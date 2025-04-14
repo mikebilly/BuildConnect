@@ -6,8 +6,8 @@ part of 'app_user_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchAppUserByUsernameHash() =>
-    r'4cdc7fb048f06c314d28c646a1caad44ad46323f';
+String _$searchAppUserByEmailHash() =>
+    r'd13b9513bbcf9b5ba117a29600e389858c165f0d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,25 +30,25 @@ class _SystemHash {
   }
 }
 
-/// See also [searchAppUserByUsername].
-@ProviderFor(searchAppUserByUsername)
-const searchAppUserByUsernameProvider = SearchAppUserByUsernameFamily();
+/// See also [searchAppUserByEmail].
+@ProviderFor(searchAppUserByEmail)
+const searchAppUserByEmailProvider = SearchAppUserByEmailFamily();
 
-/// See also [searchAppUserByUsername].
-class SearchAppUserByUsernameFamily extends Family<AsyncValue<List<AppUser>>> {
-  /// See also [searchAppUserByUsername].
-  const SearchAppUserByUsernameFamily();
+/// See also [searchAppUserByEmail].
+class SearchAppUserByEmailFamily extends Family<AsyncValue<List<AppUser>>> {
+  /// See also [searchAppUserByEmail].
+  const SearchAppUserByEmailFamily();
 
-  /// See also [searchAppUserByUsername].
-  SearchAppUserByUsernameProvider call(String username) {
-    return SearchAppUserByUsernameProvider(username);
+  /// See also [searchAppUserByEmail].
+  SearchAppUserByEmailProvider call(String email) {
+    return SearchAppUserByEmailProvider(email);
   }
 
   @override
-  SearchAppUserByUsernameProvider getProviderOverride(
-    covariant SearchAppUserByUsernameProvider provider,
+  SearchAppUserByEmailProvider getProviderOverride(
+    covariant SearchAppUserByEmailProvider provider,
   ) {
-    return call(provider.username);
+    return call(provider.email);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -63,77 +63,72 @@ class SearchAppUserByUsernameFamily extends Family<AsyncValue<List<AppUser>>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'searchAppUserByUsernameProvider';
+  String? get name => r'searchAppUserByEmailProvider';
 }
 
-/// See also [searchAppUserByUsername].
-class SearchAppUserByUsernameProvider
+/// See also [searchAppUserByEmail].
+class SearchAppUserByEmailProvider
     extends AutoDisposeFutureProvider<List<AppUser>> {
-  /// See also [searchAppUserByUsername].
-  SearchAppUserByUsernameProvider(String username)
+  /// See also [searchAppUserByEmail].
+  SearchAppUserByEmailProvider(String email)
     : this._internal(
-        (ref) => searchAppUserByUsername(
-          ref as SearchAppUserByUsernameRef,
-          username,
-        ),
-        from: searchAppUserByUsernameProvider,
-        name: r'searchAppUserByUsernameProvider',
+        (ref) => searchAppUserByEmail(ref as SearchAppUserByEmailRef, email),
+        from: searchAppUserByEmailProvider,
+        name: r'searchAppUserByEmailProvider',
         debugGetCreateSourceHash:
             const bool.fromEnvironment('dart.vm.product')
                 ? null
-                : _$searchAppUserByUsernameHash,
-        dependencies: SearchAppUserByUsernameFamily._dependencies,
+                : _$searchAppUserByEmailHash,
+        dependencies: SearchAppUserByEmailFamily._dependencies,
         allTransitiveDependencies:
-            SearchAppUserByUsernameFamily._allTransitiveDependencies,
-        username: username,
+            SearchAppUserByEmailFamily._allTransitiveDependencies,
+        email: email,
       );
 
-  SearchAppUserByUsernameProvider._internal(
+  SearchAppUserByEmailProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.username,
+    required this.email,
   }) : super.internal();
 
-  final String username;
+  final String email;
 
   @override
   Override overrideWith(
-    FutureOr<List<AppUser>> Function(SearchAppUserByUsernameRef provider)
-    create,
+    FutureOr<List<AppUser>> Function(SearchAppUserByEmailRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: SearchAppUserByUsernameProvider._internal(
-        (ref) => create(ref as SearchAppUserByUsernameRef),
+      override: SearchAppUserByEmailProvider._internal(
+        (ref) => create(ref as SearchAppUserByEmailRef),
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        username: username,
+        email: email,
       ),
     );
   }
 
   @override
   AutoDisposeFutureProviderElement<List<AppUser>> createElement() {
-    return _SearchAppUserByUsernameProviderElement(this);
+    return _SearchAppUserByEmailProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is SearchAppUserByUsernameProvider &&
-        other.username == username;
+    return other is SearchAppUserByEmailProvider && other.email == email;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, username.hashCode);
+    hash = _SystemHash.combine(hash, email.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -141,22 +136,21 @@ class SearchAppUserByUsernameProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin SearchAppUserByUsernameRef
-    on AutoDisposeFutureProviderRef<List<AppUser>> {
-  /// The parameter `username` of this provider.
-  String get username;
+mixin SearchAppUserByEmailRef on AutoDisposeFutureProviderRef<List<AppUser>> {
+  /// The parameter `email` of this provider.
+  String get email;
 }
 
-class _SearchAppUserByUsernameProviderElement
+class _SearchAppUserByEmailProviderElement
     extends AutoDisposeFutureProviderElement<List<AppUser>>
-    with SearchAppUserByUsernameRef {
-  _SearchAppUserByUsernameProviderElement(super.provider);
+    with SearchAppUserByEmailRef {
+  _SearchAppUserByEmailProviderElement(super.provider);
 
   @override
-  String get username => (origin as SearchAppUserByUsernameProvider).username;
+  String get email => (origin as SearchAppUserByEmailProvider).email;
 }
 
-String _$createAppUserHash() => r'9ac9bba826e93dc93f243e3bb15c79c9ba008dc4';
+String _$createAppUserHash() => r'39019deac5c8c25ef00fbab824d2821b5cc6350c';
 
 /// See also [createAppUser].
 @ProviderFor(createAppUser)

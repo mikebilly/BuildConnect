@@ -4,14 +4,14 @@ import 'package:buildconnect/features/app_user/models/app_user_model.dart';
 part 'app_user_provider.g.dart';
 
 @riverpod
-Future<List<AppUser>> searchAppUserByUsername(SearchAppUserByUsernameRef ref, String username) async {
+Future<List<AppUser>> searchAppUserByEmail(SearchAppUserByEmailRef ref, String email) async {
   final supabase = ref.watch(supabaseClientProvider);
   
   try {
     final List<dynamic> data = await supabase
-        .from('app_users')
+        .from('users')
         .select()
-        .ilike('username', '%$username%');
+        .ilike('email', '%$email%');
     
         return data.map((json) => AppUserMapper.fromMap(json)).toList();
   } catch (error) {
@@ -25,7 +25,7 @@ Future<AppUser> createAppUser(CreateAppUserRef ref, AppUser appUser) async {
 
     try {
     final data = await supabase
-        .from('app_users')
+        .from('users')
         .insert(appUser.toMap())
         .select()
         .single();

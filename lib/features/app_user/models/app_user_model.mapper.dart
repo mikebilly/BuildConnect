@@ -22,24 +22,29 @@ class AppUserMapper extends ClassMapperBase<AppUser> {
 
   static String? _$id(AppUser v) => v.id;
   static const Field<AppUser, String> _f$id = Field('id', _$id, opt: true);
-  static String _$username(AppUser v) => v.username;
-  static const Field<AppUser, String> _f$username =
-      Field('username', _$username);
   static String _$email(AppUser v) => v.email;
   static const Field<AppUser, String> _f$email = Field('email', _$email);
+  static DateTime? _$createdAt(AppUser v) => v.createdAt;
+  static const Field<AppUser, DateTime> _f$createdAt =
+      Field('createdAt', _$createdAt, key: r'created_at', opt: true);
+  static DateTime? _$updatedAt(AppUser v) => v.updatedAt;
+  static const Field<AppUser, DateTime> _f$updatedAt =
+      Field('updatedAt', _$updatedAt, key: r'updated_at', opt: true);
 
   @override
   final MappableFields<AppUser> fields = const {
     #id: _f$id,
-    #username: _f$username,
     #email: _f$email,
+    #createdAt: _f$createdAt,
+    #updatedAt: _f$updatedAt,
   };
 
   static AppUser _instantiate(DecodingData data) {
     return AppUser(
         id: data.dec(_f$id),
-        username: data.dec(_f$username),
-        email: data.dec(_f$email));
+        email: data.dec(_f$email),
+        createdAt: data.dec(_f$createdAt),
+        updatedAt: data.dec(_f$updatedAt));
   }
 
   @override
@@ -92,7 +97,8 @@ extension AppUserValueCopy<$R, $Out> on ObjectCopyWith<$R, AppUser, $Out> {
 
 abstract class AppUserCopyWith<$R, $In extends AppUser, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? id, String? username, String? email});
+  $R call(
+      {String? id, String? email, DateTime? createdAt, DateTime? updatedAt});
   AppUserCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -105,17 +111,23 @@ class _AppUserCopyWithImpl<$R, $Out>
   late final ClassMapperBase<AppUser> $mapper =
       AppUserMapper.ensureInitialized();
   @override
-  $R call({Object? id = $none, String? username, String? email}) =>
+  $R call(
+          {Object? id = $none,
+          String? email,
+          Object? createdAt = $none,
+          Object? updatedAt = $none}) =>
       $apply(FieldCopyWithData({
         if (id != $none) #id: id,
-        if (username != null) #username: username,
-        if (email != null) #email: email
+        if (email != null) #email: email,
+        if (createdAt != $none) #createdAt: createdAt,
+        if (updatedAt != $none) #updatedAt: updatedAt
       }));
   @override
   AppUser $make(CopyWithData data) => AppUser(
       id: data.get(#id, or: $value.id),
-      username: data.get(#username, or: $value.username),
-      email: data.get(#email, or: $value.email));
+      email: data.get(#email, or: $value.email),
+      createdAt: data.get(#createdAt, or: $value.createdAt),
+      updatedAt: data.get(#updatedAt, or: $value.updatedAt));
 
   @override
   AppUserCopyWith<$R2, AppUser, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
