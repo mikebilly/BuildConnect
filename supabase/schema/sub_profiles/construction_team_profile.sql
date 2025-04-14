@@ -15,16 +15,7 @@ CREATE TABLE IF NOT EXISTS construction_team_profiles (
   CONSTRAINT fk_representative
     FOREIGN KEY(representative_id)
     REFERENCES representative(id)
-    ON DELETE SET NULL,
-    
-  CONSTRAINT check_profile_type
-    CHECK (
-      EXISTS (
-        SELECT 1 FROM profiles
-        WHERE profiles.id = profile_id
-        AND profiles.profile_type = 'constructionTeam'
-      )
-    )
+    ON DELETE SET NULL
 );
 
 -- Construction team services linking table

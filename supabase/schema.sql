@@ -2,51 +2,55 @@
 -- This file imports all SQL schema files in the correct order
 
 -- Enums (need to be created first)
-\ir 'schema/enums/architect_role.sql'
-\ir 'schema/enums/business_entity_type.sql'
-\ir 'schema/enums/design_style.sql'
-\ir 'schema/enums/domain.sql'
-\ir 'schema/enums/material_category.sql'
-\ir 'schema/enums/payment_method.sql'
-\ir 'schema/enums/profile_type.sql'
-\ir 'schema/enums/project_role.sql'
-\ir 'schema/enums/project_status.sql'
-\ir 'schema/enums/service_type.sql'
-\ir 'schema/enums/supplier_type.sql'
-\ir 'schema/enums/working_mode.sql'
+'schema/enums/architect_role.sql'
+'schema/enums/business_entity_type.sql'
+'schema/enums/design_style.sql'
+'schema/enums/domain.sql'
+'schema/enums/material_category.sql'
+'schema/enums/payment_method.sql'
+'schema/enums/profile_type.sql'
+'schema/enums/project_role.sql'
+'schema/enums/project_status.sql'
+'schema/enums/service_type.sql'
+'schema/enums/supplier_type.sql'
+'schema/enums/working_mode.sql'
+
+'schema/core/user.sql'
+'schema/core/profile.sql'
+'schema/shared/location.sql'
+'schema/core/project.sql'
+'schema/shared/media.sql'
 
 -- Shared types/tables
-\ir 'schema/shared/certification.sql'
-\ir 'schema/shared/contact_info.sql'
-\ir 'schema/shared/education.sql'
-\ir 'schema/shared/equipment.sql'
-\ir 'schema/shared/legal.sql'
-\ir 'schema/shared/location.sql'
-\ir 'schema/shared/media.sql'
-\ir 'schema/shared/payment_terms.sql'
-\ir 'schema/shared/ratings_info.sql'
-\ir 'schema/shared/representative.sql'
-\ir 'schema/shared/review.sql'
-\ir 'schema/shared/social.sql'
-\ir 'schema/shared/verification_info.sql'
-\ir 'schema/shared/warranty.sql'
+'schema/shared/certification.sql'
+'schema/shared/contact_info.sql'
+'schema/shared/education.sql'
+'schema/shared/equipment.sql'
+'schema/shared/legal.sql'
+
+
+'schema/shared/payment_terms.sql'
+'schema/shared/review.sql'
+'schema/shared/ratings_info.sql'
+'schema/shared/representative.sql'
+
+'schema/shared/social.sql'
+'schema/shared/verification_info.sql'
+'schema/shared/warranty.sql'
 
 -- Core tables
-\ir 'schema/core/user.sql'
-\ir 'schema/core/profile.sql'
-\ir 'schema/core/project.sql'
+
+
+
 
 -- Profile subtypes
-\ir 'schema/sub_profiles/architect_profile.sql'
-\ir 'schema/sub_profiles/construction_team_profile.sql'
-\ir 'schema/sub_profiles/contractor_profile.sql'
-\ir 'schema/sub_profiles/supplier_profile.sql'
+'schema/sub_profiles/architect_profile.sql'
+'schema/sub_profiles/construction_team_profile.sql'
+'schema/sub_profiles/contractor_profile.sql'
+'schema/sub_profiles/supplier_profile.sql'
 
 -- Functions
-\ir 'schema/functions/search_profile.sql'
+'schema/functions/search_profile.sql'
 
 -- Policies (RLS)
-\ir 'schema/policies/auth_policies.sql'
-
--- Seed data
-\ir 'schema/seed/seed_data.sql' 
+'schema/policies/auth_policies.sql'

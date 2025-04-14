@@ -8,16 +8,7 @@ CREATE TABLE IF NOT EXISTS contractor_profiles (
   CONSTRAINT fk_profile
     FOREIGN KEY(profile_id)
     REFERENCES profiles(id)
-    ON DELETE CASCADE,
-    
-  CONSTRAINT check_profile_type
-    CHECK (
-      EXISTS (
-        SELECT 1 FROM profiles
-        WHERE profiles.id = profile_id
-        AND profiles.profile_type = 'contractor'
-      )
-    )
+    ON DELETE CASCADE
 );
 
 -- Contractor services linking table
