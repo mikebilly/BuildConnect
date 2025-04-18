@@ -155,3 +155,11 @@ enum ApplicationStatus {
   accepted,
   rejected
 }
+
+@MappableEnum()
+enum JobPostingType {
+  hiring,
+  partnership,
+  materials,
+  other
+}

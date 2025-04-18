@@ -951,3 +951,57 @@ extension ApplicationStatusMapperExtension on ApplicationStatus {
     return MapperContainer.globals.toValue<ApplicationStatus>(this) as String;
   }
 }
+
+class JobPostingTypeMapper extends EnumMapper<JobPostingType> {
+  JobPostingTypeMapper._();
+
+  static JobPostingTypeMapper? _instance;
+  static JobPostingTypeMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = JobPostingTypeMapper._());
+    }
+    return _instance!;
+  }
+
+  static JobPostingType fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  JobPostingType decode(dynamic value) {
+    switch (value) {
+      case r'hiring':
+        return JobPostingType.hiring;
+      case r'partnership':
+        return JobPostingType.partnership;
+      case r'materials':
+        return JobPostingType.materials;
+      case r'other':
+        return JobPostingType.other;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(JobPostingType self) {
+    switch (self) {
+      case JobPostingType.hiring:
+        return r'hiring';
+      case JobPostingType.partnership:
+        return r'partnership';
+      case JobPostingType.materials:
+        return r'materials';
+      case JobPostingType.other:
+        return r'other';
+    }
+  }
+}
+
+extension JobPostingTypeMapperExtension on JobPostingType {
+  String toValue() {
+    JobPostingTypeMapper.ensureInitialized();
+    return MapperContainer.globals.toValue<JobPostingType>(this) as String;
+  }
+}
