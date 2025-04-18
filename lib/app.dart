@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:buildconnect/routes/router.dart';
 
-class BuildConnectApp extends StatelessWidget {
+class BuildConnectApp extends ConsumerWidget {
   const BuildConnectApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('BuildConnect'),
-        ),
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: "Build Connect",
+      theme: ThemeData(),
+      routerConfig: router,
     );
   }
 }

@@ -6,11 +6,11 @@ part of 'supabase_client_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$supabaseClientHash() => r'36e9cae00709545a85bfe4a5a2cb98d8686a01ea';
+String _$supabaseClientHash() => r'2df5a38617329a3bb0a7e149189bea875722d7b8';
 
 /// See also [supabaseClient].
 @ProviderFor(supabaseClient)
-final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
+final supabaseClientProvider = Provider<SupabaseClient>.internal(
   supabaseClient,
   name: r'supabaseClientProvider',
   debugGetCreateSourceHash:
@@ -23,6 +23,6 @@ final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
+typedef SupabaseClientRef = ProviderRef<SupabaseClient>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

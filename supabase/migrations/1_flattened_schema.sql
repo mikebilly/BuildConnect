@@ -1,5 +1,5 @@
 -- Flattened schema for BuildConnect
--- Generated on Mon, Apr 14, 2025  6:22:40 PM
+-- Generated on Fri, Apr 18, 2025  5:22:42 PM
 
 -- Schema orchestration file for BuildConnect
 -- This file imports all SQL schema files in the correct order
@@ -150,27 +150,14 @@ CREATE TYPE working_mode AS ENUM (
 
 
 -- Included file: schema/core/user.sql
--- User table that extends Supabase auth.users
 CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+  created_at TIMESTAMPZ NOT NULL DEFAULT now(),
+)
 
--- Enable Row Level Security
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-
--- Create policies
-CREATE POLICY "Users can view their own user data" ON users
-  FOR SELECT USING (auth.uid() = id);
-  
-CREATE POLICY "Users can update their own user data" ON users
-  FOR UPDATE USING (auth.uid() = id);
-
--- Function to create a new user entry when a new auth user is created
-CREATE OR REPLACE FUNCTION public.handle_new_user() 
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURN TRIGGER AS $$
 BEGIN
   INSERT INTO public.users (id, email)
   VALUES (NEW.id, NEW.email);
@@ -178,10 +165,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to call the function when a new auth user is created
+DROP TRIGGER IF EXISTS on_auth_user_created on auth.users;
+
 CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user(); 
+AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- Included file: schema/core/profile.sql
 -- Profile table
