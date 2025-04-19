@@ -106,6 +106,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     isLogin ? 'Log In' : 'Register',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: AppColors.primary,
+                      fontWeight: FontWeight.normal,
                     ),
                     // style: AppTextStyles.caption,
                   ),
@@ -143,10 +144,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       ),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'Password is required';
-                      if (value.length < 6)
+                      }
+                      if (value.length < 6) {
                         return 'Password must be at least 6 characters';
+                      }
                       return null;
                     },
                   ),
@@ -173,10 +176,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         ),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return 'Please confirm your password';
-                        if (value != _password.text)
+                        }
+                        if (value != _password.text) {
                           return 'Passwords do not match';
+                        }
                         return null;
                       },
                     ),

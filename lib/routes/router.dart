@@ -2,9 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 
+//auth
 import 'package:buildconnect/screens/auth/login_screen.dart';
 import 'package:buildconnect/screens/auth/register_screen.dart';
 import 'package:buildconnect/screens/home/home_screen.dart';
+
+//profile
+import 'package:buildconnect/screens/profile/profile_edit/profile_edit_screen.dart';
 
 // import 'package:flutter_masterclass/presentation/screens/home/home_screen.dart';
 // import 'package:flutter_masterclass/presentation/screens/loading/loading_screen.dart';
@@ -41,6 +45,11 @@ GoRouter router(Ref ref) {
         path: '/register',
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/profile_edit',
+        name: 'profile_edit',
+        builder: (context, state) => const ProfileEditScreen(),
       ),
       // GoRoute(
       //   path: '/location',

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buildconnect/models/enums/enum.dart';
+import 'package:buildconnect/models/enums/enums.dart';
 
 import 'package:buildconnect/core/theme/theme.dart';
 

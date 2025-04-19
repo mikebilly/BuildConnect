@@ -71,7 +71,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.grey[200], // Darker background than grey[50]
+        fillColor: Colors.grey[50], // Darker background than grey[50]
         labelStyle: TextStyle(
           color: AppColors.text,
         ), // Keep or darken if needed

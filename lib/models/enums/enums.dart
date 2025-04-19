@@ -1,6 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'enum.mapper.dart';
+part 'enums.mapper.dart';
 
 @MappableEnum()
 enum ProfileType {
