@@ -11,7 +11,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-
   Future<void> _signOut() async {
     final authNotifier = ref.read(authProvider.notifier);
     await authNotifier.signOut();
@@ -27,7 +26,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
@@ -35,12 +33,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
+          _buildMenu(
+            context,
+            onProfileTap: () {
+              context.push('/profile_edit');
+            },
+            onLogoutTap: () {
               _signOut();
-            }
+            },
           ),
         ],
       ),
@@ -48,16 +50,67 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (user) {
-          if (user == null) {
-            _navigateToLogin();
-            return const SizedBox.shrink();
-          }
+          // if (user == null) {
+          //   _navigateToLogin();
+          //   return const SizedBox.shrink();
+          // }
 
-          return Center(
-            child: Text('Welcome ${user.email}'),
-          );
-        }
+          // return Center(child: Text('Welcome ${user.email}'));
+        },
       ),
     );
   }
 }
+
+Widget _buildMenu(
+  BuildContext context, {
+  required VoidCallback onProfileTap,
+  required VoidCallback onLogoutTap,
+}) {
+  return PopupMenuButton<String>(
+    offset: const Offset(0, 50),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        value: 'profile',
+        child: Row(
+          children: [
+            Icon(Icons.person, color: Theme.of(context).iconTheme.color),
+            const SizedBox(width: 8),
+            Text(
+              'Profile',
+            ),
+          ],
+        ),
+      ),
+      PopupMenuItem(
+        value: 'logout',
+        child: Row(
+          children: [
+            Icon(Icons.logout, color: Theme.of(context).iconTheme.color),
+            const SizedBox(width: 8),
+            Text(
+              'Logout',
+            ),
+          ],
+        ),
+      ),
+    ],
+    onSelected: (value) {
+      if (value == 'profile') {
+        onProfileTap();
+      } else if (value == 'logout') {
+        onLogoutTap();
+      }
+    },
+    child: CircleAvatar(
+      radius: 20,
+      backgroundColor: Colors.transparent,
+      child: Icon(
+        Icons.menu,
+        color: Colors.white,
+      ),
+    ),
+  );
+}
+

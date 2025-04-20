@@ -40,9 +40,6 @@
 
 -- Core tables
 
-
-
-
 -- Profile subtypes
 'schema/sub_profiles/architect_profile.sql'
 'schema/sub_profiles/construction_team_profile.sql'

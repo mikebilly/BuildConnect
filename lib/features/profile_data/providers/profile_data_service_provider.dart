@@ -5,7 +5,7 @@ import 'package:buildconnect/core/services/supabase/supabase_client_provider.dar
 
 part 'profile_data_service_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 ProfileDataService profileDataService(Ref ref) {
   final supabase = ref.watch(supabaseClientProvider);
   return ProfileDataService(supabase);

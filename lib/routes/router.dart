@@ -19,10 +19,10 @@ part 'router.g.dart';
 
 @riverpod
 GoRouter router(Ref ref) {
-  // final authState = 
+  // final authState =
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/',
     debugLogDiagnostics: true,
     redirect: (context, state) {},
     routes: [

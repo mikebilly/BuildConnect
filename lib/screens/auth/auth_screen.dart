@@ -221,6 +221,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           : "Already have an account? Login",
                     ),
                   ),
+                  TextButton(
+                    onPressed: () {
+                      context.go('/');
+                    },
+                    child: Text('Skip for now'),
+                  ),
                 ],
               ),
             ),

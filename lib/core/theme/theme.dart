@@ -36,6 +36,10 @@ class AppTextStyles {
   static TextStyle small = const TextStyle(fontSize: 12, height: 1.4);
 }
 
+class InputDecorationConstants {
+  static double borderRadiusCircular = 4;
+}
+
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
@@ -50,6 +54,13 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+      ),
+      iconTheme: const IconThemeData(
+        color: AppColors.primary, 
+        size: 20,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -79,22 +90,22 @@ class AppTheme {
           color: Colors.grey[600],
         ), // Add this for darker hint
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(InputDecorationConstants.borderRadiusCircular),
           borderSide: const BorderSide(color: Colors.black45), // Darker
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(InputDecorationConstants.borderRadiusCircular),
           borderSide: const BorderSide(color: Colors.black87), // Dark grey
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(InputDecorationConstants.borderRadiusCircular),
           borderSide: BorderSide(
             color: AppColors.primary,
             width: 1.5,
           ), // Accent color
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(InputDecorationConstants.borderRadiusCircular),
           borderSide: BorderSide(color: AppColors.error),
         ),
         contentPadding: const EdgeInsets.symmetric(

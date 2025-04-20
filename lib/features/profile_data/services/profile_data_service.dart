@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 abstract class IProfileDataService {
   Future<void> upsertProfileData(String userId, ProfileData profileData);
   Future<ProfileData?> getProfileData(String userId);
-  Future<void> deleteProfileData(String userId);
 }
 
 class ProfileDataService implements IProfileDataService {
@@ -14,8 +13,8 @@ class ProfileDataService implements IProfileDataService {
   ProfileDataService(this._supabase);
 
   @override
-  Future<void> upsertProfileData(String userId, ProfileData profileData) async {
-    await Future.delayed(const Duration(seconds: 1));
+  Future<void> upsertProfileData(String? userId, ProfileData? profileData) async {
+    await Future.delayed(const Duration(seconds: 5));
   }
 
   @override
@@ -27,10 +26,5 @@ class ProfileDataService implements IProfileDataService {
     );
     debugPrint('ProfileDataService getProfileData: $returedProfileData');
     return returedProfileData;
-  }
-
-  @override
-  Future<void> deleteProfileData(String userId) async {
-    await Future.delayed(const Duration(seconds: 1));
   }
 }
