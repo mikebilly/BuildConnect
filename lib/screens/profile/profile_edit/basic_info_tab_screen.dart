@@ -1,3 +1,4 @@
+import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,28 +29,34 @@ class BasicInfoTabScreen extends ConsumerStatefulWidget {
 }
 
 class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
+  late final ProfileDataNotifier _profileDataNotifier;
+
+  final _email = TextEditingController();
+
   final displayName = TextEditingController();
   // logo
   final _displayText = TextEditingController();
 
   MyEnum? _selectedMyEnum;
 
+  final Set<MyEnum> _selectedMyEnums = {};
+
   int _sliderVal = 1;
 
   @override
   void initState() {
     super.initState();
-    _loadScreenData(); // Initialize with a default value
+    _profileDataNotifier = ref.read(profileDataNotifierProvider.notifier);
   }
 
-  void _loadDefaultData() {
-    _selectedMyEnum = MyEnum.values.first;
-  }
+  @override
+  void dispose() {
+    Future(() {
+      _profileDataNotifier.dumpFromControllers(email: _email.text);
+    });
 
-  void _loadFetchedData() {}
-
-  Future<void> _loadScreenData() async {
-    setState(() {});
+    _email.dispose();
+    super.dispose();
   }
 
   Widget _heightWidget({required Widget widget, double height = 16.0}) {
@@ -74,7 +81,7 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
   }
 
   Widget _buildDrowndownButtonFormField<T>({
-    required T? selectedValue,
+    required T selectedValue,
     required List<T> values,
     required void Function(T?) onChanged,
     required String title,
@@ -127,8 +134,47 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
     );
   }
 
+  Widget _buildFilterChip<T>({
+    double spacing = 5.0,
+    required List<T> values,
+    required Set<T> selectedValues,
+    required void Function(T value, bool selected) onSelected,
+    required String title,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        Wrap(
+          spacing: spacing,
+          children:
+              values.map((v) {
+                final bool isSelected = selectedValues.contains(v);
+                return FilterChip(
+                  label: Text((v as dynamic).label),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    onSelected(v, selected);
+                  },
+                );
+              }).toList(),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final profileData = ref.watch(profileDataNotifierProvider);
+
+    // Bind controller only once when data is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final data = profileData.valueOrNull;
+      if (data != null) {
+        _email.text = data.email;
+      }
+    });
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -168,6 +214,28 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
                     _sliderVal = val.round();
                   });
                 },
+              ),
+            ),
+            _heightWidget(
+              widget: _buildFilterChip(
+                values: MyEnum.values,
+                selectedValues: _selectedMyEnums,
+                title: "title",
+                onSelected: (v, selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedMyEnums.add(v);
+                    } else {
+                      _selectedMyEnums.remove(v);
+                    }
+                  });
+                },
+              ),
+            ),
+            _heightWidget(
+              widget: _buildTextFormField(
+                controller: _email,
+                labelText: "Email",
               ),
             ),
           ],

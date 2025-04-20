@@ -7,17 +7,17 @@ part 'auth_provider.g.dart';
 
 @riverpod
 class Auth extends _$Auth {
-  late final AuthService _auth;
+  late final AuthService _authService;
 
   @override
   FutureOr<AppUser?> build() async {
-    _auth = ref.watch(authServiceProvider);
+    _authService = ref.watch(authServiceProvider);
 
-    if (!_auth.isLoggedIn) {
+    if (!_authService.isLoggedIn) {
       return null;
     }
 
-    return await _auth.fetchAppUser();
+    return await _authService.fetchAppUser();
   }
 
   Future<void> signIn({
@@ -27,8 +27,8 @@ class Auth extends _$Auth {
     state = const AsyncLoading();
 
     try {
-      await _auth.signIn(email, password);
-      final user = await _auth.fetchAppUser();
+      await _authService.signIn(email, password);
+      final user = await _authService.fetchAppUser();
       state = AsyncData(user);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -37,7 +37,7 @@ class Auth extends _$Auth {
 
   Future<void> signOut() async {
     state = const AsyncLoading();
-    await _auth.signOut();
+    await _authService.signOut();
     state = const AsyncData(null);
   }
 
@@ -48,8 +48,8 @@ class Auth extends _$Auth {
     state = const AsyncLoading();
 
     try {
-      await _auth.signUp(email, password);
-      final user = await _auth.fetchAppUser();
+      await _authService.signUp(email, password);
+      final user = await _authService.fetchAppUser();
       state = AsyncData(user);
     } catch (e, st) {
       state = AsyncError(e, st);
