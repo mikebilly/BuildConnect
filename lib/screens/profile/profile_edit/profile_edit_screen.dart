@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
 
+import 'package:buildconnect/models/enums/enums.dart';
+
 import 'package:buildconnect/screens/profile/profile_edit/tab_screens/basic_info_tab_screen.dart';
 import 'package:buildconnect/screens/profile/profile_edit/tab_screens/professional_info_tab_screen.dart';
 import 'package:buildconnect/screens/profile/profile_edit/tab_screens/contacts_tab_screen.dart';
@@ -64,7 +66,13 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 child: TabBarView(
                   children: [
                     const BasicInfoTabScreen(),
-                    const ProfessionalInfoTabScreen(),
+
+                    profileData.when(
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (error, stack) => Center(child: const Text('Error loading profile')),
+                      data: (data) => ProfessionalInfoTabScreen(profileType: data!.profileType),
+                    ),
+
                     const ContactsTabScreen(),
                   ],
                 ),

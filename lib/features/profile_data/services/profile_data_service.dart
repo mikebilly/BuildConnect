@@ -1,6 +1,7 @@
 import 'package:buildconnect/models/profile_data/profile_data_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
+import 'package:buildconnect/models/enums/enums.dart';
 
 abstract class IProfileDataService {
   Future<void> upsertProfileData(String userId, ProfileData profileData);
@@ -21,8 +22,10 @@ class ProfileDataService implements IProfileDataService {
   Future<ProfileData?> getProfileData(String userId) async {
     await Future.delayed(const Duration(seconds: 1));
     final returedProfileData = ProfileData(
-      name: 'John Doe',
-      email: 'test@gmail.com',
+      displayName: 'xyz',
+      profileType: ProfileType.architect,
+      portfolioLinks: [],
+      designStyles: [],
     );
     debugPrint('ProfileDataService getProfileData: $returedProfileData');
     return returedProfileData;

@@ -1,54 +1,31 @@
-import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:buildconnect/models/enums/enums.dart';
+
+import 'package:buildconnect/screens/profile/profile_edit/tab_screens/sub_profiles_screens/architect_profile_edit_screen.dart';
+import 'package:buildconnect/screens/profile/profile_edit/tab_screens/sub_profiles_screens/contractor_profile_edit_screen.dart';
+import 'package:buildconnect/screens/profile/profile_edit/tab_screens/sub_profiles_screens/construction_team_profile_edit_screen.dart';
+import 'package:buildconnect/screens/profile/profile_edit/tab_screens/sub_profiles_screens/supplier_profile_edit_screen.dart';
 
 class ProfessionalInfoTabScreen extends ConsumerStatefulWidget {
-  const ProfessionalInfoTabScreen({super.key});
+  final Enum profileType;
+  const ProfessionalInfoTabScreen({super.key, required this.profileType});
 
   @override
-  ConsumerState<ProfessionalInfoTabScreen> createState() => _ProfessionalInfoTabScreenState();
+  ConsumerState<ProfessionalInfoTabScreen> createState() =>
+      _ProfessionalInfoTabScreenState();
 }
 
-class _ProfessionalInfoTabScreenState extends ConsumerState<ProfessionalInfoTabScreen> {
-  late final ProfileDataNotifier _profileDataNotifier;
-
-  @override
-  void initState() {
-    super.initState();
-    _profileDataNotifier = ref.read(profileDataNotifierProvider.notifier);
-  }
-
-  @override
-  void dispose() {
-    Future(() {
-      // _profileDataNotifier.dumpFromControllers();
-    });
-
-    // _email.dispose();
-    super.dispose();
-  }
+class _ProfessionalInfoTabScreenState
+    extends ConsumerState<ProfessionalInfoTabScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileData = ref.watch(profileDataNotifierProvider);
-
-    // Bind controller only once when data is ready
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final data = profileData.valueOrNull;
-      if (data != null) {
-        // _email.text = data.email;
-      }
-    });
-
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Professional Info"),
-          ],
-        ),
-      ),
-    );
+    return switch (widget.profileType as ProfileType) {
+      ProfileType.architect => const ArchitectProfileEditScreen(),
+      ProfileType.contractor => const ContractorProfileEditScreen(),
+      ProfileType.constructionTeam => const ConstructionTeamProfileEditScreen(),
+      ProfileType.supplier => const SupplierProfileEditScreen(),
+    };
   }
 }

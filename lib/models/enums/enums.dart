@@ -9,18 +9,14 @@ enum ProfileType {
   constructionTeam,
   supplier;
 
-  String get label {
-    switch (this) {
-      case ProfileType.architect:
-        return 'Architect';
-      case ProfileType.contractor:
-        return 'Contractor';
-      case ProfileType.constructionTeam:
-        return 'Construction Team';
-      case ProfileType.supplier:
-        return 'Supplier';
-    }
-  }
+  String get title => 'Profile Type';
+
+  String get label => switch (this) {
+    ProfileType.architect => 'Architect',
+    ProfileType.contractor => 'Contractor',
+    ProfileType.constructionTeam => 'Construction Team',
+    ProfileType.supplier => 'Supplier',
+  };
 }
 
 @MappableEnum()
@@ -29,16 +25,13 @@ enum WorkingMode {
   remote,
   hybrid;
 
-  String get label {
-    switch (this) {
-      case WorkingMode.onsite:
-        return 'Onsite';
-      case WorkingMode.remote:
-        return 'Remote';
-      case WorkingMode.hybrid:
-        return 'Hybrid';
-    }
-  }
+  String get title => 'Working Mode';
+
+  String get label => switch (this) {
+    WorkingMode.onsite => 'Onsite',
+    WorkingMode.remote => 'Remote',
+    WorkingMode.hybrid => 'Hybrid',
+  };
 }
 
 @MappableEnum()
@@ -54,30 +47,20 @@ enum Domain {
   infrastructure,
   renovation;
 
-  String get label {
-    switch (this) {
-      case Domain.residential:
-        return 'Residential';
-      case Domain.commercial:
-        return 'Commercial';
-      case Domain.industrial:
-        return 'Industrial';
-      case Domain.hospitality:
-        return 'Hospitality';
-      case Domain.urbanPlanning:
-        return 'Urban Planning';
-      case Domain.education:
-        return 'Education';
-      case Domain.healthcare:
-        return 'Healthcare';
-      case Domain.cultural:
-        return 'Cultural';
-      case Domain.infrastructure:
-        return 'Infrastructure';
-      case Domain.renovation:
-        return 'Renovation';
-    }
-  }
+  String get title => 'Domain';
+
+  String get label => switch (this) {
+    Domain.residential => 'Residential',
+    Domain.commercial => 'Commercial',
+    Domain.industrial => 'Industrial',
+    Domain.hospitality => 'Hospitality',
+    Domain.urbanPlanning => 'Urban Planning',
+    Domain.education => 'Education',
+    Domain.healthcare => 'Healthcare',
+    Domain.cultural => 'Cultural',
+    Domain.infrastructure => 'Infrastructure',
+    Domain.renovation => 'Renovation',
+  };
 }
 
 @MappableEnum()
@@ -87,18 +70,14 @@ enum ProjectRole {
   supervision,
   supply;
 
-  String get label {
-    switch (this) {
-      case ProjectRole.design:
-        return 'Design';
-      case ProjectRole.construction:
-        return 'Construction';
-      case ProjectRole.supervision:
-        return 'Supervision';
-      case ProjectRole.supply:
-        return 'Supply';
-    }
-  }
+  String get title => 'Project Role';
+
+  String get label => switch (this) {
+    ProjectRole.design => 'Design',
+    ProjectRole.construction => 'Construction',
+    ProjectRole.supervision => 'Supervision',
+    ProjectRole.supply => 'Supply',
+  };
 }
 
 @MappableEnum()
@@ -107,16 +86,30 @@ enum ProjectStatus {
   completed,
   cancelled;
 
-  String get label {
-    switch (this) {
-      case ProjectStatus.ongoing:
-        return 'Ongoing';
-      case ProjectStatus.completed:
-        return 'Completed';
-      case ProjectStatus.cancelled:
-        return 'Cancelled';
-    }
-  }
+  String get title => 'Project Status';
+
+  String get label => switch (this) {
+    ProjectStatus.ongoing => 'Ongoing',
+    ProjectStatus.completed => 'Completed',
+    ProjectStatus.cancelled => 'Cancelled',
+  };
+}
+
+@MappableEnum()
+enum AvailabilityStatus {
+  available,
+  unavailable,
+  busy,
+  onLeave;
+
+  String get title => 'Availability Status';
+
+  String get label => switch (this) {
+    AvailabilityStatus.available => 'Available',
+    AvailabilityStatus.unavailable => 'Unavailable',
+    AvailabilityStatus.busy => 'Busy',
+    AvailabilityStatus.onLeave => 'On Leave',
+  };
 }
 
 @MappableEnum()
@@ -128,22 +121,16 @@ enum ArchitectRole {
   landscapeArchitect,
   urbanPlanner;
 
-  String get label {
-    switch (this) {
-      case ArchitectRole.seniorArchitect:
-        return 'Senior Architect';
-      case ArchitectRole.designConsultant:
-        return 'Design Consultant';
-      case ArchitectRole.interiorArchitect:
-        return 'Interior Architect';
-      case ArchitectRole.projectArchitect:
-        return 'Project Architect';
-      case ArchitectRole.landscapeArchitect:
-        return 'Landscape Architect';
-      case ArchitectRole.urbanPlanner:
-        return 'Urban Planner';
-    }
-  }
+  String get title => 'Architect Role';
+
+  String get label => switch (this) {
+    ArchitectRole.seniorArchitect => 'Senior Architect',
+    ArchitectRole.designConsultant => 'Design Consultant',
+    ArchitectRole.interiorArchitect => 'Interior Architect',
+    ArchitectRole.projectArchitect => 'Project Architect',
+    ArchitectRole.landscapeArchitect => 'Landscape Architect',
+    ArchitectRole.urbanPlanner => 'Urban Planner',
+  };
 }
 
 @MappableEnum()
@@ -156,24 +143,17 @@ enum DesignStyle {
   scandinavian,
   traditional;
 
-  String get label {
-    switch (this) {
-      case DesignStyle.minimalism:
-        return 'Minimalism';
-      case DesignStyle.modern:
-        return 'Modern';
-      case DesignStyle.classical:
-        return 'Classical';
-      case DesignStyle.tropical:
-        return 'Tropical';
-      case DesignStyle.neoclassical:
-        return 'Neoclassical';
-      case DesignStyle.scandinavian:
-        return 'Scandinavian';
-      case DesignStyle.traditional:
-        return 'Traditional';
-    }
-  }
+  String get title => 'Design Style';
+
+  String get label => switch (this) {
+    DesignStyle.minimalism => 'Minimalism',
+    DesignStyle.modern => 'Modern',
+    DesignStyle.classical => 'Classical',
+    DesignStyle.tropical => 'Tropical',
+    DesignStyle.neoclassical => 'Neoclassical',
+    DesignStyle.scandinavian => 'Scandinavian',
+    DesignStyle.traditional => 'Traditional',
+  };
 }
 
 @MappableEnum()
@@ -192,36 +172,23 @@ enum ServiceType {
   concreteWorks,
   welding;
 
-  String get label {
-    switch (this) {
-      case ServiceType.fullConstruction:
-        return 'Full Construction';
-      case ServiceType.interiorFitOut:
-        return 'Interior Fit-Out';
-      case ServiceType.electricalInstallation:
-        return 'Electrical Installation';
-      case ServiceType.plumbing:
-        return 'Plumbing';
-      case ServiceType.finishingWorks:
-        return 'Finishing Works';
-      case ServiceType.roofing:
-        return 'Roofing';
-      case ServiceType.steelStructure:
-        return 'Steel Structure';
-      case ServiceType.bricklaying:
-        return 'Bricklaying';
-      case ServiceType.tiling:
-        return 'Tiling';
-      case ServiceType.painting:
-        return 'Painting';
-      case ServiceType.scaffolding:
-        return 'Scaffolding';
-      case ServiceType.concreteWorks:
-        return 'Concrete Works';
-      case ServiceType.welding:
-        return 'Welding';
-    }
-  }
+  String get title => 'Service Type';
+
+  String get label => switch (this) {
+    ServiceType.fullConstruction => 'Full Construction',
+    ServiceType.interiorFitOut => 'Interior Fit-Out',
+    ServiceType.electricalInstallation => 'Electrical Installation',
+    ServiceType.plumbing => 'Plumbing',
+    ServiceType.finishingWorks => 'Finishing Works',
+    ServiceType.roofing => 'Roofing',
+    ServiceType.steelStructure => 'Steel Structure',
+    ServiceType.bricklaying => 'Bricklaying',
+    ServiceType.tiling => 'Tiling',
+    ServiceType.painting => 'Painting',
+    ServiceType.scaffolding => 'Scaffolding',
+    ServiceType.concreteWorks => 'Concrete Works',
+    ServiceType.welding => 'Welding',
+  };
 }
 
 @MappableEnum()
@@ -234,24 +201,17 @@ enum SupplierType {
   manufacturer,
   brand;
 
-  String get label {
-    switch (this) {
-      case SupplierType.enterprise:
-        return 'Enterprise';
-      case SupplierType.distributor:
-        return 'Distributor';
-      case SupplierType.retailStore:
-        return 'Retail Store';
-      case SupplierType.individual:
-        return 'Individual';
-      case SupplierType.reseller:
-        return 'Reseller';
-      case SupplierType.manufacturer:
-        return 'Manufacturer';
-      case SupplierType.brand:
-        return 'Brand';
-    }
-  }
+  String get title => 'Supplier Type';
+
+  String get label => switch (this) {
+    SupplierType.enterprise => 'Enterprise',
+    SupplierType.distributor => 'Distributor',
+    SupplierType.retailStore => 'Retail Store',
+    SupplierType.individual => 'Individual',
+    SupplierType.reseller => 'Reseller',
+    SupplierType.manufacturer => 'Manufacturer',
+    SupplierType.brand => 'Brand',
+  };
 }
 
 @MappableEnum()
@@ -273,42 +233,26 @@ enum MaterialCategory {
   toolsAndHardware,
   roofing;
 
-  String get label {
-    switch (this) {
-      case MaterialCategory.cement:
-        return 'Cement';
-      case MaterialCategory.bricks:
-        return 'Bricks';
-      case MaterialCategory.sandAndGravel:
-        return 'Sand and Gravel';
-      case MaterialCategory.steel:
-        return 'Steel';
-      case MaterialCategory.electricalEquipment:
-        return 'Electrical Equipment';
-      case MaterialCategory.lighting:
-        return 'Lighting';
-      case MaterialCategory.plumbingEquipment:
-        return 'Plumbing Equipment';
-      case MaterialCategory.tiles:
-        return 'Tiles';
-      case MaterialCategory.paint:
-        return 'Paint';
-      case MaterialCategory.doorsAndWindows:
-        return 'Doors and Windows';
-      case MaterialCategory.waterproofing:
-        return 'Waterproofing';
-      case MaterialCategory.wood:
-        return 'Wood';
-      case MaterialCategory.interiorFurniture:
-        return 'Interior Furniture';
-      case MaterialCategory.safetyEquipment:
-        return 'Safety Equipment';
-      case MaterialCategory.toolsAndHardware:
-        return 'Tools and Hardware';
-      case MaterialCategory.roofing:
-        return 'Roofing';
-    }
-  }
+  String get title => 'Material Category';
+
+  String get label => switch (this) {
+    MaterialCategory.cement => 'Cement',
+    MaterialCategory.bricks => 'Bricks',
+    MaterialCategory.sandAndGravel => 'Sand and Gravel',
+    MaterialCategory.steel => 'Steel',
+    MaterialCategory.electricalEquipment => 'Electrical Equipment',
+    MaterialCategory.lighting => 'Lighting',
+    MaterialCategory.plumbingEquipment => 'Plumbing Equipment',
+    MaterialCategory.tiles => 'Tiles',
+    MaterialCategory.paint => 'Paint',
+    MaterialCategory.doorsAndWindows => 'Doors and Windows',
+    MaterialCategory.waterproofing => 'Waterproofing',
+    MaterialCategory.wood => 'Wood',
+    MaterialCategory.interiorFurniture => 'Interior Furniture',
+    MaterialCategory.safetyEquipment => 'Safety Equipment',
+    MaterialCategory.toolsAndHardware => 'Tools and Hardware',
+    MaterialCategory.roofing => 'Roofing',
+  };
 }
 
 @MappableEnum()
@@ -319,20 +263,15 @@ enum BusinessEntityType {
   corporation,
   cooperative;
 
-  String get label {
-    switch (this) {
-      case BusinessEntityType.individual:
-        return 'Individual';
-      case BusinessEntityType.partnership:
-        return 'Partnership';
-      case BusinessEntityType.limitedCompany:
-        return 'Limited Company';
-      case BusinessEntityType.corporation:
-        return 'Corporation';
-      case BusinessEntityType.cooperative:
-        return 'Cooperative';
-    }
-  }
+  String get title => 'Business Entity Type';
+
+  String get label => switch (this) {
+    BusinessEntityType.individual => 'Individual',
+    BusinessEntityType.partnership => 'Partnership',
+    BusinessEntityType.limitedCompany => 'Limited Company',
+    BusinessEntityType.corporation => 'Corporation',
+    BusinessEntityType.cooperative => 'Cooperative',
+  };
 }
 
 @MappableEnum()
@@ -343,20 +282,15 @@ enum PaymentMethod {
   mobileBanking,
   eWallet;
 
-  String get label {
-    switch (this) {
-      case PaymentMethod.cash:
-        return 'Cash';
-      case PaymentMethod.bankTransfer:
-        return 'Bank Transfer';
-      case PaymentMethod.creditCard:
-        return 'Credit Card';
-      case PaymentMethod.mobileBanking:
-        return 'Mobile Banking';
-      case PaymentMethod.eWallet:
-        return 'E-Wallet';
-    }
-  }
+  String get title => 'Payment Method';
+
+  String get label => switch (this) {
+    PaymentMethod.cash => 'Cash',
+    PaymentMethod.bankTransfer => 'Bank Transfer',
+    PaymentMethod.creditCard => 'Credit Card',
+    PaymentMethod.mobileBanking => 'Mobile Banking',
+    PaymentMethod.eWallet => 'E-Wallet',
+  };
 }
 
 @MappableEnum()
@@ -366,18 +300,14 @@ enum MediaType {
   document,
   model3D;
 
-  String get label {
-    switch (this) {
-      case MediaType.image:
-        return 'Image';
-      case MediaType.video:
-        return 'Video';
-      case MediaType.document:
-        return 'Document';
-      case MediaType.model3D:
-        return '3D Model';
-    }
-  }
+  String get title => 'Media Type';
+
+  String get label => switch (this) {
+    MediaType.image => 'Image',
+    MediaType.video => 'Video',
+    MediaType.document => 'Document',
+    MediaType.model3D => '3D Model',
+  };
 }
 
 @MappableEnum()
@@ -387,18 +317,14 @@ enum JobStatus {
   closed,
   cancelled;
 
-  String get label {
-    switch (this) {
-      case JobStatus.pending:
-        return 'Pending';
-      case JobStatus.active:
-        return 'Active';
-      case JobStatus.closed:
-        return 'Closed';
-      case JobStatus.cancelled:
-        return 'Cancelled';
-    }
-  }
+  String get title => 'Job Status';
+
+  String get label => switch (this) {
+    JobStatus.pending => 'Pending',
+    JobStatus.active => 'Active',
+    JobStatus.closed => 'Closed',
+    JobStatus.cancelled => 'Cancelled',
+  };
 }
 
 @MappableEnum()
@@ -407,16 +333,13 @@ enum ApplicationStatus {
   accepted,
   rejected;
 
-  String get label {
-    switch (this) {
-      case ApplicationStatus.pending:
-        return 'Pending';
-      case ApplicationStatus.accepted:
-        return 'Accepted';
-      case ApplicationStatus.rejected:
-        return 'Rejected';
-    }
-  }
+  String get title => 'Application Status';
+
+  String get label => switch (this) {
+    ApplicationStatus.pending => 'Pending',
+    ApplicationStatus.accepted => 'Accepted',
+    ApplicationStatus.rejected => 'Rejected',
+  };
 }
 
 @MappableEnum()
@@ -426,16 +349,12 @@ enum JobPostingType {
   materials,
   other;
 
-  String get label {
-    switch (this) {
-      case JobPostingType.hiring:
-        return 'Hiring';
-      case JobPostingType.partnership:
-        return 'Partnership';
-      case JobPostingType.materials:
-        return 'Materials';
-      case JobPostingType.other:
-        return 'Other';
-    }
-  }
+  String get title => 'Job Posting Type';
+
+  String get label => switch (this) {
+    JobPostingType.hiring => 'Hiring',
+    JobPostingType.partnership => 'Partnership',
+    JobPostingType.materials => 'Materials',
+    JobPostingType.other => 'Other',
+  };
 }

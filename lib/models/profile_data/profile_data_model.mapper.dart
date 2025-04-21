@@ -13,6 +13,8 @@ class ProfileDataMapper extends ClassMapperBase<ProfileData> {
   static ProfileDataMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = ProfileDataMapper._());
+      ProfileTypeMapper.ensureInitialized();
+      DesignStyleMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -20,19 +22,33 @@ class ProfileDataMapper extends ClassMapperBase<ProfileData> {
   @override
   final String id = 'ProfileData';
 
-  static String _$name(ProfileData v) => v.name;
-  static const Field<ProfileData, String> _f$name = Field('name', _$name);
-  static String _$email(ProfileData v) => v.email;
-  static const Field<ProfileData, String> _f$email = Field('email', _$email);
+  static String _$displayName(ProfileData v) => v.displayName;
+  static const Field<ProfileData, String> _f$displayName =
+      Field('displayName', _$displayName);
+  static ProfileType _$profileType(ProfileData v) => v.profileType;
+  static const Field<ProfileData, ProfileType> _f$profileType =
+      Field('profileType', _$profileType);
+  static List<String> _$portfolioLinks(ProfileData v) => v.portfolioLinks;
+  static const Field<ProfileData, List<String>> _f$portfolioLinks =
+      Field('portfolioLinks', _$portfolioLinks);
+  static List<DesignStyle> _$designStyles(ProfileData v) => v.designStyles;
+  static const Field<ProfileData, List<DesignStyle>> _f$designStyles =
+      Field('designStyles', _$designStyles);
 
   @override
   final MappableFields<ProfileData> fields = const {
-    #name: _f$name,
-    #email: _f$email,
+    #displayName: _f$displayName,
+    #profileType: _f$profileType,
+    #portfolioLinks: _f$portfolioLinks,
+    #designStyles: _f$designStyles,
   };
 
   static ProfileData _instantiate(DecodingData data) {
-    return ProfileData(name: data.dec(_f$name), email: data.dec(_f$email));
+    return ProfileData(
+        displayName: data.dec(_f$displayName),
+        profileType: data.dec(_f$profileType),
+        portfolioLinks: data.dec(_f$portfolioLinks),
+        designStyles: data.dec(_f$designStyles));
   }
 
   @override
@@ -87,7 +103,15 @@ extension ProfileDataValueCopy<$R, $Out>
 
 abstract class ProfileDataCopyWith<$R, $In extends ProfileData, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? name, String? email});
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
+      get portfolioLinks;
+  ListCopyWith<$R, DesignStyle, ObjectCopyWith<$R, DesignStyle, DesignStyle>>
+      get designStyles;
+  $R call(
+      {String? displayName,
+      ProfileType? profileType,
+      List<String>? portfolioLinks,
+      List<DesignStyle>? designStyles});
   ProfileDataCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -100,12 +124,35 @@ class _ProfileDataCopyWithImpl<$R, $Out>
   late final ClassMapperBase<ProfileData> $mapper =
       ProfileDataMapper.ensureInitialized();
   @override
-  $R call({String? name, String? email}) => $apply(FieldCopyWithData(
-      {if (name != null) #name: name, if (email != null) #email: email}));
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
+      get portfolioLinks => ListCopyWith(
+          $value.portfolioLinks,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(portfolioLinks: v));
+  @override
+  ListCopyWith<$R, DesignStyle, ObjectCopyWith<$R, DesignStyle, DesignStyle>>
+      get designStyles => ListCopyWith(
+          $value.designStyles,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(designStyles: v));
+  @override
+  $R call(
+          {String? displayName,
+          ProfileType? profileType,
+          List<String>? portfolioLinks,
+          List<DesignStyle>? designStyles}) =>
+      $apply(FieldCopyWithData({
+        if (displayName != null) #displayName: displayName,
+        if (profileType != null) #profileType: profileType,
+        if (portfolioLinks != null) #portfolioLinks: portfolioLinks,
+        if (designStyles != null) #designStyles: designStyles
+      }));
   @override
   ProfileData $make(CopyWithData data) => ProfileData(
-      name: data.get(#name, or: $value.name),
-      email: data.get(#email, or: $value.email));
+      displayName: data.get(#displayName, or: $value.displayName),
+      profileType: data.get(#profileType, or: $value.profileType),
+      portfolioLinks: data.get(#portfolioLinks, or: $value.portfolioLinks),
+      designStyles: data.get(#designStyles, or: $value.designStyles));
 
   @override
   ProfileDataCopyWith<$R2, ProfileData, $Out2> $chain<$R2, $Out2>(

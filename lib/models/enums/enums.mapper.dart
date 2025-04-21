@@ -292,6 +292,60 @@ extension ProjectStatusMapperExtension on ProjectStatus {
   }
 }
 
+class AvailabilityStatusMapper extends EnumMapper<AvailabilityStatus> {
+  AvailabilityStatusMapper._();
+
+  static AvailabilityStatusMapper? _instance;
+  static AvailabilityStatusMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = AvailabilityStatusMapper._());
+    }
+    return _instance!;
+  }
+
+  static AvailabilityStatus fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  AvailabilityStatus decode(dynamic value) {
+    switch (value) {
+      case r'available':
+        return AvailabilityStatus.available;
+      case r'unavailable':
+        return AvailabilityStatus.unavailable;
+      case r'busy':
+        return AvailabilityStatus.busy;
+      case r'onLeave':
+        return AvailabilityStatus.onLeave;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(AvailabilityStatus self) {
+    switch (self) {
+      case AvailabilityStatus.available:
+        return r'available';
+      case AvailabilityStatus.unavailable:
+        return r'unavailable';
+      case AvailabilityStatus.busy:
+        return r'busy';
+      case AvailabilityStatus.onLeave:
+        return r'onLeave';
+    }
+  }
+}
+
+extension AvailabilityStatusMapperExtension on AvailabilityStatus {
+  String toValue() {
+    AvailabilityStatusMapper.ensureInitialized();
+    return MapperContainer.globals.toValue<AvailabilityStatus>(this) as String;
+  }
+}
+
 class ArchitectRoleMapper extends EnumMapper<ArchitectRole> {
   ArchitectRoleMapper._();
 
