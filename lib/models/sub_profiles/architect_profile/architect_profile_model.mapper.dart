@@ -22,12 +22,12 @@ class ArchitectProfileMapper extends ClassMapperBase<ArchitectProfile> {
   @override
   final String id = 'ArchitectProfile';
 
+  static String? _$profileId(ArchitectProfile v) => v.profileId;
+  static const Field<ArchitectProfile, String> _f$profileId =
+      Field('profileId', _$profileId, opt: true);
   static ArchitectRole _$architectRole(ArchitectProfile v) => v.architectRole;
   static const Field<ArchitectProfile, ArchitectRole> _f$architectRole =
       Field('architectRole', _$architectRole);
-  static List<InvalidType> _$education(ArchitectProfile v) => v.education;
-  static const Field<ArchitectProfile, List<InvalidType>> _f$education =
-      Field('education', _$education);
   static String _$designPhilosophy(ArchitectProfile v) => v.designPhilosophy;
   static const Field<ArchitectProfile, String> _f$designPhilosophy =
       Field('designPhilosophy', _$designPhilosophy);
@@ -40,8 +40,8 @@ class ArchitectProfileMapper extends ClassMapperBase<ArchitectProfile> {
 
   @override
   final MappableFields<ArchitectProfile> fields = const {
+    #profileId: _f$profileId,
     #architectRole: _f$architectRole,
-    #education: _f$education,
     #designPhilosophy: _f$designPhilosophy,
     #designStyles: _f$designStyles,
     #portfolioLinks: _f$portfolioLinks,
@@ -49,8 +49,8 @@ class ArchitectProfileMapper extends ClassMapperBase<ArchitectProfile> {
 
   static ArchitectProfile _instantiate(DecodingData data) {
     return ArchitectProfile(
+        profileId: data.dec(_f$profileId),
         architectRole: data.dec(_f$architectRole),
-        education: data.dec(_f$education),
         designPhilosophy: data.dec(_f$designPhilosophy),
         designStyles: data.dec(_f$designStyles),
         portfolioLinks: data.dec(_f$portfolioLinks));
@@ -111,15 +111,13 @@ extension ArchitectProfileValueCopy<$R, $Out>
 
 abstract class ArchitectProfileCopyWith<$R, $In extends ArchitectProfile, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get education;
   ListCopyWith<$R, DesignStyle, ObjectCopyWith<$R, DesignStyle, DesignStyle>>
       get designStyles;
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
       get portfolioLinks;
   $R call(
-      {ArchitectRole? architectRole,
-      List<InvalidType>? education,
+      {String? profileId,
+      ArchitectRole? architectRole,
       String? designPhilosophy,
       List<DesignStyle>? designStyles,
       List<String>? portfolioLinks});
@@ -136,10 +134,6 @@ class _ArchitectProfileCopyWithImpl<$R, $Out>
   late final ClassMapperBase<ArchitectProfile> $mapper =
       ArchitectProfileMapper.ensureInitialized();
   @override
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get education => ListCopyWith($value.education,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(education: v));
-  @override
   ListCopyWith<$R, DesignStyle, ObjectCopyWith<$R, DesignStyle, DesignStyle>>
       get designStyles => ListCopyWith(
           $value.designStyles,
@@ -153,22 +147,22 @@ class _ArchitectProfileCopyWithImpl<$R, $Out>
           (v) => call(portfolioLinks: v));
   @override
   $R call(
-          {ArchitectRole? architectRole,
-          List<InvalidType>? education,
+          {Object? profileId = $none,
+          ArchitectRole? architectRole,
           String? designPhilosophy,
           List<DesignStyle>? designStyles,
           List<String>? portfolioLinks}) =>
       $apply(FieldCopyWithData({
+        if (profileId != $none) #profileId: profileId,
         if (architectRole != null) #architectRole: architectRole,
-        if (education != null) #education: education,
         if (designPhilosophy != null) #designPhilosophy: designPhilosophy,
         if (designStyles != null) #designStyles: designStyles,
         if (portfolioLinks != null) #portfolioLinks: portfolioLinks
       }));
   @override
   ArchitectProfile $make(CopyWithData data) => ArchitectProfile(
+      profileId: data.get(#profileId, or: $value.profileId),
       architectRole: data.get(#architectRole, or: $value.architectRole),
-      education: data.get(#education, or: $value.education),
       designPhilosophy:
           data.get(#designPhilosophy, or: $value.designPhilosophy),
       designStyles: data.get(#designStyles, or: $value.designStyles),

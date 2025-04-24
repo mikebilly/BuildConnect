@@ -1,4 +1,5 @@
 import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
+import 'package:buildconnect/models/sub_profiles/construction_team_profile/construction_team_profile_model.dart';
 import 'package:buildconnect/shared/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +24,7 @@ class _ConstructionTeamProfileEditScreenState
   final _teamSizeController = TextEditingController(text: '1');
 
   List<ServiceType> _services = [];
-  final Set<ServiceType> _servicesSet = {};
+  Set<ServiceType> _servicesSet = {};
 
   String _representativeName = '';
   final _representativeNameController = TextEditingController();
@@ -42,12 +43,24 @@ class _ConstructionTeamProfileEditScreenState
   bool _initialized = false;
   void _loadData() {
     final profileData = ref.read(profileDataNotifierProvider);
-    final data = profileData.valueOrNull;
+    final _data = profileData.valueOrNull;
 
-    if (data != null && !_initialized) {
+    if (_data != null &&
+        !_initialized &&
+        _data.constructionTeamProfile != null) {
+      final data = _data.constructionTeamProfile!;
       debugPrint('Initializing data: $data');
       setState(() {
         /////////////// Load data
+        _representativeNameController.text = data.representativeName;
+        _representativeName = data.representativeName;
+
+        _representativePhoneController.text = data.representativePhone;
+        _reprensentativePhone = data.representativePhone;
+
+        _servicesSet = data.services.toSet();
+        _teamSizeController.text = data.teamSize.toString();
+        _teamSize = data.teamSize;
 
         ///////////////
         _initialized = true;
@@ -58,11 +71,18 @@ class _ConstructionTeamProfileEditScreenState
   @override
   void dispose() {
     debugPrint('Disposing');
+    final newConstructionTeamProfile = ConstructionTeamProfile(
+      representativeName: _representativeNameController.text,
+      representativePhone: _representativePhoneController.text,
+      services: _servicesSet.toList(),
+      teamSize: _teamSize,
+    );
     // Future(() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _profileDataNotifier.dumpFromControllers(
         // designStyles: _designStyles.toList(),
         // portfolioLinks: _portfolioLinks,
+        constructionTeamProfile: newConstructionTeamProfile,
       );
     });
 
@@ -122,11 +142,21 @@ class _ConstructionTeamProfileEditScreenState
               ),
             ),
 
-            heightWidget(widget: buildSlider(labelText: 'Team size', value: _teamSize, controller: _teamSizeController, min: 1, max: 100, unit: 'people', onChanged: (v) {
-              setState(() {
-                _teamSize = v.round();
-              });
-            })),
+            heightWidget(
+              widget: buildSlider(
+                labelText: 'Team size',
+                value: _teamSize,
+                controller: _teamSizeController,
+                min: 1,
+                max: 100,
+                unit: 'people',
+                onChanged: (v) {
+                  setState(() {
+                    _teamSize = v.round();
+                  });
+                },
+              ),
+            ),
           ],
         ),
       ),

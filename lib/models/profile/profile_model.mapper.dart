@@ -14,8 +14,12 @@ class ProfileMapper extends ClassMapperBase<Profile> {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = ProfileMapper._());
       ProfileTypeMapper.ensureInitialized();
+      AvailabilityStatusMapper.ensureInitialized();
       WorkingModeMapper.ensureInitialized();
       DomainMapper.ensureInitialized();
+      ContactMapper.ensureInitialized();
+      PaymentMethodMapper.ensureInitialized();
+      BusinessEntityTypeMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -23,149 +27,69 @@ class ProfileMapper extends ClassMapperBase<Profile> {
   @override
   final String id = 'Profile';
 
-  static String _$id(Profile v) => v.id;
-  static const Field<Profile, String> _f$id = Field('id', _$id);
-  static String _$userId(Profile v) => v.userId;
-  static const Field<Profile, String> _f$userId = Field('userId', _$userId);
+  static String? _$userId(Profile v) => v.userId;
+  static const Field<Profile, String> _f$userId =
+      Field('userId', _$userId, opt: true);
   static String _$displayName(Profile v) => v.displayName;
   static const Field<Profile, String> _f$displayName =
       Field('displayName', _$displayName);
-  static String _$logo(Profile v) => v.logo;
-  static const Field<Profile, String> _f$logo = Field('logo', _$logo);
   static ProfileType _$profileType(Profile v) => v.profileType;
   static const Field<Profile, ProfileType> _f$profileType =
       Field('profileType', _$profileType);
-  static InvalidType _$contactInfo(Profile v) => v.contactInfo;
-  static const Field<Profile, InvalidType> _f$contactInfo =
-      Field('contactInfo', _$contactInfo);
-  static String _$profilePhoto(Profile v) => v.profilePhoto;
-  static const Field<Profile, String> _f$profilePhoto =
-      Field('profilePhoto', _$profilePhoto);
-  static InvalidType _$verificationInfo(Profile v) => v.verificationInfo;
-  static const Field<Profile, InvalidType> _f$verificationInfo =
-      Field('verificationInfo', _$verificationInfo);
-  static InvalidType _$mainLocation(Profile v) => v.mainLocation;
-  static const Field<Profile, InvalidType> _f$mainLocation =
-      Field('mainLocation', _$mainLocation);
   static String _$bio(Profile v) => v.bio;
   static const Field<Profile, String> _f$bio = Field('bio', _$bio);
-  static String _$availabilityStatus(Profile v) => v.availabilityStatus;
-  static const Field<Profile, String> _f$availabilityStatus =
+  static AvailabilityStatus _$availabilityStatus(Profile v) =>
+      v.availabilityStatus;
+  static const Field<Profile, AvailabilityStatus> _f$availabilityStatus =
       Field('availabilityStatus', _$availabilityStatus);
-  static List<InvalidType> _$projects(Profile v) => v.projects;
-  static const Field<Profile, List<InvalidType>> _f$projects =
-      Field('projects', _$projects);
-  static List<InvalidType> _$certifications(Profile v) => v.certifications;
-  static const Field<Profile, List<InvalidType>> _f$certifications =
-      Field('certifications', _$certifications);
   static int _$yearsOfExperience(Profile v) => v.yearsOfExperience;
   static const Field<Profile, int> _f$yearsOfExperience =
       Field('yearsOfExperience', _$yearsOfExperience);
-  static InvalidType _$ratingsInfo(Profile v) => v.ratingsInfo;
-  static const Field<Profile, InvalidType> _f$ratingsInfo =
-      Field('ratingsInfo', _$ratingsInfo);
-  static InvalidType _$legal(Profile v) => v.legal;
-  static const Field<Profile, InvalidType> _f$legal =
-      Field('legal', _$legal, opt: true);
-  static DateTime? _$established(Profile v) => v.established;
-  static const Field<Profile, DateTime> _f$established =
-      Field('established', _$established, opt: true);
-  static List<String> _$operatingAreas(Profile v) => v.operatingAreas;
-  static const Field<Profile, List<String>> _f$operatingAreas =
-      Field('operatingAreas', _$operatingAreas);
   static WorkingMode _$workingMode(Profile v) => v.workingMode;
   static const Field<Profile, WorkingMode> _f$workingMode =
       Field('workingMode', _$workingMode);
-  static List<InvalidType> _$medias(Profile v) => v.medias;
-  static const Field<Profile, List<InvalidType>> _f$medias =
-      Field('medias', _$medias);
-  static List<String> _$links(Profile v) => v.links;
-  static const Field<Profile, List<String>> _f$links = Field('links', _$links);
-  static InvalidType _$warranty(Profile v) => v.warranty;
-  static const Field<Profile, InvalidType> _f$warranty =
-      Field('warranty', _$warranty, opt: true);
   static List<Domain> _$domains(Profile v) => v.domains;
   static const Field<Profile, List<Domain>> _f$domains =
       Field('domains', _$domains);
-  static InvalidType _$paymentTerms(Profile v) => v.paymentTerms;
-  static const Field<Profile, InvalidType> _f$paymentTerms =
-      Field('paymentTerms', _$paymentTerms);
-  static InvalidType _$architectProfile(Profile v) => v.architectProfile;
-  static const Field<Profile, InvalidType> _f$architectProfile =
-      Field('architectProfile', _$architectProfile, opt: true);
-  static InvalidType _$contractorProfile(Profile v) => v.contractorProfile;
-  static const Field<Profile, InvalidType> _f$contractorProfile =
-      Field('contractorProfile', _$contractorProfile, opt: true);
-  static InvalidType _$constructionTeamProfile(Profile v) =>
-      v.constructionTeamProfile;
-  static const Field<Profile, InvalidType> _f$constructionTeamProfile =
-      Field('constructionTeamProfile', _$constructionTeamProfile, opt: true);
-  static InvalidType _$supplierProfile(Profile v) => v.supplierProfile;
-  static const Field<Profile, InvalidType> _f$supplierProfile =
-      Field('supplierProfile', _$supplierProfile, opt: true);
+  static List<Contact> _$contacts(Profile v) => v.contacts;
+  static const Field<Profile, List<Contact>> _f$contacts =
+      Field('contacts', _$contacts);
+  static List<PaymentMethod> _$paymentMethods(Profile v) => v.paymentMethods;
+  static const Field<Profile, List<PaymentMethod>> _f$paymentMethods =
+      Field('paymentMethods', _$paymentMethods);
+  static BusinessEntityType _$businessEntityType(Profile v) =>
+      v.businessEntityType;
+  static const Field<Profile, BusinessEntityType> _f$businessEntityType =
+      Field('businessEntityType', _$businessEntityType);
 
   @override
   final MappableFields<Profile> fields = const {
-    #id: _f$id,
     #userId: _f$userId,
     #displayName: _f$displayName,
-    #logo: _f$logo,
     #profileType: _f$profileType,
-    #contactInfo: _f$contactInfo,
-    #profilePhoto: _f$profilePhoto,
-    #verificationInfo: _f$verificationInfo,
-    #mainLocation: _f$mainLocation,
     #bio: _f$bio,
     #availabilityStatus: _f$availabilityStatus,
-    #projects: _f$projects,
-    #certifications: _f$certifications,
     #yearsOfExperience: _f$yearsOfExperience,
-    #ratingsInfo: _f$ratingsInfo,
-    #legal: _f$legal,
-    #established: _f$established,
-    #operatingAreas: _f$operatingAreas,
     #workingMode: _f$workingMode,
-    #medias: _f$medias,
-    #links: _f$links,
-    #warranty: _f$warranty,
     #domains: _f$domains,
-    #paymentTerms: _f$paymentTerms,
-    #architectProfile: _f$architectProfile,
-    #contractorProfile: _f$contractorProfile,
-    #constructionTeamProfile: _f$constructionTeamProfile,
-    #supplierProfile: _f$supplierProfile,
+    #contacts: _f$contacts,
+    #paymentMethods: _f$paymentMethods,
+    #businessEntityType: _f$businessEntityType,
   };
 
   static Profile _instantiate(DecodingData data) {
     return Profile(
-        id: data.dec(_f$id),
         userId: data.dec(_f$userId),
         displayName: data.dec(_f$displayName),
-        logo: data.dec(_f$logo),
         profileType: data.dec(_f$profileType),
-        contactInfo: data.dec(_f$contactInfo),
-        profilePhoto: data.dec(_f$profilePhoto),
-        verificationInfo: data.dec(_f$verificationInfo),
-        mainLocation: data.dec(_f$mainLocation),
         bio: data.dec(_f$bio),
         availabilityStatus: data.dec(_f$availabilityStatus),
-        projects: data.dec(_f$projects),
-        certifications: data.dec(_f$certifications),
         yearsOfExperience: data.dec(_f$yearsOfExperience),
-        ratingsInfo: data.dec(_f$ratingsInfo),
-        legal: data.dec(_f$legal),
-        established: data.dec(_f$established),
-        operatingAreas: data.dec(_f$operatingAreas),
         workingMode: data.dec(_f$workingMode),
-        medias: data.dec(_f$medias),
-        links: data.dec(_f$links),
-        warranty: data.dec(_f$warranty),
         domains: data.dec(_f$domains),
-        paymentTerms: data.dec(_f$paymentTerms),
-        architectProfile: data.dec(_f$architectProfile),
-        contractorProfile: data.dec(_f$contractorProfile),
-        constructionTeamProfile: data.dec(_f$constructionTeamProfile),
-        supplierProfile: data.dec(_f$supplierProfile));
+        contacts: data.dec(_f$contacts),
+        paymentMethods: data.dec(_f$paymentMethods),
+        businessEntityType: data.dec(_f$businessEntityType));
   }
 
   @override
@@ -218,45 +142,22 @@ extension ProfileValueCopy<$R, $Out> on ObjectCopyWith<$R, Profile, $Out> {
 
 abstract class ProfileCopyWith<$R, $In extends Profile, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get projects;
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get certifications;
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
-      get operatingAreas;
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get medias;
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get links;
   ListCopyWith<$R, Domain, ObjectCopyWith<$R, Domain, Domain>> get domains;
+  ListCopyWith<$R, Contact, ContactCopyWith<$R, Contact, Contact>> get contacts;
+  ListCopyWith<$R, PaymentMethod,
+      ObjectCopyWith<$R, PaymentMethod, PaymentMethod>> get paymentMethods;
   $R call(
-      {String? id,
-      String? userId,
+      {String? userId,
       String? displayName,
-      String? logo,
       ProfileType? profileType,
-      InvalidType? contactInfo,
-      String? profilePhoto,
-      InvalidType? verificationInfo,
-      InvalidType? mainLocation,
       String? bio,
-      String? availabilityStatus,
-      List<InvalidType>? projects,
-      List<InvalidType>? certifications,
+      AvailabilityStatus? availabilityStatus,
       int? yearsOfExperience,
-      InvalidType? ratingsInfo,
-      InvalidType? legal,
-      DateTime? established,
-      List<String>? operatingAreas,
       WorkingMode? workingMode,
-      List<InvalidType>? medias,
-      List<String>? links,
-      InvalidType? warranty,
       List<Domain>? domains,
-      InvalidType? paymentTerms,
-      InvalidType? architectProfile,
-      InvalidType? contractorProfile,
-      InvalidType? constructionTeamProfile,
-      InvalidType? supplierProfile});
+      List<Contact>? contacts,
+      List<PaymentMethod>? paymentMethods,
+      BusinessEntityType? businessEntityType});
   ProfileCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -269,130 +170,62 @@ class _ProfileCopyWithImpl<$R, $Out>
   late final ClassMapperBase<Profile> $mapper =
       ProfileMapper.ensureInitialized();
   @override
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get projects => ListCopyWith($value.projects,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(projects: v));
-  @override
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get certifications => ListCopyWith(
-          $value.certifications,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(certifications: v));
-  @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
-      get operatingAreas => ListCopyWith(
-          $value.operatingAreas,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(operatingAreas: v));
-  @override
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get medias => ListCopyWith($value.medias,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(medias: v));
-  @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get links =>
-      ListCopyWith($value.links, (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(links: v));
-  @override
   ListCopyWith<$R, Domain, ObjectCopyWith<$R, Domain, Domain>> get domains =>
       ListCopyWith($value.domains, (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(domains: v));
   @override
+  ListCopyWith<$R, Contact, ContactCopyWith<$R, Contact, Contact>>
+      get contacts => ListCopyWith($value.contacts,
+          (v, t) => v.copyWith.$chain(t), (v) => call(contacts: v));
+  @override
+  ListCopyWith<$R, PaymentMethod,
+          ObjectCopyWith<$R, PaymentMethod, PaymentMethod>>
+      get paymentMethods => ListCopyWith(
+          $value.paymentMethods,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(paymentMethods: v));
+  @override
   $R call(
-          {String? id,
-          String? userId,
+          {Object? userId = $none,
           String? displayName,
-          String? logo,
           ProfileType? profileType,
-          InvalidType? contactInfo,
-          String? profilePhoto,
-          InvalidType? verificationInfo,
-          InvalidType? mainLocation,
           String? bio,
-          String? availabilityStatus,
-          List<InvalidType>? projects,
-          List<InvalidType>? certifications,
+          AvailabilityStatus? availabilityStatus,
           int? yearsOfExperience,
-          InvalidType? ratingsInfo,
-          InvalidType? legal,
-          Object? established = $none,
-          List<String>? operatingAreas,
           WorkingMode? workingMode,
-          List<InvalidType>? medias,
-          List<String>? links,
-          InvalidType? warranty,
           List<Domain>? domains,
-          InvalidType? paymentTerms,
-          InvalidType? architectProfile,
-          InvalidType? contractorProfile,
-          InvalidType? constructionTeamProfile,
-          InvalidType? supplierProfile}) =>
+          List<Contact>? contacts,
+          List<PaymentMethod>? paymentMethods,
+          BusinessEntityType? businessEntityType}) =>
       $apply(FieldCopyWithData({
-        if (id != null) #id: id,
-        if (userId != null) #userId: userId,
+        if (userId != $none) #userId: userId,
         if (displayName != null) #displayName: displayName,
-        if (logo != null) #logo: logo,
         if (profileType != null) #profileType: profileType,
-        if (contactInfo != null) #contactInfo: contactInfo,
-        if (profilePhoto != null) #profilePhoto: profilePhoto,
-        if (verificationInfo != null) #verificationInfo: verificationInfo,
-        if (mainLocation != null) #mainLocation: mainLocation,
         if (bio != null) #bio: bio,
         if (availabilityStatus != null) #availabilityStatus: availabilityStatus,
-        if (projects != null) #projects: projects,
-        if (certifications != null) #certifications: certifications,
         if (yearsOfExperience != null) #yearsOfExperience: yearsOfExperience,
-        if (ratingsInfo != null) #ratingsInfo: ratingsInfo,
-        if (legal != null) #legal: legal,
-        if (established != $none) #established: established,
-        if (operatingAreas != null) #operatingAreas: operatingAreas,
         if (workingMode != null) #workingMode: workingMode,
-        if (medias != null) #medias: medias,
-        if (links != null) #links: links,
-        if (warranty != null) #warranty: warranty,
         if (domains != null) #domains: domains,
-        if (paymentTerms != null) #paymentTerms: paymentTerms,
-        if (architectProfile != null) #architectProfile: architectProfile,
-        if (contractorProfile != null) #contractorProfile: contractorProfile,
-        if (constructionTeamProfile != null)
-          #constructionTeamProfile: constructionTeamProfile,
-        if (supplierProfile != null) #supplierProfile: supplierProfile
+        if (contacts != null) #contacts: contacts,
+        if (paymentMethods != null) #paymentMethods: paymentMethods,
+        if (businessEntityType != null) #businessEntityType: businessEntityType
       }));
   @override
   Profile $make(CopyWithData data) => Profile(
-      id: data.get(#id, or: $value.id),
       userId: data.get(#userId, or: $value.userId),
       displayName: data.get(#displayName, or: $value.displayName),
-      logo: data.get(#logo, or: $value.logo),
       profileType: data.get(#profileType, or: $value.profileType),
-      contactInfo: data.get(#contactInfo, or: $value.contactInfo),
-      profilePhoto: data.get(#profilePhoto, or: $value.profilePhoto),
-      verificationInfo:
-          data.get(#verificationInfo, or: $value.verificationInfo),
-      mainLocation: data.get(#mainLocation, or: $value.mainLocation),
       bio: data.get(#bio, or: $value.bio),
       availabilityStatus:
           data.get(#availabilityStatus, or: $value.availabilityStatus),
-      projects: data.get(#projects, or: $value.projects),
-      certifications: data.get(#certifications, or: $value.certifications),
       yearsOfExperience:
           data.get(#yearsOfExperience, or: $value.yearsOfExperience),
-      ratingsInfo: data.get(#ratingsInfo, or: $value.ratingsInfo),
-      legal: data.get(#legal, or: $value.legal),
-      established: data.get(#established, or: $value.established),
-      operatingAreas: data.get(#operatingAreas, or: $value.operatingAreas),
       workingMode: data.get(#workingMode, or: $value.workingMode),
-      medias: data.get(#medias, or: $value.medias),
-      links: data.get(#links, or: $value.links),
-      warranty: data.get(#warranty, or: $value.warranty),
       domains: data.get(#domains, or: $value.domains),
-      paymentTerms: data.get(#paymentTerms, or: $value.paymentTerms),
-      architectProfile:
-          data.get(#architectProfile, or: $value.architectProfile),
-      contractorProfile:
-          data.get(#contractorProfile, or: $value.contractorProfile),
-      constructionTeamProfile: data.get(#constructionTeamProfile,
-          or: $value.constructionTeamProfile),
-      supplierProfile: data.get(#supplierProfile, or: $value.supplierProfile));
+      contacts: data.get(#contacts, or: $value.contacts),
+      paymentMethods: data.get(#paymentMethods, or: $value.paymentMethods),
+      businessEntityType:
+          data.get(#businessEntityType, or: $value.businessEntityType));
 
   @override
   ProfileCopyWith<$R2, Profile, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>

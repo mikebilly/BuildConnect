@@ -21,12 +21,7 @@ class ProfileDataService implements IProfileDataService {
   @override
   Future<ProfileData?> getProfileData(String userId) async {
     await Future.delayed(const Duration(seconds: 1));
-    final returedProfileData = ProfileData(
-      displayName: 'xyz',
-      profileType: ProfileType.architect,
-      portfolioLinks: [],
-      designStyles: [],
-    );
+    final returedProfileData = ProfileData.empty();
     debugPrint('ProfileDataService getProfileData: $returedProfileData');
     return returedProfileData;
   }

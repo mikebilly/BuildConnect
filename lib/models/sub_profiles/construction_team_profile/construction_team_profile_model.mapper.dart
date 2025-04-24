@@ -23,35 +23,40 @@ class ConstructionTeamProfileMapper
   @override
   final String id = 'ConstructionTeamProfile';
 
-  static InvalidType _$representative(ConstructionTeamProfile v) =>
-      v.representative;
-  static const Field<ConstructionTeamProfile, InvalidType> _f$representative =
-      Field('representative', _$representative);
+  static String? _$profileId(ConstructionTeamProfile v) => v.profileId;
+  static const Field<ConstructionTeamProfile, String> _f$profileId =
+      Field('profileId', _$profileId, opt: true);
+  static String _$representativeName(ConstructionTeamProfile v) =>
+      v.representativeName;
+  static const Field<ConstructionTeamProfile, String> _f$representativeName =
+      Field('representativeName', _$representativeName);
+  static String _$representativePhone(ConstructionTeamProfile v) =>
+      v.representativePhone;
+  static const Field<ConstructionTeamProfile, String> _f$representativePhone =
+      Field('representativePhone', _$representativePhone);
   static int _$teamSize(ConstructionTeamProfile v) => v.teamSize;
   static const Field<ConstructionTeamProfile, int> _f$teamSize =
       Field('teamSize', _$teamSize);
   static List<ServiceType> _$services(ConstructionTeamProfile v) => v.services;
   static const Field<ConstructionTeamProfile, List<ServiceType>> _f$services =
       Field('services', _$services);
-  static List<InvalidType> _$equipments(ConstructionTeamProfile v) =>
-      v.equipments;
-  static const Field<ConstructionTeamProfile, List<InvalidType>> _f$equipments =
-      Field('equipments', _$equipments);
 
   @override
   final MappableFields<ConstructionTeamProfile> fields = const {
-    #representative: _f$representative,
+    #profileId: _f$profileId,
+    #representativeName: _f$representativeName,
+    #representativePhone: _f$representativePhone,
     #teamSize: _f$teamSize,
     #services: _f$services,
-    #equipments: _f$equipments,
   };
 
   static ConstructionTeamProfile _instantiate(DecodingData data) {
     return ConstructionTeamProfile(
-        representative: data.dec(_f$representative),
+        profileId: data.dec(_f$profileId),
+        representativeName: data.dec(_f$representativeName),
+        representativePhone: data.dec(_f$representativePhone),
         teamSize: data.dec(_f$teamSize),
-        services: data.dec(_f$services),
-        equipments: data.dec(_f$equipments));
+        services: data.dec(_f$services));
   }
 
   @override
@@ -114,13 +119,12 @@ abstract class ConstructionTeamProfileCopyWith<
     $Out> implements ClassCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, ServiceType, ObjectCopyWith<$R, ServiceType, ServiceType>>
       get services;
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get equipments;
   $R call(
-      {InvalidType? representative,
+      {String? profileId,
+      String? representativeName,
+      String? representativePhone,
       int? teamSize,
-      List<ServiceType>? services,
-      List<InvalidType>? equipments});
+      List<ServiceType>? services});
   ConstructionTeamProfileCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -139,29 +143,29 @@ class _ConstructionTeamProfileCopyWithImpl<$R, $Out>
       get services => ListCopyWith($value.services,
           (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(services: v));
   @override
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get equipments => ListCopyWith(
-          $value.equipments,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(equipments: v));
-  @override
   $R call(
-          {InvalidType? representative,
+          {Object? profileId = $none,
+          String? representativeName,
+          String? representativePhone,
           int? teamSize,
-          List<ServiceType>? services,
-          List<InvalidType>? equipments}) =>
+          List<ServiceType>? services}) =>
       $apply(FieldCopyWithData({
-        if (representative != null) #representative: representative,
+        if (profileId != $none) #profileId: profileId,
+        if (representativeName != null) #representativeName: representativeName,
+        if (representativePhone != null)
+          #representativePhone: representativePhone,
         if (teamSize != null) #teamSize: teamSize,
-        if (services != null) #services: services,
-        if (equipments != null) #equipments: equipments
+        if (services != null) #services: services
       }));
   @override
   ConstructionTeamProfile $make(CopyWithData data) => ConstructionTeamProfile(
-      representative: data.get(#representative, or: $value.representative),
+      profileId: data.get(#profileId, or: $value.profileId),
+      representativeName:
+          data.get(#representativeName, or: $value.representativeName),
+      representativePhone:
+          data.get(#representativePhone, or: $value.representativePhone),
       teamSize: data.get(#teamSize, or: $value.teamSize),
-      services: data.get(#services, or: $value.services),
-      equipments: data.get(#equipments, or: $value.equipments));
+      services: data.get(#services, or: $value.services));
 
   @override
   ConstructionTeamProfileCopyWith<$R2, ConstructionTeamProfile, $Out2>

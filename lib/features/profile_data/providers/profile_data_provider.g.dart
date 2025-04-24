@@ -7,7 +7,7 @@ part of 'profile_data_provider.dart';
 // **************************************************************************
 
 String _$profileDataNotifierHash() =>
-    r'163fff424a6ee01c88d95a4d27724016a6ab77f6';
+    r'350febfc439e1a5efb0638893c9e4383c7726257';
 
 /// See also [ProfileDataNotifier].
 @ProviderFor(ProfileDataNotifier)

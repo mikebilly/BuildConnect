@@ -70,7 +70,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                     profileData.when(
                       loading: () => const Center(child: CircularProgressIndicator()),
                       error: (error, stack) => Center(child: const Text('Error loading profile')),
-                      data: (data) => ProfessionalInfoTabScreen(profileType: data!.profileType),
+                      data: (data) => ProfessionalInfoTabScreen(profileType: data!.profile.profileType),
                     ),
 
                     const ContactsTabScreen(),

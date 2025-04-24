@@ -1059,3 +1059,85 @@ extension JobPostingTypeMapperExtension on JobPostingType {
     return MapperContainer.globals.toValue<JobPostingType>(this) as String;
   }
 }
+
+class ContactTypeMapper extends EnumMapper<ContactType> {
+  ContactTypeMapper._();
+
+  static ContactTypeMapper? _instance;
+  static ContactTypeMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = ContactTypeMapper._());
+    }
+    return _instance!;
+  }
+
+  static ContactType fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  ContactType decode(dynamic value) {
+    switch (value) {
+      case r'email':
+        return ContactType.email;
+      case r'phone':
+        return ContactType.phone;
+      case r'website':
+        return ContactType.website;
+      case r'github':
+        return ContactType.github;
+      case r'linkedin':
+        return ContactType.linkedin;
+      case r'twitter':
+        return ContactType.twitter;
+      case r'facebook':
+        return ContactType.facebook;
+      case r'instagram':
+        return ContactType.instagram;
+      case r'youtube':
+        return ContactType.youtube;
+      case r'tiktok':
+        return ContactType.tiktok;
+      case r'other':
+        return ContactType.other;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(ContactType self) {
+    switch (self) {
+      case ContactType.email:
+        return r'email';
+      case ContactType.phone:
+        return r'phone';
+      case ContactType.website:
+        return r'website';
+      case ContactType.github:
+        return r'github';
+      case ContactType.linkedin:
+        return r'linkedin';
+      case ContactType.twitter:
+        return r'twitter';
+      case ContactType.facebook:
+        return r'facebook';
+      case ContactType.instagram:
+        return r'instagram';
+      case ContactType.youtube:
+        return r'youtube';
+      case ContactType.tiktok:
+        return r'tiktok';
+      case ContactType.other:
+        return r'other';
+    }
+  }
+}
+
+extension ContactTypeMapperExtension on ContactType {
+  String toValue() {
+    ContactTypeMapper.ensureInitialized();
+    return MapperContainer.globals.toValue<ContactType>(this) as String;
+  }
+}

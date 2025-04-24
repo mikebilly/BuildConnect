@@ -5,15 +5,31 @@ part 'construction_team_profile_model.mapper.dart';
 
 @MappableClass()
 class ConstructionTeamProfile with ConstructionTeamProfileMappable {
-  final Representative representative;
+  final String? profileId;
+  // final Representative representative;
+  final String representativeName;
+  final String representativePhone;
+
   final int teamSize;
   final List<ServiceType> services;
-  final List<Equipment> equipments;
+  // final List<Equipment> equipments;
 
   const ConstructionTeamProfile({
-    required this.representative,
+    this.profileId,
+    // required this.representative,
+    required this.representativeName,
+    required this.representativePhone,
     required this.teamSize,
     required this.services,
-    required this.equipments,
+    // required this.equipments,
   });
+
+  factory ConstructionTeamProfile.empty() {
+    return const ConstructionTeamProfile(
+      representativeName: '',
+      representativePhone: '',
+      teamSize: 0,
+      services: [],
+    );
+  }
 }

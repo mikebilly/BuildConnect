@@ -1,4 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 part 'enums.mapper.dart';
 
@@ -356,5 +358,64 @@ enum JobPostingType {
     JobPostingType.partnership => 'Partnership',
     JobPostingType.materials => 'Materials',
     JobPostingType.other => 'Other',
+  };
+}
+
+@MappableEnum()
+enum ContactType {
+  email,
+  phone,
+  website,
+  github,
+  linkedin,
+  twitter,
+  facebook,
+  instagram,
+  youtube,
+  tiktok,
+  other;
+
+  String get title => 'Contact Type';
+
+  String get label => switch (this) {
+    ContactType.email => 'Email',
+    ContactType.phone => 'Phone',
+    ContactType.website => 'Website',
+    ContactType.github => 'GitHub',
+    ContactType.linkedin => 'LinkedIn',
+    ContactType.twitter => 'Twitter',
+    ContactType.facebook => 'Facebook',
+    ContactType.instagram => 'Instagram',
+    ContactType.youtube => 'YouTube',
+    ContactType.tiktok => 'TikTok',
+    ContactType.other => 'Other',
+  };
+
+  String get hintText => switch (this) {
+    ContactType.email => 'example@email.com',
+    ContactType.phone => '0123456789',
+    ContactType.website => 'https://example.com',
+    ContactType.github => 'https://github.com/username',
+    ContactType.linkedin => 'https://linkedin.com/in/username',
+    ContactType.twitter => 'https://twitter.com/username',
+    ContactType.facebook => 'https://facebook.com/username',
+    ContactType.instagram => 'https://instagram.com/username',
+    ContactType.youtube => 'https://youtube.com/@channel',
+    ContactType.tiktok => 'https://tiktok.com/@username',
+    ContactType.other => 'Enter contact link or text',
+  };
+
+  Widget icon(BuildContext context) => switch (this) {
+    ContactType.email => Icon(Icons.email, color: Theme.of(context).colorScheme.primary),
+    ContactType.phone => Icon(Icons.phone, color: Theme.of(context).colorScheme.primary),
+    ContactType.website => Icon(Icons.language, color: Theme.of(context).colorScheme.primary),
+    ContactType.github => const FaIcon(FontAwesomeIcons.github, color: Colors.black),
+    ContactType.linkedin => const FaIcon(FontAwesomeIcons.linkedin, color: Color(0xFF0A66C2)),
+    ContactType.twitter => const FaIcon(FontAwesomeIcons.twitter, color: Color(0xFF1DA1F2)),
+    ContactType.facebook => const FaIcon(FontAwesomeIcons.facebook, color: Color(0xFF1877F2)),
+    ContactType.instagram => const FaIcon(FontAwesomeIcons.instagram, color: Color(0xFFC13584)),
+    ContactType.youtube => const FaIcon(FontAwesomeIcons.youtube, color: Color(0xFFFF0000)),
+    ContactType.tiktok => const FaIcon(FontAwesomeIcons.tiktok, color: Color(0xFF010101)),
+    ContactType.other => Icon(Icons.device_unknown, color: Theme.of(context).colorScheme.secondary),
   };
 }

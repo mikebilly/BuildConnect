@@ -21,22 +21,22 @@ class ContractorProfileMapper extends ClassMapperBase<ContractorProfile> {
   @override
   final String id = 'ContractorProfile';
 
+  static String? _$profileId(ContractorProfile v) => v.profileId;
+  static const Field<ContractorProfile, String> _f$profileId =
+      Field('profileId', _$profileId, opt: true);
   static List<ServiceType> _$services(ContractorProfile v) => v.services;
   static const Field<ContractorProfile, List<ServiceType>> _f$services =
       Field('services', _$services);
-  static List<InvalidType> _$equipments(ContractorProfile v) => v.equipments;
-  static const Field<ContractorProfile, List<InvalidType>> _f$equipments =
-      Field('equipments', _$equipments);
 
   @override
   final MappableFields<ContractorProfile> fields = const {
+    #profileId: _f$profileId,
     #services: _f$services,
-    #equipments: _f$equipments,
   };
 
   static ContractorProfile _instantiate(DecodingData data) {
     return ContractorProfile(
-        services: data.dec(_f$services), equipments: data.dec(_f$equipments));
+        profileId: data.dec(_f$profileId), services: data.dec(_f$services));
   }
 
   @override
@@ -97,9 +97,7 @@ abstract class ContractorProfileCopyWith<$R, $In extends ContractorProfile,
     $Out> implements ClassCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, ServiceType, ObjectCopyWith<$R, ServiceType, ServiceType>>
       get services;
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get equipments;
-  $R call({List<ServiceType>? services, List<InvalidType>? equipments});
+  $R call({String? profileId, List<ServiceType>? services});
   ContractorProfileCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -117,21 +115,15 @@ class _ContractorProfileCopyWithImpl<$R, $Out>
       get services => ListCopyWith($value.services,
           (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(services: v));
   @override
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get equipments => ListCopyWith(
-          $value.equipments,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(equipments: v));
-  @override
-  $R call({List<ServiceType>? services, List<InvalidType>? equipments}) =>
+  $R call({Object? profileId = $none, List<ServiceType>? services}) =>
       $apply(FieldCopyWithData({
-        if (services != null) #services: services,
-        if (equipments != null) #equipments: equipments
+        if (profileId != $none) #profileId: profileId,
+        if (services != null) #services: services
       }));
   @override
   ContractorProfile $make(CopyWithData data) => ContractorProfile(
-      services: data.get(#services, or: $value.services),
-      equipments: data.get(#equipments, or: $value.equipments));
+      profileId: data.get(#profileId, or: $value.profileId),
+      services: data.get(#services, or: $value.services));
 
   @override
   ContractorProfileCopyWith<$R2, ContractorProfile, $Out2> $chain<$R2, $Out2>(

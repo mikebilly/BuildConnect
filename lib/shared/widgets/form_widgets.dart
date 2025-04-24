@@ -37,13 +37,19 @@ Widget buildDrowndownButtonFormField<T>({
   required List<T> values,
   required void Function(T?) onChanged,
   String? title,
+  String? labelText,
+  double gap = 0,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(title ?? ((selectedValue as dynamic).title), style: TextStyle(fontWeight: FontWeight.bold)),
+      SizedBox(height: gap),
       DropdownButtonFormField<T>(
         value: selectedValue,
+        decoration: InputDecoration(
+          labelText: labelText,
+        ),
         items:
             values.map((v) {
               return DropdownMenuItem<T>(
