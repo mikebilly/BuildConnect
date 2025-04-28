@@ -1,6 +1,7 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:buildconnect/core/constants/supabase_constants.dart';
 
 part 'enums.mapper.dart';
 
@@ -18,6 +19,13 @@ enum ProfileType {
     ProfileType.contractor => 'Contractor',
     ProfileType.constructionTeam => 'Construction Team',
     ProfileType.supplier => 'Supplier',
+  };
+
+  String get table => switch (this) {
+    ProfileType.architect => SupabaseConstants.architectProfilesTable,
+    ProfileType.contractor => SupabaseConstants.contractorProfilesTable,
+    ProfileType.constructionTeam => SupabaseConstants.constructionTeamProfilesTable,
+    ProfileType.supplier => SupabaseConstants.supplierProfilesTable,
   };
 }
 

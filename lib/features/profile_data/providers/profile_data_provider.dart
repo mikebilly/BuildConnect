@@ -36,7 +36,10 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
       return ProfileData.empty();
     }
 
-    return await _profileDataService.getProfileData(_userId ?? '');
+    debugPrint("Building, fetching profile data for user: $_userId");
+    var profileData = await _profileDataService.getProfileData(_userId!);
+    profileData = ProfileData.empty();
+    return profileData;
   }
 
   Future<void> updateProfileData() async {
@@ -47,6 +50,11 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
     // if (data == null || userId == null) return;
     await _profileDataService.upsertProfileData(userId, data);
     state = const AsyncData(null);
+  }
+
+  Future<void> clearProfileData() async {
+    debugPrint("Clearing profile data");
+    state = const AsyncData(null); // or AsyncData(ProfileData.empty())
   }
 
  Future<ProfileData> dumpFromControllers({
@@ -85,6 +93,9 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
     debugPrint('Updated data: $updatedData');
 
     state = AsyncData(updatedData);
+
+    debugPrint('########## ^^^^^^^ Dump successful!!: $updatedData');
+
 
     return updatedData;
   }

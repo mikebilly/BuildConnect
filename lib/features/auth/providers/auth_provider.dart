@@ -3,15 +3,18 @@ import 'package:buildconnect/models/app_user/app_user_model.dart';
 import 'package:buildconnect/features/auth/services/auth_service.dart';
 import 'package:buildconnect/features/auth/providers/auth_service_provider.dart';
 
+import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
 part 'auth_provider.g.dart';
 
 @riverpod
 class Auth extends _$Auth {
   late final AuthService _authService;
+  late final ProfileDataNotifier _profileDataNotifier;
 
   @override
   FutureOr<AppUser?> build() async {
     _authService = ref.watch(authServiceProvider);
+    _profileDataNotifier = ref.read(profileDataNotifierProvider.notifier);
 
     if (!_authService.isLoggedIn) {
       return null;
@@ -38,6 +41,8 @@ class Auth extends _$Auth {
   Future<void> signOut() async {
     state = const AsyncLoading();
     await _authService.signOut();
+
+    await _profileDataNotifier.clearProfileData();
     state = const AsyncData(null);
   }
 

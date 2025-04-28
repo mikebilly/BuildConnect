@@ -67,11 +67,16 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   children: [
                     const BasicInfoTabScreen(),
 
-                    profileData.when(
-                      loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (error, stack) => Center(child: const Text('Error loading profile')),
-                      data: (data) => ProfessionalInfoTabScreen(profileType: data!.profile.profileType),
-                    ),
+profileData.when(
+  loading: () => const Center(child: CircularProgressIndicator()),
+  error: (error, stack) => Center(child: Text('Error at loading professional ìno: $error')),
+  data: (data) {
+    debugPrint('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx - ProfileData: $data');
+    return data == null
+      ? const Center(child: Text('No profile data available'))
+      : ProfessionalInfoTabScreen(profileType: data.profile.profileType);
+  },
+),
 
                     const ContactsTabScreen(),
                   ],

@@ -55,7 +55,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           //   return const SizedBox.shrink();
           // }
 
-          // return Center(child: Text('Welcome ${user.email}'));
+          return Center(child: Text('$auth'));
         },
       ),
     );

@@ -6,6 +6,7 @@ import 'package:buildconnect/models/enums/enums.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:buildconnect/models/profile/profile_model.dart';
+
 class BasicInfoTabScreen extends ConsumerStatefulWidget {
   const BasicInfoTabScreen({super.key});
 
@@ -21,7 +22,7 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
   ProfileType _profileType = ProfileType.values.first;
   final _bio = TextEditingController();
   AvailabilityStatus _availabilityStatus = AvailabilityStatus.values.first;
-  
+
   int _yearsOfExperience = 1;
   final _yearsOfExperienceController = TextEditingController(text: '1');
 
@@ -62,6 +63,10 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
         ///////////////
         _initialized = true;
       });
+    } else {
+      if (_data == null) {
+        debugPrint('Error at load to basic info: ProfileData is null');
+      }
     }
   }
 
@@ -81,12 +86,12 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
       businessEntityType: _businessEntityType,
       contacts: [],
     );
+    debugPrint('Right before dumping at basic info: $newProfile');
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _profileDataNotifier.dumpFromControllers(
         // designStyles: _designStyles.toList(),
         // portfolioLinks: _portfolioLinks,
         profile: newProfile,
-        
       );
     });
 

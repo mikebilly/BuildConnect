@@ -23,7 +23,6 @@ class ProfileData with ProfileDataMappable {
     // required this.portfolioLinks,
     // required this.designStyles,
     // required this.contacts,
-
     required this.profile,
     this.architectProfile,
     this.contractorProfile,
@@ -39,5 +38,22 @@ class ProfileData with ProfileDataMappable {
       supplierProfile: null,
       constructionTeamProfile: null,
     );
+  }
+
+  Object? get subProfile => switch (profile.profileType) {
+    ProfileType.architect => architectProfile,
+    ProfileType.contractor => contractorProfile,
+    ProfileType.supplier => supplierProfile,
+    ProfileType.constructionTeam => constructionTeamProfile,
+  };
+
+  String get subProfileTable => profile.profileType.table;
+
+  Map<String, dynamic> get subProfileMap {
+    final _subProfile = subProfile;
+    if (_subProfile == null) {
+      return {};
+    }
+    return (_subProfile as dynamic).toMap();
   }
 }
