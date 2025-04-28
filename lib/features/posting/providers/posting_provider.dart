@@ -1,0 +1,57 @@
+// lib/features/posting/providers/posting_provider.dart
+import 'package:buildconnect/features/posting/services/posting_service.dart';
+import 'package:buildconnect/models/post/post_model.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:buildconnect/models/enums/enums.dart';
+
+part 'posting_provider.g.dart';
+
+@Riverpod()
+class PostingNotifier extends _$PostingNotifier {
+  @override
+  Future<void> build() async {}
+
+  Future<PostModel> createPost({
+    required String title,
+    required JobPostingType jobPostingType,
+    required String location,
+    required String description,
+    double? budget,
+    DateTime? deadline,
+    List<String>? requiredSkills,
+    List<String>? categories,
+    required String authorId,
+  }) async {
+    final post = await ref
+        .read(postingServiceProvider)
+        .createPost(
+          title: title,
+          jobPostingType: jobPostingType,
+          location: location,
+          description: description,
+          budget: budget,
+          deadline: deadline,
+          requiredSkills: requiredSkills,
+          categories: categories,
+          authorId: authorId,
+        );
+    return post;
+  }
+
+  Future<void> createNewPost() async {
+    final post = await ref
+        .read(postingServiceProvider)
+        .createPost(
+          title: 'Sample Post',
+          jobPostingType: JobPostingType.hiring,
+          location: 'New York',
+          description: 'This is a sample post description.',
+          budget: 1000.0,
+          deadline: DateTime.now().add(const Duration(days: 7)),
+          requiredSkills: ['Flutter', 'Dart'],
+          categories: ['Software Development'],
+          authorId: '12345',
+        );
+    // return post;
+  }
+}
