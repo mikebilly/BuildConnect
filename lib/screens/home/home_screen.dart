@@ -26,6 +26,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  void _navigateToPosts() {
+    Future.microtask(() {
+      if (mounted) context.push('/post');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
@@ -58,6 +64,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // return Center(child: Text('Welcome ${user.email}'));
         },
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _navigateToPosts,
+        icon: const Icon(Icons.post_add),
+        label: const Text('Post'),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
@@ -70,32 +82,29 @@ Widget _buildMenu(
   return PopupMenuButton<String>(
     offset: const Offset(0, 50),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    itemBuilder: (context) => [
-      PopupMenuItem(
-        value: 'profile',
-        child: Row(
-          children: [
-            Icon(Icons.person, color: Theme.of(context).iconTheme.color),
-            const SizedBox(width: 8),
-            Text(
-              'Profile',
+    itemBuilder:
+        (context) => [
+          PopupMenuItem(
+            value: 'profile',
+            child: Row(
+              children: [
+                Icon(Icons.person, color: Theme.of(context).iconTheme.color),
+                const SizedBox(width: 8),
+                Text('Profile'),
+              ],
             ),
-          ],
-        ),
-      ),
-      PopupMenuItem(
-        value: 'logout',
-        child: Row(
-          children: [
-            Icon(Icons.logout, color: Theme.of(context).iconTheme.color),
-            const SizedBox(width: 8),
-            Text(
-              'Logout',
+          ),
+          PopupMenuItem(
+            value: 'logout',
+            child: Row(
+              children: [
+                Icon(Icons.logout, color: Theme.of(context).iconTheme.color),
+                const SizedBox(width: 8),
+                Text('Logout'),
+              ],
             ),
-          ],
-        ),
-      ),
-    ],
+          ),
+        ],
     onSelected: (value) {
       if (value == 'profile') {
         onProfileTap();
@@ -106,11 +115,7 @@ Widget _buildMenu(
     child: CircleAvatar(
       radius: 20,
       backgroundColor: Colors.transparent,
-      child: Icon(
-        Icons.menu,
-        color: Colors.white,
-      ),
+      child: Icon(Icons.menu, color: Colors.white),
     ),
   );
 }
-

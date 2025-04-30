@@ -22,32 +22,8 @@ class PostingService {
 
   PostingService(this._client);
 
-  Future<PostModel> createPost({
-    required String title,
-    required JobPostingType jobPostingType,
-    required String location,
-    required String description,
-    double? budget,
-    DateTime? deadline,
-    List<String>? requiredSkills,
-    List<String>? categories,
-    required String authorId,
-  }) async {
-    final post = PostModel(
-      id: const Uuid().v4(),
-      title: title,
-      jobPostingType: jobPostingType,
-      location: location,
-      description: description,
-      budget: budget,
-      deadline: deadline,
-      requiredSkills: requiredSkills,
-      categories: categories,
-      authorId: authorId,
-      createdAt: DateTime.now(),
-    );
-
-    final data = post.toMap();
+  Future<PostModel> createPost({required PostModel postModel}) async {
+    final data = postModel.toJson();
     final response = await _client.from('posts').insert(data).select();
     return PostModelMapper.fromMap(response[0]);
   }

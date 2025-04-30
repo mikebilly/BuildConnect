@@ -15,6 +15,8 @@ import 'package:buildconnect/screens/profile/profile_edit/profile_edit_screen.da
 // import 'package:flutter_masterclass/presentation/screens/error/error_screen.dart';
 // import 'package:flutter_masterclass/presentation/screens/choose_location/choose_location_screen.dart';
 
+//posting
+import 'package:buildconnect/screens/posts/post_screen.dart';
 part 'router.g.dart';
 
 @riverpod
@@ -50,6 +52,11 @@ GoRouter router(Ref ref) {
         path: '/profile_edit',
         name: 'profile_edit',
         builder: (context, state) => const ProfileEditScreen(),
+      ),
+      GoRoute(
+        path: '/post',
+        name: 'post',
+        builder: (context, state) => const PostScreen(),
       ),
       // GoRoute(
       //   path: '/location',

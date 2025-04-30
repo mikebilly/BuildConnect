@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:buildconnect/models/enums/enums.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:buildconnect/models/post/post_model.dart';
 
 class PostScreen extends ConsumerStatefulWidget {
   const PostScreen({super.key});
@@ -43,6 +44,16 @@ class _PostScreenState extends ConsumerState<PostScreen> {
       });
     }
   }
+
+  // Future<void> _createPost() async {
+  //   final newPostModel = PostModel(
+
+  //   );
+
+  //   await _postingNotifier.createPost(
+  //     postingModel: newPostModel,
+  //   );
+  // }
 
   @override
   void dispose() {
