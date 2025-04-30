@@ -5,12 +5,17 @@ part 'contractor_profile_model.mapper.dart';
 
 @MappableClass()
 class ContractorProfile with ContractorProfileMappable {
+  final String? profileId;
   final List<ServiceType> services;
-  final List<Equipment> equipments;
+  // final List<Equipment> equipments;
 
   const ContractorProfile({
+    this.profileId,
     required this.services,
-    required this.equipments,
+    // required this.equipments,
   });
-}
 
+  factory ContractorProfile.empty() {
+    return const ContractorProfile(services: []);
+  }
+}

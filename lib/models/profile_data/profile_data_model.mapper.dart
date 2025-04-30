@@ -13,8 +13,11 @@ class ProfileDataMapper extends ClassMapperBase<ProfileData> {
   static ProfileDataMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = ProfileDataMapper._());
-      ProfileTypeMapper.ensureInitialized();
-      DesignStyleMapper.ensureInitialized();
+      ProfileMapper.ensureInitialized();
+      ArchitectProfileMapper.ensureInitialized();
+      ContractorProfileMapper.ensureInitialized();
+      SupplierProfileMapper.ensureInitialized();
+      ConstructionTeamProfileMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -22,33 +25,42 @@ class ProfileDataMapper extends ClassMapperBase<ProfileData> {
   @override
   final String id = 'ProfileData';
 
-  static String _$displayName(ProfileData v) => v.displayName;
-  static const Field<ProfileData, String> _f$displayName =
-      Field('displayName', _$displayName);
-  static ProfileType _$profileType(ProfileData v) => v.profileType;
-  static const Field<ProfileData, ProfileType> _f$profileType =
-      Field('profileType', _$profileType);
-  static List<String> _$portfolioLinks(ProfileData v) => v.portfolioLinks;
-  static const Field<ProfileData, List<String>> _f$portfolioLinks =
-      Field('portfolioLinks', _$portfolioLinks);
-  static List<DesignStyle> _$designStyles(ProfileData v) => v.designStyles;
-  static const Field<ProfileData, List<DesignStyle>> _f$designStyles =
-      Field('designStyles', _$designStyles);
+  static Profile _$profile(ProfileData v) => v.profile;
+  static const Field<ProfileData, Profile> _f$profile =
+      Field('profile', _$profile);
+  static ArchitectProfile? _$architectProfile(ProfileData v) =>
+      v.architectProfile;
+  static const Field<ProfileData, ArchitectProfile> _f$architectProfile =
+      Field('architectProfile', _$architectProfile, opt: true);
+  static ContractorProfile? _$contractorProfile(ProfileData v) =>
+      v.contractorProfile;
+  static const Field<ProfileData, ContractorProfile> _f$contractorProfile =
+      Field('contractorProfile', _$contractorProfile, opt: true);
+  static SupplierProfile? _$supplierProfile(ProfileData v) => v.supplierProfile;
+  static const Field<ProfileData, SupplierProfile> _f$supplierProfile =
+      Field('supplierProfile', _$supplierProfile, opt: true);
+  static ConstructionTeamProfile? _$constructionTeamProfile(ProfileData v) =>
+      v.constructionTeamProfile;
+  static const Field<ProfileData, ConstructionTeamProfile>
+      _f$constructionTeamProfile =
+      Field('constructionTeamProfile', _$constructionTeamProfile, opt: true);
 
   @override
   final MappableFields<ProfileData> fields = const {
-    #displayName: _f$displayName,
-    #profileType: _f$profileType,
-    #portfolioLinks: _f$portfolioLinks,
-    #designStyles: _f$designStyles,
+    #profile: _f$profile,
+    #architectProfile: _f$architectProfile,
+    #contractorProfile: _f$contractorProfile,
+    #supplierProfile: _f$supplierProfile,
+    #constructionTeamProfile: _f$constructionTeamProfile,
   };
 
   static ProfileData _instantiate(DecodingData data) {
     return ProfileData(
-        displayName: data.dec(_f$displayName),
-        profileType: data.dec(_f$profileType),
-        portfolioLinks: data.dec(_f$portfolioLinks),
-        designStyles: data.dec(_f$designStyles));
+        profile: data.dec(_f$profile),
+        architectProfile: data.dec(_f$architectProfile),
+        contractorProfile: data.dec(_f$contractorProfile),
+        supplierProfile: data.dec(_f$supplierProfile),
+        constructionTeamProfile: data.dec(_f$constructionTeamProfile));
   }
 
   @override
@@ -103,15 +115,21 @@ extension ProfileDataValueCopy<$R, $Out>
 
 abstract class ProfileDataCopyWith<$R, $In extends ProfileData, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
-      get portfolioLinks;
-  ListCopyWith<$R, DesignStyle, ObjectCopyWith<$R, DesignStyle, DesignStyle>>
-      get designStyles;
+  ProfileCopyWith<$R, Profile, Profile> get profile;
+  ArchitectProfileCopyWith<$R, ArchitectProfile, ArchitectProfile>?
+      get architectProfile;
+  ContractorProfileCopyWith<$R, ContractorProfile, ContractorProfile>?
+      get contractorProfile;
+  SupplierProfileCopyWith<$R, SupplierProfile, SupplierProfile>?
+      get supplierProfile;
+  ConstructionTeamProfileCopyWith<$R, ConstructionTeamProfile,
+      ConstructionTeamProfile>? get constructionTeamProfile;
   $R call(
-      {String? displayName,
-      ProfileType? profileType,
-      List<String>? portfolioLinks,
-      List<DesignStyle>? designStyles});
+      {Profile? profile,
+      ArchitectProfile? architectProfile,
+      ContractorProfile? contractorProfile,
+      SupplierProfile? supplierProfile,
+      ConstructionTeamProfile? constructionTeamProfile});
   ProfileDataCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -124,35 +142,50 @@ class _ProfileDataCopyWithImpl<$R, $Out>
   late final ClassMapperBase<ProfileData> $mapper =
       ProfileDataMapper.ensureInitialized();
   @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
-      get portfolioLinks => ListCopyWith(
-          $value.portfolioLinks,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(portfolioLinks: v));
+  ProfileCopyWith<$R, Profile, Profile> get profile =>
+      $value.profile.copyWith.$chain((v) => call(profile: v));
   @override
-  ListCopyWith<$R, DesignStyle, ObjectCopyWith<$R, DesignStyle, DesignStyle>>
-      get designStyles => ListCopyWith(
-          $value.designStyles,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(designStyles: v));
+  ArchitectProfileCopyWith<$R, ArchitectProfile, ArchitectProfile>?
+      get architectProfile => $value.architectProfile?.copyWith
+          .$chain((v) => call(architectProfile: v));
+  @override
+  ContractorProfileCopyWith<$R, ContractorProfile, ContractorProfile>?
+      get contractorProfile => $value.contractorProfile?.copyWith
+          .$chain((v) => call(contractorProfile: v));
+  @override
+  SupplierProfileCopyWith<$R, SupplierProfile, SupplierProfile>?
+      get supplierProfile => $value.supplierProfile?.copyWith
+          .$chain((v) => call(supplierProfile: v));
+  @override
+  ConstructionTeamProfileCopyWith<$R, ConstructionTeamProfile,
+          ConstructionTeamProfile>?
+      get constructionTeamProfile => $value.constructionTeamProfile?.copyWith
+          .$chain((v) => call(constructionTeamProfile: v));
   @override
   $R call(
-          {String? displayName,
-          ProfileType? profileType,
-          List<String>? portfolioLinks,
-          List<DesignStyle>? designStyles}) =>
+          {Profile? profile,
+          Object? architectProfile = $none,
+          Object? contractorProfile = $none,
+          Object? supplierProfile = $none,
+          Object? constructionTeamProfile = $none}) =>
       $apply(FieldCopyWithData({
-        if (displayName != null) #displayName: displayName,
-        if (profileType != null) #profileType: profileType,
-        if (portfolioLinks != null) #portfolioLinks: portfolioLinks,
-        if (designStyles != null) #designStyles: designStyles
+        if (profile != null) #profile: profile,
+        if (architectProfile != $none) #architectProfile: architectProfile,
+        if (contractorProfile != $none) #contractorProfile: contractorProfile,
+        if (supplierProfile != $none) #supplierProfile: supplierProfile,
+        if (constructionTeamProfile != $none)
+          #constructionTeamProfile: constructionTeamProfile
       }));
   @override
   ProfileData $make(CopyWithData data) => ProfileData(
-      displayName: data.get(#displayName, or: $value.displayName),
-      profileType: data.get(#profileType, or: $value.profileType),
-      portfolioLinks: data.get(#portfolioLinks, or: $value.portfolioLinks),
-      designStyles: data.get(#designStyles, or: $value.designStyles));
+      profile: data.get(#profile, or: $value.profile),
+      architectProfile:
+          data.get(#architectProfile, or: $value.architectProfile),
+      contractorProfile:
+          data.get(#contractorProfile, or: $value.contractorProfile),
+      supplierProfile: data.get(#supplierProfile, or: $value.supplierProfile),
+      constructionTeamProfile: data.get(#constructionTeamProfile,
+          or: $value.constructionTeamProfile));
 
   @override
   ProfileDataCopyWith<$R2, ProfileData, $Out2> $chain<$R2, $Out2>(

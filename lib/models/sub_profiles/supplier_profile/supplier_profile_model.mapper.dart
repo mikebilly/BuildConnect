@@ -22,6 +22,9 @@ class SupplierProfileMapper extends ClassMapperBase<SupplierProfile> {
   @override
   final String id = 'SupplierProfile';
 
+  static String? _$profileId(SupplierProfile v) => v.profileId;
+  static const Field<SupplierProfile, String> _f$profileId =
+      Field('profileId', _$profileId, opt: true);
   static SupplierType _$supplierType(SupplierProfile v) => v.supplierType;
   static const Field<SupplierProfile, SupplierType> _f$supplierType =
       Field('supplierType', _$supplierType);
@@ -29,38 +32,24 @@ class SupplierProfileMapper extends ClassMapperBase<SupplierProfile> {
       v.materialCategories;
   static const Field<SupplierProfile, List<MaterialCategory>>
       _f$materialCategories = Field('materialCategories', _$materialCategories);
-  static String _$supplyCapacity(SupplierProfile v) => v.supplyCapacity;
-  static const Field<SupplierProfile, String> _f$supplyCapacity =
-      Field('supplyCapacity', _$supplyCapacity);
   static int _$deliveryRadius(SupplierProfile v) => v.deliveryRadius;
   static const Field<SupplierProfile, int> _f$deliveryRadius =
       Field('deliveryRadius', _$deliveryRadius);
-  static List<InvalidType> _$warehouseLocations(SupplierProfile v) =>
-      v.warehouseLocations;
-  static const Field<SupplierProfile, List<InvalidType>> _f$warehouseLocations =
-      Field('warehouseLocations', _$warehouseLocations);
-  static List<InvalidType> _$catalogs(SupplierProfile v) => v.catalogs;
-  static const Field<SupplierProfile, List<InvalidType>> _f$catalogs =
-      Field('catalogs', _$catalogs);
 
   @override
   final MappableFields<SupplierProfile> fields = const {
+    #profileId: _f$profileId,
     #supplierType: _f$supplierType,
     #materialCategories: _f$materialCategories,
-    #supplyCapacity: _f$supplyCapacity,
     #deliveryRadius: _f$deliveryRadius,
-    #warehouseLocations: _f$warehouseLocations,
-    #catalogs: _f$catalogs,
   };
 
   static SupplierProfile _instantiate(DecodingData data) {
     return SupplierProfile(
+        profileId: data.dec(_f$profileId),
         supplierType: data.dec(_f$supplierType),
         materialCategories: data.dec(_f$materialCategories),
-        supplyCapacity: data.dec(_f$supplyCapacity),
-        deliveryRadius: data.dec(_f$deliveryRadius),
-        warehouseLocations: data.dec(_f$warehouseLocations),
-        catalogs: data.dec(_f$catalogs));
+        deliveryRadius: data.dec(_f$deliveryRadius));
   }
 
   @override
@@ -120,17 +109,11 @@ abstract class SupplierProfileCopyWith<$R, $In extends SupplierProfile, $Out>
   ListCopyWith<$R, MaterialCategory,
           ObjectCopyWith<$R, MaterialCategory, MaterialCategory>>
       get materialCategories;
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get warehouseLocations;
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get catalogs;
   $R call(
-      {SupplierType? supplierType,
+      {String? profileId,
+      SupplierType? supplierType,
       List<MaterialCategory>? materialCategories,
-      String? supplyCapacity,
-      int? deliveryRadius,
-      List<InvalidType>? warehouseLocations,
-      List<InvalidType>? catalogs});
+      int? deliveryRadius});
   SupplierProfileCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -151,41 +134,24 @@ class _SupplierProfileCopyWithImpl<$R, $Out>
           (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(materialCategories: v));
   @override
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get warehouseLocations => ListCopyWith(
-          $value.warehouseLocations,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(warehouseLocations: v));
-  @override
-  ListCopyWith<$R, InvalidType, ObjectCopyWith<$R, InvalidType, InvalidType>>
-      get catalogs => ListCopyWith($value.catalogs,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(catalogs: v));
-  @override
   $R call(
-          {SupplierType? supplierType,
+          {Object? profileId = $none,
+          SupplierType? supplierType,
           List<MaterialCategory>? materialCategories,
-          String? supplyCapacity,
-          int? deliveryRadius,
-          List<InvalidType>? warehouseLocations,
-          List<InvalidType>? catalogs}) =>
+          int? deliveryRadius}) =>
       $apply(FieldCopyWithData({
+        if (profileId != $none) #profileId: profileId,
         if (supplierType != null) #supplierType: supplierType,
         if (materialCategories != null) #materialCategories: materialCategories,
-        if (supplyCapacity != null) #supplyCapacity: supplyCapacity,
-        if (deliveryRadius != null) #deliveryRadius: deliveryRadius,
-        if (warehouseLocations != null) #warehouseLocations: warehouseLocations,
-        if (catalogs != null) #catalogs: catalogs
+        if (deliveryRadius != null) #deliveryRadius: deliveryRadius
       }));
   @override
   SupplierProfile $make(CopyWithData data) => SupplierProfile(
+      profileId: data.get(#profileId, or: $value.profileId),
       supplierType: data.get(#supplierType, or: $value.supplierType),
       materialCategories:
           data.get(#materialCategories, or: $value.materialCategories),
-      supplyCapacity: data.get(#supplyCapacity, or: $value.supplyCapacity),
-      deliveryRadius: data.get(#deliveryRadius, or: $value.deliveryRadius),
-      warehouseLocations:
-          data.get(#warehouseLocations, or: $value.warehouseLocations),
-      catalogs: data.get(#catalogs, or: $value.catalogs));
+      deliveryRadius: data.get(#deliveryRadius, or: $value.deliveryRadius));
 
   @override
   SupplierProfileCopyWith<$R2, SupplierProfile, $Out2> $chain<$R2, $Out2>(

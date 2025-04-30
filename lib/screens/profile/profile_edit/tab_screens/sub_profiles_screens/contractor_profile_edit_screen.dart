@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:buildconnect/models/enums/enums.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:buildconnect/models/sub_profiles/contractor_profile/contractor_profile_model.dart';
 
 class ContractorProfileEditScreen extends ConsumerStatefulWidget {
   const ContractorProfileEditScreen({super.key});
@@ -32,13 +33,14 @@ class _ContractorProfileEditScreenState
   bool _initialized = false;
   void _loadData() {
     final profileData = ref.read(profileDataNotifierProvider);
-    final data = profileData.valueOrNull;
+    final _data = profileData.valueOrNull;
 
-    if (data != null && !_initialized) {
+    if (_data != null && !_initialized && _data.contractorProfile != null) {
+      final data = _data.contractorProfile!;
       debugPrint('Initializing data: $data');
       setState(() {
         /////////////// Load data
-
+        _servicesSet.addAll(data.services);
         ///////////////
         _initialized = true;
       });
@@ -48,11 +50,13 @@ class _ContractorProfileEditScreenState
   @override
   void dispose() {
     debugPrint('Disposing');
+    final newContractorProfile = ContractorProfile(
+      services: _servicesSet.toList(),
+    );
     // Future(() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _profileDataNotifier.dumpFromControllers(
-        // designStyles: _designStyles.toList(),
-        // portfolioLinks: _portfolioLinks,
+        contractorProfile: newContractorProfile,
       );
     });
 
@@ -77,15 +81,19 @@ class _ContractorProfileEditScreenState
             heightWidget(widget: headerText(text: "Contractor Profile")),
 
             heightWidget(
-              widget: buildFilterChip(values: ServiceType.values, selectedValues: _servicesSet, onSelected: (v, selected) {
-                setState(() {
-                  if (selected) {
-                    _servicesSet.add(v);
-                  } else {
-                    _servicesSet.remove(v);
-                  }
-                });
-              }),
+              widget: buildFilterChip(
+                values: ServiceType.values,
+                selectedValues: _servicesSet,
+                onSelected: (v, selected) {
+                  setState(() {
+                    if (selected) {
+                      _servicesSet.add(v);
+                    } else {
+                      _servicesSet.remove(v);
+                    }
+                  });
+                },
+              ),
             ),
           ],
         ),

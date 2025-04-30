@@ -1,4 +1,5 @@
 import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
+import 'package:buildconnect/models/sub_profiles/architect_profile/architect_profile_model.dart';
 import 'package:buildconnect/shared/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,12 +41,17 @@ class _ArchitectProfileEditScreenState
   bool _initialized = false;
   void _loadData() {
     final profileData = ref.read(profileDataNotifierProvider);
-    final data = profileData.valueOrNull;
+    final _data = profileData.valueOrNull;
 
-    if (data != null && !_initialized) {
+    if (_data != null && !_initialized && _data.architectProfile != null) {
+      final data = _data.architectProfile!;
       debugPrint('Initializing data: $data');
       setState(() {
         ///////////////
+        //
+        _architectRole = data.architectRole;
+        _designPhilosophyController.text = data.designPhilosophy;
+        _designPhilosophy = data.designPhilosophy;
         _designStylesSet = data.designStyles.toSet();
 
         for (final portfolioLink in data.portfolioLinks) {
@@ -76,10 +82,16 @@ class _ArchitectProfileEditScreenState
 
     debugPrint('Disposing');
     // Future(() {
+    final newArchitectProfile = ArchitectProfile(
+      architectRole: _architectRole!,
+      designPhilosophy: _designPhilosophy,
+      designStyles: _designStyles,
+      portfolioLinks: _portfolioLinks,
+    );
+    
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _profileDataNotifier.dumpFromControllers(
-        designStyles: _designStyles,
-        portfolioLinks: _portfolioLinks,
+        architectProfile: newArchitectProfile,
       );
     });
 

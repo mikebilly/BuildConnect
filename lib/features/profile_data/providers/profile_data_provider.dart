@@ -6,6 +6,13 @@ import 'package:buildconnect/features/profile_data/services/profile_data_service
 import 'package:buildconnect/models/profile_data/profile_data_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:buildconnect/models/enums/enums.dart';
+import 'package:buildconnect/models/shared/shared_models.dart';
+
+import 'package:buildconnect/models/profile/profile_model.dart';
+import 'package:buildconnect/models/sub_profiles/architect_profile/architect_profile_model.dart';
+import 'package:buildconnect/models/sub_profiles/contractor_profile/contractor_profile_model.dart';
+import 'package:buildconnect/models/sub_profiles/supplier_profile/supplier_profile_model.dart';
+import 'package:buildconnect/models/sub_profiles/construction_team_profile/construction_team_profile_model.dart';
 
 part 'profile_data_provider.g.dart';
 
@@ -29,7 +36,10 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
       return ProfileData.empty();
     }
 
-    return await _profileDataService.getProfileData(_userId ?? '');
+    debugPrint("Building, fetching profile data for user: $_userId");
+    var profileData = await _profileDataService.getProfileData(_userId!);
+    profileData = ProfileData.empty();
+    return profileData;
   }
 
   Future<void> updateProfileData() async {
@@ -42,37 +52,23 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
     state = const AsyncData(null);
   }
 
-  // Future<void> dumpFromControllers({
-  //   String? displayName,
-  //   ProfileType? profileType,
-  //   // add other fields here
-  // }) async {
-  //   final data = _data;
-  //   if (data == null) {
-  //     debugPrint("Data is null, cannot update");
-  //     return;
-  //   }
-  //   debugPrint('Loading...');
-  //   state = const AsyncLoading();
-  //   debugPrint('profileType saved: $profileType');
+  Future<void> clearProfileData() async {
+    debugPrint("Clearing profile data");
+    state = const AsyncData(null); // or AsyncData(ProfileData.empty())
+  }
 
-  //   state = AsyncData(
-  //     data.copyWith(
-  //       displayName: displayName ?? data.displayName,
-  //       // displayName: displayName ?? data.displayName,
-  //       profileType: profileType ?? data.profileType,
-  //     ),
-  //   );
-  //   debugPrint('Finished dumping');
-  // }
+ Future<ProfileData> dumpFromControllers({
+    Profile? profile,
 
-  Future<ProfileData> dumpFromControllers({
-    String? displayName,
-    ProfileType? profileType,
-    List<String>? portfolioLinks,
-    List<DesignStyle>? designStyles,
+    ArchitectProfile? architectProfile,
+    ContractorProfile? contractorProfile,
+    ConstructionTeamProfile? constructionTeamProfile,
+    SupplierProfile? supplierProfile,
+
+    List<Contact>? contacts,
   }) async {
     final data = _data;
+    final userId = _userId;
     if (data == null) throw Exception("Data is null");
 
     state = const AsyncLoading();
@@ -80,14 +76,26 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
     // Optional: simulate a delay or real async save
     // await Future.delayed(const Duration(milliseconds: 500));
 
+    final newProfile = (profile != null ? profile.copyWith(userId: userId, contacts: data.profile.contacts) : (contacts != null ? data.profile.copyWith(contacts: contacts) : data.profile));
+    final newArchitectProfile = (architectProfile != null ? architectProfile.copyWith(profileId: userId) : data.architectProfile);
+    final newContractorProfile = (contractorProfile != null ? contractorProfile.copyWith(profileId: userId) : data.contractorProfile);
+    final newConstructionTeamProfile = (constructionTeamProfile != null ? constructionTeamProfile.copyWith(profileId: userId) : data.constructionTeamProfile);
+    final newSupplierProfile = (supplierProfile != null ? supplierProfile.copyWith(profileId: userId) : data.supplierProfile);
+
     final updatedData = data.copyWith(
-      displayName: displayName ?? data.displayName,
-      profileType: profileType ?? data.profileType,
-      portfolioLinks: portfolioLinks ?? data.portfolioLinks,
-      designStyles: designStyles ?? data.designStyles,
+      profile: newProfile,
+      architectProfile: newArchitectProfile,
+      contractorProfile: newContractorProfile,
+      constructionTeamProfile: newConstructionTeamProfile,
+      supplierProfile: newSupplierProfile,
     );
 
+    debugPrint('Updated data: $updatedData');
+
     state = AsyncData(updatedData);
+
+    debugPrint('########## ^^^^^^^ Dump successful!!: $updatedData');
+
 
     return updatedData;
   }
