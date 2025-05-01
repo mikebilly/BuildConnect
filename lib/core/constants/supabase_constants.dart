@@ -6,4 +6,6 @@ class SupabaseConstants {
   static const String contractorProfilesTable = 'contractor_profiles';
   static const String supplierProfilesTable = 'supplier_profiles';
   static const String constructionTeamProfilesTable = 'construction_team_profiles';
+
+  static const String profileContactsTable = 'profile_contacts';
 }

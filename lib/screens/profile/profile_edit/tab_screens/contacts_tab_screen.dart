@@ -10,10 +10,10 @@ class ContactsTabScreen extends ConsumerStatefulWidget {
   const ContactsTabScreen({super.key});
 
   @override
-  ConsumerState<ContactsTabScreen> createState() => _ContactsTabScreenState();
+  ConsumerState<ContactsTabScreen> createState() => ContactsTabScreenState();
 }
 
-class _ContactsTabScreenState extends ConsumerState<ContactsTabScreen> {
+class ContactsTabScreenState extends ConsumerState<ContactsTabScreen> {
   late final ProfileDataNotifier _profileDataNotifier;
 
   /// Local states
@@ -49,17 +49,23 @@ class _ContactsTabScreenState extends ConsumerState<ContactsTabScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    debugPrint('Disposing');
-    // Future(() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _profileDataNotifier.dumpFromControllers(
+  Future<void> dumpFromControllers() async {
+    debugPrint('Right before dumping from controllers');
+    await Future.microtask(() async {
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+      await _profileDataNotifier.dumpFromControllers(
         // designStyles: _designStyles.toList(),
         // portfolioLinks: _portfolioLinks,
         contacts: _contacts,
       );
     });
+  }
+
+  @override
+  void dispose() {
+    debugPrint('Disposing');
+    // Future(() {
+    dumpFromControllers();
 
     // _email.dispose();
     super.dispose();

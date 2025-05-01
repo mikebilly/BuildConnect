@@ -27,27 +27,31 @@ class ProfileMapper extends ClassMapperBase<Profile> {
   @override
   final String id = 'Profile';
 
+  static String? _$id(Profile v) => v.id;
+  static const Field<Profile, String> _f$id = Field('id', _$id, opt: true);
   static String? _$userId(Profile v) => v.userId;
   static const Field<Profile, String> _f$userId =
-      Field('userId', _$userId, opt: true);
+      Field('userId', _$userId, key: r'user_id', opt: true);
   static String _$displayName(Profile v) => v.displayName;
   static const Field<Profile, String> _f$displayName =
-      Field('displayName', _$displayName);
+      Field('displayName', _$displayName, key: r'display_name');
   static ProfileType _$profileType(Profile v) => v.profileType;
   static const Field<Profile, ProfileType> _f$profileType =
-      Field('profileType', _$profileType);
+      Field('profileType', _$profileType, key: r'profile_type');
   static String _$bio(Profile v) => v.bio;
   static const Field<Profile, String> _f$bio = Field('bio', _$bio);
   static AvailabilityStatus _$availabilityStatus(Profile v) =>
       v.availabilityStatus;
-  static const Field<Profile, AvailabilityStatus> _f$availabilityStatus =
-      Field('availabilityStatus', _$availabilityStatus);
+  static const Field<Profile, AvailabilityStatus> _f$availabilityStatus = Field(
+      'availabilityStatus', _$availabilityStatus,
+      key: r'availability_status');
   static int _$yearsOfExperience(Profile v) => v.yearsOfExperience;
-  static const Field<Profile, int> _f$yearsOfExperience =
-      Field('yearsOfExperience', _$yearsOfExperience);
+  static const Field<Profile, int> _f$yearsOfExperience = Field(
+      'yearsOfExperience', _$yearsOfExperience,
+      key: r'years_of_experience');
   static WorkingMode _$workingMode(Profile v) => v.workingMode;
   static const Field<Profile, WorkingMode> _f$workingMode =
-      Field('workingMode', _$workingMode);
+      Field('workingMode', _$workingMode, key: r'working_mode');
   static List<Domain> _$domains(Profile v) => v.domains;
   static const Field<Profile, List<Domain>> _f$domains =
       Field('domains', _$domains);
@@ -56,14 +60,16 @@ class ProfileMapper extends ClassMapperBase<Profile> {
       Field('contacts', _$contacts);
   static List<PaymentMethod> _$paymentMethods(Profile v) => v.paymentMethods;
   static const Field<Profile, List<PaymentMethod>> _f$paymentMethods =
-      Field('paymentMethods', _$paymentMethods);
+      Field('paymentMethods', _$paymentMethods, key: r'payment_methods');
   static BusinessEntityType _$businessEntityType(Profile v) =>
       v.businessEntityType;
-  static const Field<Profile, BusinessEntityType> _f$businessEntityType =
-      Field('businessEntityType', _$businessEntityType);
+  static const Field<Profile, BusinessEntityType> _f$businessEntityType = Field(
+      'businessEntityType', _$businessEntityType,
+      key: r'business_entity_type');
 
   @override
   final MappableFields<Profile> fields = const {
+    #id: _f$id,
     #userId: _f$userId,
     #displayName: _f$displayName,
     #profileType: _f$profileType,
@@ -79,6 +85,7 @@ class ProfileMapper extends ClassMapperBase<Profile> {
 
   static Profile _instantiate(DecodingData data) {
     return Profile(
+        id: data.dec(_f$id),
         userId: data.dec(_f$userId),
         displayName: data.dec(_f$displayName),
         profileType: data.dec(_f$profileType),
@@ -147,7 +154,8 @@ abstract class ProfileCopyWith<$R, $In extends Profile, $Out>
   ListCopyWith<$R, PaymentMethod,
       ObjectCopyWith<$R, PaymentMethod, PaymentMethod>> get paymentMethods;
   $R call(
-      {String? userId,
+      {String? id,
+      String? userId,
       String? displayName,
       ProfileType? profileType,
       String? bio,
@@ -186,7 +194,8 @@ class _ProfileCopyWithImpl<$R, $Out>
           (v) => call(paymentMethods: v));
   @override
   $R call(
-          {Object? userId = $none,
+          {Object? id = $none,
+          Object? userId = $none,
           String? displayName,
           ProfileType? profileType,
           String? bio,
@@ -198,6 +207,7 @@ class _ProfileCopyWithImpl<$R, $Out>
           List<PaymentMethod>? paymentMethods,
           BusinessEntityType? businessEntityType}) =>
       $apply(FieldCopyWithData({
+        if (id != $none) #id: id,
         if (userId != $none) #userId: userId,
         if (displayName != null) #displayName: displayName,
         if (profileType != null) #profileType: profileType,
@@ -212,6 +222,7 @@ class _ProfileCopyWithImpl<$R, $Out>
       }));
   @override
   Profile $make(CopyWithData data) => Profile(
+      id: data.get(#id, or: $value.id),
       userId: data.get(#userId, or: $value.userId),
       displayName: data.get(#displayName, or: $value.displayName),
       profileType: data.get(#profileType, or: $value.profileType),

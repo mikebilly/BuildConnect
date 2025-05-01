@@ -3,7 +3,7 @@ import 'package:buildconnect/models/enums/enums.dart';
 
 part 'shared_models.mapper.dart';
 
-@MappableClass()
+@MappableClass(caseStyle: CaseStyle.snakeCase)
 class Contact with ContactMappable {
   final ContactType type;
   final String value;

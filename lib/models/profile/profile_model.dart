@@ -4,8 +4,9 @@ import 'package:buildconnect/models/shared/shared_models.dart';
 
 part 'profile_model.mapper.dart';
 
-@MappableClass()
+@MappableClass(caseStyle: CaseStyle.snakeCase)
 class Profile with ProfileMappable {
+  final String? id;
   final String? userId; // FK to AppUser.id
   final String displayName;
   // final String logo;
@@ -43,6 +44,7 @@ class Profile with ProfileMappable {
   // final SupplierProfile? supplierProfile;
 
   Profile({
+    this.id,
     this.userId,
     required this.displayName,
     // required this.logo,

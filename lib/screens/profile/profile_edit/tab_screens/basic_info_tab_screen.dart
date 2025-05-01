@@ -11,10 +11,10 @@ class BasicInfoTabScreen extends ConsumerStatefulWidget {
   const BasicInfoTabScreen({super.key});
 
   @override
-  ConsumerState<BasicInfoTabScreen> createState() => _BasicInfoTabScreenState();
+  ConsumerState<BasicInfoTabScreen> createState() => BasicInfoTabScreenState();
 }
 
-class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
+class BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
   late final ProfileDataNotifier _profileDataNotifier;
 
   ////
@@ -70,9 +70,7 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    debugPrint('Disposing');
+  Future<void> dumpFromControllers() async {
     // Future(() {
     Profile newProfile = Profile(
       displayName: _displayName.text,
@@ -87,13 +85,20 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
       contacts: [],
     );
     debugPrint('Right before dumping at basic info: $newProfile');
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _profileDataNotifier.dumpFromControllers(
+    await Future.microtask(() async {
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+      await _profileDataNotifier.dumpFromControllers(
         // designStyles: _designStyles.toList(),
         // portfolioLinks: _portfolioLinks,
         profile: newProfile,
       );
     });
+  }
+
+  @override
+  void dispose() {
+    debugPrint('Disposing');
+    dumpFromControllers();
 
     // _email.dispose();
     super.dispose();

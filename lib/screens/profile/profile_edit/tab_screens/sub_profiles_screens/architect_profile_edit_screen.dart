@@ -11,10 +11,10 @@ class ArchitectProfileEditScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ArchitectProfileEditScreen> createState() =>
-      _ArchitectProfileEditScreenState();
+      ArchitectProfileEditScreenState();
 }
 
-class _ArchitectProfileEditScreenState
+class ArchitectProfileEditScreenState
     extends ConsumerState<ArchitectProfileEditScreen> {
   late final ProfileDataNotifier _profileDataNotifier;
 
@@ -66,8 +66,7 @@ class _ArchitectProfileEditScreenState
     }
   }
 
-  @override
-  void dispose() {
+  Future<void> dumpFromControllers() async {
     for (final controller in _portfolioLinksControllers) {
       debugPrint('Disposing controller: ${controller.text}');
       if (controller.text.isNotEmpty) {
@@ -88,13 +87,19 @@ class _ArchitectProfileEditScreenState
       designStyles: _designStyles,
       portfolioLinks: _portfolioLinks,
     );
-    
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    debugPrint('Right before dumping at architect: $newArchitectProfile');
+    await Future.microtask(() async {
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
       _profileDataNotifier.dumpFromControllers(
         architectProfile: newArchitectProfile,
       );
     });
+  }
 
+  @override
+  void dispose() {
+    dumpFromControllers();
+    debugPrint('Disposing');
     // _email.dispose();
     super.dispose();
   }

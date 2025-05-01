@@ -31,14 +31,20 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
 
   @override
   FutureOr<ProfileData?> build() async {
+    final authService = ref.watch(authServiceProvider);
+
     if (!_isLoggedIn || _userId == null) {
       debugPrint("Not logged in");
       return ProfileData.empty();
     }
+    else {
+      debugPrint('Logged into ProfileData, userId: $_userId');
+    }
 
     debugPrint("Building, fetching profile data for user: $_userId");
-    var profileData = await _profileDataService.getProfileData(_userId!);
-    profileData = ProfileData.empty();
+    var profileData;
+    profileData = await _profileDataService.getProfileData(_userId!);
+    // profileData = ProfileData.empty();
     return profileData;
   }
 
@@ -49,15 +55,15 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
     state = const AsyncLoading();
     // if (data == null || userId == null) return;
     await _profileDataService.upsertProfileData(userId, data);
-    state = const AsyncData(null);
+    state = AsyncData(data);
   }
 
   Future<void> clearProfileData() async {
     debugPrint("Clearing profile data");
-    state = const AsyncData(null); // or AsyncData(ProfileData.empty())
+    state = AsyncData(null); // or AsyncData(ProfileData.empty())
   }
 
- Future<ProfileData> dumpFromControllers({
+  Future<ProfileData> dumpFromControllers({
     Profile? profile,
 
     ArchitectProfile? architectProfile,
@@ -69,18 +75,36 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
   }) async {
     final data = _data;
     final userId = _userId;
-    if (data == null) throw Exception("Data is null");
+    if (data == null) throw Exception("Error in Dump controller: Data is null");
+    
 
     state = const AsyncLoading();
 
     // Optional: simulate a delay or real async save
     // await Future.delayed(const Duration(milliseconds: 500));
 
-    final newProfile = (profile != null ? profile.copyWith(userId: userId, contacts: data.profile.contacts) : (contacts != null ? data.profile.copyWith(contacts: contacts) : data.profile));
-    final newArchitectProfile = (architectProfile != null ? architectProfile.copyWith(profileId: userId) : data.architectProfile);
-    final newContractorProfile = (contractorProfile != null ? contractorProfile.copyWith(profileId: userId) : data.contractorProfile);
-    final newConstructionTeamProfile = (constructionTeamProfile != null ? constructionTeamProfile.copyWith(profileId: userId) : data.constructionTeamProfile);
-    final newSupplierProfile = (supplierProfile != null ? supplierProfile.copyWith(profileId: userId) : data.supplierProfile);
+    final newProfile =
+        (profile != null
+            ? profile.copyWith(userId: userId, contacts: data.profile.contacts)
+            : (contacts != null
+                ? data.profile.copyWith(contacts: contacts)
+                : data.profile));
+    final newArchitectProfile =
+        (architectProfile != null
+            ? architectProfile.copyWith(profileId: userId)
+            : data.architectProfile);
+    final newContractorProfile =
+        (contractorProfile != null
+            ? contractorProfile.copyWith(profileId: userId)
+            : data.contractorProfile);
+    final newConstructionTeamProfile =
+        (constructionTeamProfile != null
+            ? constructionTeamProfile.copyWith(profileId: userId)
+            : data.constructionTeamProfile);
+    final newSupplierProfile =
+        (supplierProfile != null
+            ? supplierProfile.copyWith(profileId: userId)
+            : data.supplierProfile);
 
     final updatedData = data.copyWith(
       profile: newProfile,
@@ -90,12 +114,11 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
       supplierProfile: newSupplierProfile,
     );
 
-    debugPrint('Updated data: $updatedData');
+    // debugPrint('Updated data: $updatedData');
 
     state = AsyncData(updatedData);
 
     debugPrint('########## ^^^^^^^ Dump successful!!: $updatedData');
-
 
     return updatedData;
   }

@@ -16,6 +16,7 @@ class Auth extends _$Auth {
     _authService = ref.watch(authServiceProvider);
     _profileDataNotifier = ref.read(profileDataNotifierProvider.notifier);
 
+
     if (!_authService.isLoggedIn) {
       return null;
     }
@@ -23,10 +24,7 @@ class Auth extends _$Auth {
     return await _authService.fetchAppUser();
   }
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     state = const AsyncLoading();
 
     try {
@@ -46,10 +44,7 @@ class Auth extends _$Auth {
     state = const AsyncData(null);
   }
 
-  Future<void> signUp({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signUp({required String email, required String password}) async {
     state = const AsyncLoading();
 
     try {

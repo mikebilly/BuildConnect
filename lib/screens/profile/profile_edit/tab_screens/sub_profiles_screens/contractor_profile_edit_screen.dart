@@ -11,10 +11,10 @@ class ContractorProfileEditScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ContractorProfileEditScreen> createState() =>
-      _ContractorProfileEditScreenState();
+      ContractorProfileEditScreenState();
 }
 
-class _ContractorProfileEditScreenState
+class ContractorProfileEditScreenState
     extends ConsumerState<ContractorProfileEditScreen> {
   late final ProfileDataNotifier _profileDataNotifier;
 
@@ -47,18 +47,23 @@ class _ContractorProfileEditScreenState
     }
   }
 
-  @override
-  void dispose() {
-    debugPrint('Disposing');
+  Future<void> dumpFromControllers() async {
     final newContractorProfile = ContractorProfile(
       services: _servicesSet.toList(),
     );
-    // Future(() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    debugPrint('Right before dumping at contractor: $newContractorProfile');
+    await Future.microtask(() async {
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
       _profileDataNotifier.dumpFromControllers(
         contractorProfile: newContractorProfile,
       );
     });
+  }
+
+  @override
+  void dispose() {
+    debugPrint('Disposing');
+    dumpFromControllers();
 
     // _email.dispose();
     super.dispose();

@@ -17,10 +17,23 @@ class ProfileEditScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
+  final basicInfoKey = GlobalKey<BasicInfoTabScreenState>();
+  final professionalInfoKey = GlobalKey<ProfessionalInfoTabScreenState>();
+  final contactsKey = GlobalKey<ContactsTabScreenState>();
+
   Future<void> _submit() async {
     debugPrint('submit called');
+    debugPrint('Dumping all controllers from all screens');
+    await _dumpAllTabControllers();
+
+    // await Future.delayed(const Duration(milliseconds: 100)).then((_) {
+    //   debugPrint('Dumped all controllers from all screens');
+    // });
+
+
     final profileDataNotifier = ref.read(profileDataNotifierProvider.notifier);
     try {
+    
       await profileDataNotifier.updateProfileData();
       if (mounted) {
         debugPrint('Profile updated successfully');
@@ -40,6 +53,22 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
 
   void _navigateToHomeScreen() {
     context.go('/');
+  }
+
+  Future<void> _dumpAllTabControllers() async {
+    await basicInfoKey.currentState?.dumpFromControllers();
+    professionalInfoKey.currentState?.dumpFromControllers();
+    await contactsKey.currentState?.dumpFromControllers();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ This ensures fresh data is fetched when entering the screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(profileDataNotifierProvider);
+    });
   }
 
   @override
@@ -63,23 +92,32 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: TabBarView(
-                  children: [
-                    const BasicInfoTabScreen(),
+                child: profileData.when(
+                  loading:
+                      () => const Center(child: CircularProgressIndicator()),
+                  error:
+                      (error, stack) => Center(
+                        child: Text('Error at loading profile: $error'),
+                      ),
+                  data: (data) {
+                    if (data == null) {
+                      return const Center(
+                        // child: Text('No profile data available'),
+                        child: CircularProgressIndicator(),
+                      );
+                    }
 
-profileData.when(
-  loading: () => const Center(child: CircularProgressIndicator()),
-  error: (error, stack) => Center(child: Text('Error at loading professional ìno: $error')),
-  data: (data) {
-    debugPrint('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx - ProfileData: $data');
-    return data == null
-      ? const Center(child: Text('No profile data available'))
-      : ProfessionalInfoTabScreen(profileType: data.profile.profileType);
-  },
-),
-
-                    const ContactsTabScreen(),
-                  ],
+                    return TabBarView(
+                      children: [
+                        BasicInfoTabScreen(key: basicInfoKey),
+                        ProfessionalInfoTabScreen(
+                          key: professionalInfoKey,
+                          profileType: data.profile.profileType,
+                        ),
+                        ContactsTabScreen(key: contactsKey),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
