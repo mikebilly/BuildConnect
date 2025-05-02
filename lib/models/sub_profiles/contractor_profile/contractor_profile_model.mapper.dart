@@ -23,7 +23,7 @@ class ContractorProfileMapper extends ClassMapperBase<ContractorProfile> {
 
   static String? _$profileId(ContractorProfile v) => v.profileId;
   static const Field<ContractorProfile, String> _f$profileId =
-      Field('profileId', _$profileId, opt: true);
+      Field('profileId', _$profileId, key: r'profile_id', opt: true);
   static List<ServiceType> _$services(ContractorProfile v) => v.services;
   static const Field<ContractorProfile, List<ServiceType>> _f$services =
       Field('services', _$services);

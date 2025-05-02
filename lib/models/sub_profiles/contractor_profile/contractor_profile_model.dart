@@ -3,7 +3,7 @@ import 'package:buildconnect/models/enums/enums.dart';
 
 part 'contractor_profile_model.mapper.dart';
 
-@MappableClass()
+@MappableClass(caseStyle: CaseStyle.snakeCase)
 class ContractorProfile with ContractorProfileMappable {
   final String? profileId;
   final List<ServiceType> services;

@@ -3,7 +3,7 @@ import 'package:buildconnect/models/enums/enums.dart';
 
 part 'architect_profile_model.mapper.dart';
 
-@MappableClass()
+@MappableClass(caseStyle: CaseStyle.snakeCase)
 class ArchitectProfile with ArchitectProfileMappable {
   final String? profileId;
 

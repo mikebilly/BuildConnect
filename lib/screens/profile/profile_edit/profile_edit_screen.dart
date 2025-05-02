@@ -57,7 +57,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
 
   Future<void> _dumpAllTabControllers() async {
     await basicInfoKey.currentState?.dumpFromControllers();
-    professionalInfoKey.currentState?.dumpFromControllers();
+    await professionalInfoKey.currentState?.dumpFromControllers();
     await contactsKey.currentState?.dumpFromControllers();
   }
 
