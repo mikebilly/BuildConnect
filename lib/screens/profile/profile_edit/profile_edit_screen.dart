@@ -30,10 +30,8 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     //   debugPrint('Dumped all controllers from all screens');
     // });
 
-
     final profileDataNotifier = ref.read(profileDataNotifierProvider.notifier);
     try {
-    
       await profileDataNotifier.updateProfileData();
       if (mounted) {
         debugPrint('Profile updated successfully');

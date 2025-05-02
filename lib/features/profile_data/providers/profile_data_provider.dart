@@ -1,6 +1,7 @@
 import 'package:buildconnect/features/auth/providers/auth_service_provider.dart';
 import 'package:buildconnect/features/auth/services/auth_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:buildconnect/features/profile_data/providers/profile_data_service_provider.dart';
 import 'package:buildconnect/features/profile_data/services/profile_data_service.dart';
 import 'package:buildconnect/models/profile_data/profile_data_model.dart';
@@ -122,4 +123,11 @@ class ProfileDataNotifier extends _$ProfileDataNotifier {
 
     return updatedData;
   }
+}
+
+
+@Riverpod(keepAlive: true)
+Future<ProfileData?> profileDataByUserId(Ref ref, String userId) async {
+  final profileDataService = ref.watch(profileDataServiceProvider);
+  return profileDataService.getProfileData(userId);
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:buildconnect/models/app_user/app_user_model.dart';
 import 'package:buildconnect/features/auth/services/auth_service.dart';
@@ -15,7 +16,6 @@ class Auth extends _$Auth {
   FutureOr<AppUser?> build() async {
     _authService = ref.watch(authServiceProvider);
     _profileDataNotifier = ref.read(profileDataNotifierProvider.notifier);
-
 
     if (!_authService.isLoggedIn) {
       return null;
@@ -36,11 +36,18 @@ class Auth extends _$Auth {
     }
   }
 
+  void invalidateProviders() {
+    debugPrint('%%%%%%%%%%%%%%%%%Invalidating providers');
+    ref.invalidate(profileDataNotifierProvider);
+    ref.invalidate(profileDataByUserIdProvider);
+  }
+
   Future<void> signOut() async {
     state = const AsyncLoading();
     await _authService.signOut();
 
-    await _profileDataNotifier.clearProfileData();
+    // await _profileDataNotifier.clearProfileData();
+    invalidateProviders();
     state = const AsyncData(null);
   }
 

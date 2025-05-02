@@ -9,6 +9,7 @@ import 'package:buildconnect/screens/home/home_screen.dart';
 
 //profile
 import 'package:buildconnect/screens/profile/profile_edit/profile_edit_screen.dart';
+import 'package:buildconnect/screens/profile/profile_view/profile_view_screen.dart';
 
 // import 'package:flutter_masterclass/presentation/screens/home/home_screen.dart';
 // import 'package:flutter_masterclass/presentation/screens/loading/loading_screen.dart';
@@ -50,6 +51,16 @@ GoRouter router(Ref ref) {
         path: '/profile_edit',
         name: 'profile_edit',
         builder: (context, state) => const ProfileEditScreen(),
+      ),
+      GoRoute(
+        path: '/profile_view/:userId',
+        name: 'profile_view',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId'];
+          return ProfileViewScreen(
+            userId: userId,
+          );
+        },
       ),
       // GoRoute(
       //   path: '/location',
