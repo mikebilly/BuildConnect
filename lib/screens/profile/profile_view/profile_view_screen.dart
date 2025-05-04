@@ -1,3 +1,4 @@
+import 'package:buildconnect/screens/profile/profile_view/widgets/profile_view_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
@@ -32,8 +33,14 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
             return const Center(child: Text('No profile data found'));
           } else {
             return SingleChildScrollView(
-              child: Center(
-                child: Text('Profile Data: ${profileData.toString()}'),
+              // child: Center(
+                // child: Text('Profile Data: ${profileData.toString()}'),
+              // ),
+
+              child: Column(
+                children: [
+                  ProfileViewHeader(profileData: profileData),
+                ],
               ),
             );
           }

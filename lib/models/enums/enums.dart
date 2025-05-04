@@ -27,6 +27,13 @@ enum ProfileType {
     ProfileType.constructionTeam => SupabaseConstants.constructionTeamProfilesTable,
     ProfileType.supplier => SupabaseConstants.supplierProfilesTable,
   };
+
+  IconData get icon => switch (this) {
+    ProfileType.architect => Icons.architecture,
+    ProfileType.contractor => Icons.business,
+    ProfileType.constructionTeam => Icons.group_work,
+    ProfileType.supplier => Icons.store,
+  };
 }
 
 @MappableEnum()
