@@ -26,7 +26,11 @@ Widget buildTextFormField({
 }) {
   return TextFormField(
     controller: controller,
-    decoration: InputDecoration(labelText: labelText, hintText: hintText, suffixIcon: suffixIcon),
+    decoration: InputDecoration(
+      labelText: labelText,
+      hintText: hintText,
+      suffixIcon: suffixIcon,
+    ),
     maxLines: maxLines,
     inputFormatters: inputFormatters,
   );
@@ -43,13 +47,14 @@ Widget buildDrowndownButtonFormField<T>({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(title ?? ((selectedValue as dynamic).title), style: TextStyle(fontWeight: FontWeight.bold)),
+      Text(
+        title ?? ((selectedValue as dynamic).title),
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
       SizedBox(height: gap),
       DropdownButtonFormField<T>(
         value: selectedValue,
-        decoration: InputDecoration(
-          labelText: labelText,
-        ),
+        decoration: InputDecoration(labelText: labelText),
         items:
             values.map((v) {
               return DropdownMenuItem<T>(
@@ -141,7 +146,10 @@ Widget buildSlider({
           },
           decoration: InputDecoration(
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 8,
+            ),
           ),
         ),
       ),
@@ -150,8 +158,6 @@ Widget buildSlider({
     ],
   );
 }
-
-
 
 Widget buildFilterChip<T>({
   double spacing = 5.0,
@@ -164,7 +170,10 @@ Widget buildFilterChip<T>({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(title ?? (values as dynamic).first.title, style: TextStyle(fontWeight: FontWeight.bold)),
+      Text(
+        title ?? (values as dynamic).first.title,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
       Wrap(
         spacing: spacing,
         runSpacing: runSpacing,

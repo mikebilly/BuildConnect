@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+// import 'package:buildconnect/shared/common_widgets.dart';
 import 'package:buildconnect/features/auth/providers/auth_provider.dart';
+import 'package:buildconnect/screens/home/tabs/feed_screen.dart';
+import 'package:buildconnect/screens/home/tabs/hometab_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -10,7 +13,22 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   Future<void> _signOut() async {
     final authNotifier = ref.read(authProvider.notifier);
     await authNotifier.signOut();
@@ -51,17 +69,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             },
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [Tab(text: 'Home'), Tab(text: 'Feeds')],
+          labelColor: Colors.white,
+          indicatorColor: Colors.white,
+          unselectedLabelColor: const Color.fromARGB(128, 255, 255, 255),
+        ),
       ),
       body: auth.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (user) {
-          // if (user == null) {
-          //   _navigateToLogin();
-          //   return const SizedBox.shrink();
-          // }
-
-          return Center(child: Text('$auth'));
+          return TabBarView(
+            controller: _tabController,
+            children: const [HomeTabScreen(), FeedScreen()],
+          );
+          // return Center(child: Text('$auth'));
         },
       ),
       floatingActionButton: FloatingActionButton.extended(

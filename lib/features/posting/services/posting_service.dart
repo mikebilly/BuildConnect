@@ -22,9 +22,32 @@ class PostingService {
 
   PostingService(this._client);
 
-  Future<PostModel> createPost({required PostModel postModel}) async {
+  Future<PostModel> createNewPost({required PostModel postModel}) async {
     final data = postModel.toJson();
     final response = await _client.from('posts').insert(data).select();
     return PostModelMapper.fromMap(response[0]);
+  }
+
+  Future<List<PostModel>> fetchAllPosts() async {
+    final response = await _client
+        .from(SupabaseConstants.postsTable)
+        .select()
+        .order('created_at', ascending: false);
+
+    return (response as List).map((e) => PostModelMapper.fromMap(e)).toList();
+  }
+
+  Future<void> deleteJobPosting(String postId) async {
+    await _client.from(SupabaseConstants.postsTable).delete().eq('id', postId);
+  }
+
+  Future<void> toggleJobPostingActive(String jobPostingId) async {
+    final response = await _client
+        .from(SupabaseConstants.postsTable)
+        .update({'is_active': true})
+        .eq('id', jobPostingId);
+    if (response.error != null) {
+      throw Exception('Failed to toggle job posting active status');
+    }
   }
 }

@@ -1,6 +1,8 @@
 import 'package:buildconnect/features/posting/providers/posting_provider.dart';
 import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
 import 'package:buildconnect/shared/common_widgets.dart';
+import 'package:buildconnect/shared/widgets/add_chips_widget.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:buildconnect/models/enums/enums.dart';
@@ -20,6 +22,24 @@ class _PostScreenState extends ConsumerState<PostScreen> {
 
   /// Local states
   JobPostingType _jobPostingType = JobPostingType.values.first;
+  String _jobTitle = "";
+  final _jobTitleController = TextEditingController();
+
+  String _location = "";
+  final _locationController = TextEditingController();
+
+  String _description = "";
+  final _descriptionController = TextEditingController();
+
+  DateTime? _deadline;
+  final _deadlineController = TextEditingController();
+
+  final TextEditingController _requiredSkillsController =
+      TextEditingController();
+  List<String> _requiredSkillsList = [];
+
+  double _budget = 1;
+  final _budgetController = TextEditingController(text: "1");
 
   ///
 
@@ -45,15 +65,37 @@ class _PostScreenState extends ConsumerState<PostScreen> {
     }
   }
 
-  // Future<void> _createPost() async {
-  //   final newPostModel = PostModel(
+  Future<void> _submit() async {
+    final newPostModel = PostModel(
+      // authorId: _postingNotifier.authorId,
+      authorId: "vanhID",
+      title: _jobTitleController.text,
+      location: _locationController.text,
+      description: _descriptionController.text,
+      budget: _budget,
+      deadline: _deadline ?? DateTime.now(),
+      requiredSkills: _requiredSkillsList,
+      jobPostingType: _jobPostingType,
+    );
+    print(newPostModel);
 
-  //   );
-
-  //   await _postingNotifier.createPost(
-  //     postingModel: newPostModel,
-  //   );
-  // }
+    // try {
+    //   await _postingNotifier.createNewPost(newPostModel);
+    //   print(newPostModel);
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Post created successfully')),
+    //     );
+    //   }
+    // } catch (e) {
+    //   print("Error: $e");
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(
+    //       context,
+    //     ).showSnackBar(SnackBar(content: Text('Failed to create post: $e')));
+    //   }
+    // }
+  }
 
   @override
   void dispose() {
@@ -99,7 +141,121 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                   },
                 ),
               ),
+
+              heightWidget(
+                widget: buildTextFormField(
+                  controller: _jobTitleController,
+                  labelText: 'Job Title',
+                  maxLines: 1,
+                  hintText: 'Enter the title of the job posting',
+                ),
+              ),
+              heightWidget(
+                widget: buildTextFormField(
+                  controller: _locationController,
+                  labelText: 'Job Location',
+                  maxLines: 1,
+                  hintText: 'Enter the Location of the job ',
+                ),
+              ),
+              heightWidget(
+                widget: buildTextFormField(
+                  controller: _descriptionController,
+                  labelText: 'Job Description',
+                  maxLines: 3,
+                  hintText: 'Enter the Description of the job posting',
+                ),
+              ),
+              heightWidget(
+                widget: buildSlider(
+                  controller: _budgetController,
+                  labelText: 'Job Budget',
+                  value: 1000,
+                  min: 1000,
+                  max: 10000000000,
+                  unit: "VND",
+                  onChanged: (val) {
+                    setState(() {
+                      _budget = val.roundToDouble();
+                    });
+                  },
+                ),
+              ),
+              heightWidget(
+                widget: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Job Deadline'),
+                    const SizedBox(height: 8),
+                    InkWell(
+                      onTap: () async {
+                        final now = DateTime.now();
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: _deadline ?? now,
+                          firstDate: now,
+                          lastDate: DateTime(now.year + 10),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _deadline = picked;
+                            _deadlineController.text =
+                                "${picked.day}/${picked.month}/${picked.year}";
+                          });
+                        }
+                      },
+                      child: IgnorePointer(
+                        child: TextFormField(
+                          controller: _deadlineController,
+                          decoration: const InputDecoration(
+                            hintText: 'Pick a deadline',
+                            suffixIcon: Icon(Icons.calendar_today),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // heightWidget(
+              //   widget: buildTextFormField(
+              //     controller: _requiredSkillsController,
+              //     labelText: 'Job skill',
+              //     maxLines: 1,
+              //     hintText: 'Enter the Job skill of the job posting',
+              //   ),
+              // ),
+              heightWidget(
+                widget: SkillInputField(
+                  title: 'Required Skills (Optional)',
+                  buttonColor: Colors.greenAccent,
+                  chipTextColor: Colors.white,
+                  chipBackgroundColor: const Color.fromARGB(
+                    255,
+                    8,
+                    218,
+                    92,
+                  ).withAlpha((0.6 * 255).round()),
+                  onSkillListChanged: (_requiredSkillsList) {
+                    print('Danh sách kỹ năng: $_requiredSkillsList');
+                  },
+                ),
+              ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () {
+              _submit();
+            },
+            child: const Text("Save Post"),
           ),
         ),
       ),

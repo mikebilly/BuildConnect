@@ -17,6 +17,7 @@ import 'package:buildconnect/screens/profile/profile_edit/profile_edit_screen.da
 
 //posting
 import 'package:buildconnect/screens/posts/post_screen.dart';
+import 'package:buildconnect/screens/posts/detail_post_screen.dart';
 part 'router.g.dart';
 
 @riverpod
@@ -58,6 +59,14 @@ GoRouter router(Ref ref) {
         name: 'post',
         builder: (context, state) => const PostScreen(),
       ),
+      GoRoute(
+        path: '/job-posting/view/:jobPostingId',
+        builder: (context, state) {
+          final jobPostingId = state.pathParameters['jobPostingId']!;
+          return JobPostingViewScreen(jobPostingId: jobPostingId);
+        },
+      ),
+
       // GoRoute(
       //   path: '/location',
       //   name: 'location',
