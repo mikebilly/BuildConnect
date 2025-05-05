@@ -16,6 +16,12 @@ class AppColors {
 }
 
 class AppTextStyles {
+  static TextStyle title = const TextStyle(
+    fontSize: 30,
+    fontWeight: FontWeight.bold,
+    height: 1.4,
+  );
+
   static TextStyle heading = const TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.bold,

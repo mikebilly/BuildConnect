@@ -44,7 +44,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 error: (e, _) => null,
                 data: (user) {
                   if (user != null) {
-                    context.push('/profile_view/${user.id}');
+                    context.push('/profile/view/${user.id}');
                   }
                   else {
                     context.push('/login');

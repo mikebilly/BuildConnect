@@ -48,12 +48,12 @@ GoRouter router(Ref ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
-        path: '/profile_edit',
+        path: '/profile/edit',
         name: 'profile_edit',
         builder: (context, state) => const ProfileEditScreen(),
       ),
       GoRoute(
-        path: '/profile_view/:userId',
+        path: '/profile/view/:userId',
         name: 'profile_view',
         builder: (context, state) {
           final userId = state.pathParameters['userId'];
