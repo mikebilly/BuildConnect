@@ -27,6 +27,13 @@ enum ProfileType {
     ProfileType.constructionTeam => SupabaseConstants.constructionTeamProfilesTable,
     ProfileType.supplier => SupabaseConstants.supplierProfilesTable,
   };
+
+  IconData get icon => switch (this) {
+    ProfileType.architect => Icons.architecture,
+    ProfileType.contractor => Icons.business,
+    ProfileType.constructionTeam => Icons.people,
+    ProfileType.supplier => Icons.inventory,
+  };
 }
 
 @MappableEnum()
@@ -70,6 +77,35 @@ enum Domain {
     Domain.cultural => 'Cultural',
     Domain.infrastructure => 'Infrastructure',
     Domain.renovation => 'Renovation',
+  };
+}
+
+@MappableEnum()
+enum City {
+  hanoi,
+  hoChiMinh,
+  daNang,
+  haiPhong,
+  canTho,
+  ninhBinh,
+  hue,
+  daLat,
+  bienHoa,
+  vungTau;
+
+  String get title => 'City';
+
+  String get label => switch (this) {
+    City.hanoi => 'Hà Nội',
+    City.hoChiMinh => 'TP. Hồ Chí Minh',
+    City.daNang => 'Đà Nẵng',
+    City.haiPhong => 'Hải Phòng',
+    City.canTho => 'Cần Thơ',
+    City.ninhBinh => 'Ninh Bình',
+    City.hue => 'Huế',
+    City.daLat => 'Đà Lạt',
+    City.bienHoa => 'Biên Hòa',
+    City.vungTau => 'Vũng Tàu',
   };
 }
 

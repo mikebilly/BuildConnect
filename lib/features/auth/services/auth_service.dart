@@ -26,15 +26,19 @@ class AuthService implements IAuthService {
         email: email,
         password: password,
       );
-      if (response.user != null) {
-        debugPrint("User signed in: ${response.user!.email}");
-      } else {
+
+      if (response.user == null) {
         debugPrint('Sign in: No user returned');
+        throw AuthException('No user returned from sign in');
       }
+
+      debugPrint("User signed in: ${response.user!.email}");
     } on AuthException catch (error) {
       debugPrint('Sign in error: ${error.message}');
+      rethrow;
     } catch (error) {
-      debugPrint('Unexpected error: $error');
+      debugPrint('Unexpected error during sign in: $error');
+      rethrow;
     }
   }
 
@@ -45,15 +49,19 @@ class AuthService implements IAuthService {
         email: email,
         password: password,
       );
-      if (response.user != null) {
-        debugPrint("User signed up: ${response.user!.email}");
-      } else {
+
+      if (response.user == null) {
         debugPrint('Sign up: No user returned');
+        throw AuthException('No user returned from sign up');
       }
+
+      debugPrint("User signed up: ${response.user!.email}");
     } on AuthException catch (error) {
       debugPrint('Sign up error: ${error.message}');
+      rethrow;
     } catch (error) {
-      debugPrint('Unexpected error: $error');
+      debugPrint('Unexpected error during sign up: $error');
+      rethrow;
     }
   }
 
@@ -64,8 +72,10 @@ class AuthService implements IAuthService {
       debugPrint('User signed out');
     } on AuthException catch (error) {
       debugPrint('Sign out error: ${error.message}');
+      rethrow;
     } catch (error) {
-      debugPrint('Unexpected error: $error');
+      debugPrint('Unexpected error during sign out: $error');
+      rethrow;
     }
   }
 
@@ -87,18 +97,21 @@ class AuthService implements IAuthService {
   @override
   Future<AppUser?> fetchAppUser() async {
     final user = currentUser;
-    if (user == null) {
+    if (user == null) return null;
+
+    try {
+      final data = await _supabase
+          .from(SupabaseConstants.usersTable)
+          .select('id, email, created_at')
+          .eq('id', user.id)
+          .single();
+
+      debugPrint('🟡 Supabase user data: $data');
+
+      return AppUserMapper.fromMap(data);
+    } catch (error) {
+      debugPrint('Error fetching app user: $error');
       return null;
     }
-
-    final data = await _supabase
-      .from(SupabaseConstants.usersTable)
-      .select('id, email, created_at')
-      .eq('id', user.id)
-      .single();
-
-    debugPrint('🟡 Supabase user data: $data');
-    
-    return AppUserMapper.fromMap(data);
   }
 }

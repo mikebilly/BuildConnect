@@ -10,3 +10,4 @@ AuthService authService(Ref ref) {
   final supabase = ref.watch(supabaseClientProvider);
   return AuthService(supabase);
 }
+

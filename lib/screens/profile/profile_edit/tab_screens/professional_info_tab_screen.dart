@@ -13,19 +13,30 @@ class ProfessionalInfoTabScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ProfessionalInfoTabScreen> createState() =>
-      _ProfessionalInfoTabScreenState();
+      ProfessionalInfoTabScreenState();
 }
 
-class _ProfessionalInfoTabScreenState
+class ProfessionalInfoTabScreenState
     extends ConsumerState<ProfessionalInfoTabScreen> {
+  final architectProfileKey = GlobalKey<ArchitectProfileEditScreenState>();
+  final contractorProfileKey = GlobalKey<ContractorProfileEditScreenState>();
+  final constructionTeamKey = GlobalKey<ConstructionTeamProfileEditScreenState>();
+  final supplierProfileKey = GlobalKey<SupplierProfileEditScreenState>();
+
+  Future<void> dumpFromControllers() async {
+    await architectProfileKey.currentState?.dumpFromControllers();
+    await contractorProfileKey.currentState?.dumpFromControllers();
+    await constructionTeamKey.currentState?.dumpFromControllers();
+    await supplierProfileKey.currentState?.dumpFromControllers();
+  }
 
   @override
   Widget build(BuildContext context) {
     return switch (widget.profileType as ProfileType) {
-      ProfileType.architect => const ArchitectProfileEditScreen(),
-      ProfileType.contractor => const ContractorProfileEditScreen(),
-      ProfileType.constructionTeam => const ConstructionTeamProfileEditScreen(),
-      ProfileType.supplier => const SupplierProfileEditScreen(),
+      ProfileType.architect => ArchitectProfileEditScreen(key: architectProfileKey),
+      ProfileType.contractor => ContractorProfileEditScreen(key: contractorProfileKey),
+      ProfileType.constructionTeam => ConstructionTeamProfileEditScreen(key: constructionTeamKey),
+      ProfileType.supplier => SupplierProfileEditScreen(key: supplierProfileKey),
     };
   }
 }

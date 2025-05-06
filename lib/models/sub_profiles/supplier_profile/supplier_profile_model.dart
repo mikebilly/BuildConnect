@@ -3,7 +3,7 @@ import 'package:buildconnect/models/enums/enums.dart';
 
 part 'supplier_profile_model.mapper.dart';
 
-@MappableClass()
+@MappableClass(caseStyle: CaseStyle.snakeCase)
 class SupplierProfile with SupplierProfileMappable {
   final String? profileId;
 

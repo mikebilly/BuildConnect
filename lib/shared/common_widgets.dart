@@ -1,6 +1,7 @@
 export 'package:buildconnect/shared/widgets/form_widgets.dart';
-import 'package:buildconnect/core/theme/theme.dart';
+export 'package:buildconnect/shared/widgets/profile_view_widgets.dart';
 
+import 'package:buildconnect/core/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 Widget buildTabBar({
@@ -48,43 +49,39 @@ class CustomButton extends StatelessWidget {
           elevation: isPrimary ? 2 : 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
-            side:
-                isPrimary
-                    ? BorderSide.none
-                    : BorderSide(color: AppColors.primary),
+            side: isPrimary
+                ? BorderSide.none
+                : BorderSide(color: AppColors.primary),
           ),
-          disabledBackgroundColor:
-              isPrimary
-                  ? AppColors.primary.withValues(alpha: 0.5)
-                  : Colors.transparent,
-          disabledForegroundColor:
-              isPrimary
-                  ? Colors.white.withValues(alpha: 0.7)
-                  : AppColors.primary.withValues(alpha: 0.5),
+          disabledBackgroundColor: isPrimary
+              ? AppColors.primary.withAlpha(128)
+              : Colors.transparent,
+          disabledForegroundColor: isPrimary
+              ? Colors.white.withAlpha(180)
+              : AppColors.primary.withAlpha(128),
         ),
-        child:
-            isLoading
-                ? SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      isPrimary ? Colors.white : AppColors.primary,
-                    ),
+        child: isLoading
+            ? SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    isPrimary ? Colors.white : AppColors.primary,
                   ),
-                )
-                : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (icon != null) ...[
-                      Icon(icon, size: 18),
-                      const SizedBox(width: 8),
-                    ],
-                    Text(text),
-                  ],
                 ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, size: 18),
+                    const SizedBox(width: 8),
+                  ],
+                  Text(text),
+                ],
+              ),
       ),
     );
   }

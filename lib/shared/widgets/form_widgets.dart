@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 Widget heightWidget({required Widget widget, double height = 16.0}) {
   return Column(
@@ -63,6 +64,72 @@ Widget buildDrowndownButtonFormField<T>({
               );
             }).toList(),
         onChanged: onChanged,
+      ),
+    ],
+  );
+}
+
+Widget buildDropdownSearch<T>({
+  required T selectedValue,
+  required List<T> values,
+  required void Function(T?) onChanged,
+  String? title,
+  String? labelText,
+  double gap = 0,
+  bool boldTitle = true,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (title != null) ...[
+        if (title != '')
+          Text(
+            title,
+            style: boldTitle ? TextStyle(fontWeight: FontWeight.bold) : null,
+          ),
+        SizedBox(height: gap),
+      ] else ...[
+        Text(
+          (values.first as dynamic).title,
+          style: boldTitle ? TextStyle(fontWeight: FontWeight.bold) : null,
+        ),
+        SizedBox(height: gap),
+      ],
+      DropdownSearch<T>(
+        selectedItem: selectedValue,
+        items: (filter, scrollController) => values,
+        onChanged: onChanged,
+        itemAsString: (item) => (item as dynamic).label,
+        compareFn:
+            (item1, item2) => (item1 as dynamic).id == (item2 as dynamic).id,
+        popupProps: PopupProps.menu(
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            decoration: InputDecoration(
+              labelText: "Search",
+              border: OutlineInputBorder(),
+            ),
+            // Enable real-time search
+            onChanged: (value) {
+              // The search happens automatically as you type
+            },
+          ),
+          // Make it scrollable with a fixed height
+          fit: FlexFit.loose,
+          constraints: BoxConstraints(maxHeight: 300),
+          // Enable scrolling
+          scrollbarProps: ScrollbarProps(
+            thickness: 7,
+            radius: Radius.circular(10),
+            interactive: true,
+          ),
+        ),
+        decoratorProps: DropDownDecoratorProps(
+          decoration: InputDecoration(
+            labelText: labelText,
+            border: OutlineInputBorder(),
+          ),
+        ),
       ),
     ],
   );

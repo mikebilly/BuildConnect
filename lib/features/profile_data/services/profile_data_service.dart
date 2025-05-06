@@ -4,6 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:buildconnect/models/enums/enums.dart';
 import 'package:buildconnect/core/constants/supabase_constants.dart';
 import 'package:buildconnect/models/profile/profile_model.dart';
+import 'package:buildconnect/models/shared/shared_models.dart';
+
+import 'package:buildconnect/models/sub_profiles/architect_profile/architect_profile_model.dart';
+import 'package:buildconnect/models/sub_profiles/contractor_profile/contractor_profile_model.dart';
+import 'package:buildconnect/models/sub_profiles/supplier_profile/supplier_profile_model.dart';
+import 'package:buildconnect/models/sub_profiles/construction_team_profile/construction_team_profile_model.dart';
 
 abstract class IProfileDataService {
   Future<void> upsertProfileData(String userId, ProfileData profileData);
@@ -12,78 +18,402 @@ abstract class IProfileDataService {
 
 class ProfileDataService implements IProfileDataService {
   final SupabaseClient _supabase;
-
   ProfileDataService(this._supabase);
 
-  Future<void> upsertProfile(String userId, Profile profile) async {
+  // String? get userId => _supabase.auth.currentUser?.id;
+
+  Future<Profile> upsertProfile(String? userId, Profile profile) async {
     debugPrint('========================= upsertProfile called');
     debugPrint(
       '========================= attempting to upsertProfile: $userId, profile: $profile',
     );
-    final profileMap = profile.toMap();
-    debugPrint('========================= UPSERT profileMap $profileMap');
 
-    try {
-      final response =
-          await _supabase
-              .from(SupabaseConstants.profilesTable)
-              .upsert(profileMap, onConflict: 'user_id')
-              .select();
-    } on PostgrestException catch (e) {
-      debugPrint('Error at upsert PROFILE: $e');
-      throw Exception('Error at upsert PROFILE: $e');
-    } catch (e) {
-      debugPrint('Error at upsert PROFILE: $e');
+    if (userId == null) {
+      throw Exception('Error at upsert Profile: User ID is null');
     }
+
+    final profileResponse =
+        await _supabase
+            .from(SupabaseConstants.profilesTable)
+            .upsert({
+              'user_id': userId,
+              'display_name': profile.displayName,
+              'profile_type': profile.profileType.name,
+              'bio': profile.bio,
+              'availability_status': profile.availabilityStatus.name,
+              'years_of_experience': profile.yearsOfExperience,
+              'working_mode': profile.workingMode.name,
+              'business_entity_type': profile.businessEntityType.name,
+              'main_city': profile.mainCity.name,
+              'main_address': profile.mainAddress,
+            }, onConflict: 'user_id')
+            .select()
+            .maybeSingle();
+
+    debugPrint('🟡 Supabase upsert response: $profileResponse');
+    if (profileResponse == null) {
+      throw Exception('🛑 Upsert returned null. Profile not saved.');
+    }
+
+    final profileId = profileResponse['id'];
+    if (profileId == null) {
+      throw Exception('Error at upsert Profile: Profile ID is null');
+    }
+
+    // 🔄 Replace old contacts
+    await _supabase
+        .from(SupabaseConstants.profileContactsTable)
+        .delete()
+        .eq('profile_id', profileId);
+
+    final contacts = profile.contacts;
+    final contactsInserts =
+        contacts
+            .map(
+              (contact) => {
+                'profile_id': profileId,
+                'contact': contact.toMap(),
+              },
+            )
+            .toList();
+
+    if (contactsInserts.isNotEmpty) {
+      await _supabase
+          .from(SupabaseConstants.profileContactsTable)
+          .insert(contactsInserts);
+    }
+
+    // 🔄 Replace old domains
+    await _supabase
+        .from(SupabaseConstants.profileDomainsTable)
+        .delete()
+        .eq('profile_id', profileId);
+    final domains = profile.domains;
+    final domainInserts =
+        domains
+            .map((domain) => {'profile_id': profileId, 'domain': domain.name})
+            .toList();
+    if (domainInserts.isNotEmpty) {
+      await _supabase
+          .from(SupabaseConstants.profileDomainsTable)
+          .insert(domainInserts);
+    }
+
+    // 🔄 Replace old payment methods
+    await _supabase
+        .from(SupabaseConstants.profilePaymentMethodsTable)
+        .delete()
+        .eq('profile_id', profileId);
+    final paymentMethods = profile.paymentMethods;
+    final paymentInserts =
+        paymentMethods
+            .map(
+              (method) => {
+                'profile_id': profileId,
+                'payment_method': method.name,
+              },
+            )
+            .toList();
+    if (paymentInserts.isNotEmpty) {
+      await _supabase.from('profile_payment_methods').insert(paymentInserts);
+    }
+
+    await _supabase
+        .from(SupabaseConstants.profileOperatingAreasTable)
+        .delete()
+        .eq('profile_id', profileId);
+    final operatingAreas = profile.operatingAreas;
+    final operatingAreasInserts =
+        profile.operatingAreas
+            .map((city) => {'profile_id': profileId, 'city': city.name})
+            .toList();
+    if (operatingAreasInserts.isNotEmpty) {
+      await _supabase
+          .from(SupabaseConstants.profileOperatingAreasTable)
+          .insert(operatingAreasInserts);
+    }
+
+    // ✅ Return reconstructed Profile
+    final fullMap = {
+      ...profileResponse,
+      'contacts': contacts,
+      'domains': domains,
+      'payment_methods': paymentMethods,
+      'operating_areas': operatingAreas,
+    };
+
+    debugPrint('🟢 Supabase full map: $fullMap');
+    return ProfileMapper.fromMap(fullMap);
   }
 
-  Future<void> upsertSubProfile(String id, ProfileData profileData) async {
+  Future<void> upsertSubProfile(
+    String profileId,
+    ProfileData profileData,
+  ) async {
     debugPrint('========================= upsertSubProfile called');
 
-    final subProfileMap = profileData.subProfileMap;    
-    final subProfileTable = profileData.subProfileTable;
-
-    debugPrint(
-      '========================= UPSERT subProfileMap $subProfileMap',
-    );
-
     try {
-      final response =
-          await _supabase
-              .from(subProfileTable)
-              .upsert(subProfileMap, onConflict: 'profile_id')
-              .select();
+      switch (profileData.profile.profileType) {
+        case ProfileType.architect:
+          final architect = profileData.architectProfile;
+          if (architect == null) return;
 
-      debugPrint('========================= UPSERT response $response');
-    } on PostgrestException catch (e) {
-      debugPrint('Error at upsert SUBPROFILE: $e');
-      throw Exception('Error at upsert SUBPROFILE: $e');
+          await _supabase.from('architect_profiles').upsert({
+            'profile_id': profileId,
+            'architect_role': architect.architectRole.name,
+            'design_philosophy': architect.designPhilosophy,
+          }, onConflict: 'profile_id');
+
+          await _supabase
+              .from('architect_design_styles')
+              .delete()
+              .eq('profile_id', profileId);
+
+          final designStyleInserts =
+              architect.designStyles
+                  .map(
+                    (style) => {
+                      'profile_id': profileId,
+                      'design_style': style.name,
+                    },
+                  )
+                  .toList();
+
+          if (designStyleInserts.isNotEmpty) {
+            await _supabase
+                .from('architect_design_styles')
+                .insert(designStyleInserts);
+          }
+
+          await _supabase
+              .from('architect_portfolio_links')
+              .delete()
+              .eq('profile_id', profileId);
+
+          final linkInserts =
+              architect.portfolioLinks
+                  .map(
+                    (url) => {'profile_id': profileId, 'portfolio_link': url},
+                  )
+                  .toList();
+
+          if (linkInserts.isNotEmpty) {
+            await _supabase
+                .from('architect_portfolio_links')
+                .insert(linkInserts);
+          }
+
+          break;
+
+        case ProfileType.contractor:
+          final contractor = profileData.contractorProfile;
+          if (contractor == null) return;
+
+          await _supabase.from('contractor_profiles').upsert({
+            'profile_id': profileId,
+          }, onConflict: 'profile_id');
+
+          await _supabase
+              .from('contractor_services')
+              .delete()
+              .eq('profile_id', profileId);
+
+          final contractorServices =
+              contractor.services
+                  .map((s) => {'profile_id': profileId, 'service_type': s.name})
+                  .toList();
+
+          if (contractorServices.isNotEmpty) {
+            await _supabase
+                .from('contractor_services')
+                .insert(contractorServices);
+          }
+
+          break;
+
+        case ProfileType.supplier:
+          final supplier = profileData.supplierProfile;
+          if (supplier == null) return;
+
+          await _supabase.from('supplier_profiles').upsert({
+            'profile_id': profileId,
+            'supplier_type': supplier.supplierType.name,
+            'delivery_radius': supplier.deliveryRadius,
+          }, onConflict: 'profile_id');
+
+          await _supabase
+              .from('supplier_material_categories')
+              .delete()
+              .eq('profile_id', profileId);
+
+          final materials =
+              supplier.materialCategories
+                  .map(
+                    (m) => {
+                      'profile_id': profileId,
+                      'material_category': m.name,
+                    },
+                  )
+                  .toList();
+
+          if (materials.isNotEmpty) {
+            await _supabase
+                .from('supplier_material_categories')
+                .insert(materials);
+          }
+
+          break;
+
+        case ProfileType.constructionTeam:
+          final team = profileData.constructionTeamProfile;
+          if (team == null) return;
+
+          await _supabase.from('construction_team_profiles').upsert({
+            'profile_id': profileId,
+            'representative_name': team.representativeName,
+            'representative_phone': team.representativePhone,
+            'team_size': team.teamSize,
+          }, onConflict: 'profile_id');
+
+          await _supabase
+              .from('construction_team_services')
+              .delete()
+              .eq('profile_id', profileId);
+
+          final teamServices =
+              team.services
+                  .map((s) => {'profile_id': profileId, 'service_type': s.name})
+                  .toList();
+
+          if (teamServices.isNotEmpty) {
+            await _supabase
+                .from('construction_team_services')
+                .insert(teamServices);
+          }
+
+          break;
+      }
     } catch (e) {
-      debugPrint('Error at upsert SUBPROFILE: $e');
+      debugPrint('❌ Error at upsert SUBPROFILE: $e');
+      throw Exception('Error at upsert SUBPROFILE: $e');
     }
   }
 
-  Future<Profile> fetchProfile(String userId) async {
-    debugPrint('========================= fetchProfile called');
-    debugPrint('========================= userId: $userId');
+  Future<Object> fetchSubProfile(
+    String profileId,
+    ProfileType profileType,
+  ) async {
+    debugPrint('========================= fetchSubProfile called');
+    debugPrint('========================= profileId: $profileId');
+    debugPrint('========================= profileType: $profileType');
 
     try {
-      final profileRes = await _supabase
-          .from(SupabaseConstants.profilesTable)
-          .select()
-          .eq('user_id', userId)
-          .single();
+      switch (profileType) {
+        case ProfileType.architect:
+          final architect =
+              await _supabase
+                  .from(SupabaseConstants.architectProfilesTable)
+                  .select()
+                  .eq('profile_id', profileId)
+                  .maybeSingle();
 
-      debugPrint(
-        '========================= ProfileDataService fetchProfile: $profileRes',
-      );
-      return ProfileMapper.fromMap(profileRes);
-    } on PostgrestException catch (e) {
-      debugPrint('Error at fetch: $e');
-      return Profile.empty();
+          if (architect == null) {
+            debugPrint('Architect profile is null');
+            return ArchitectProfile.empty();
+          }
+
+          final designStylesRes = await _supabase
+              .from(SupabaseConstants.architectDesignStylesTable)
+              .select()
+              .eq('profile_id', profileId);
+
+          final portfolioLinksRes = await _supabase
+              .from(SupabaseConstants.architectPortfolioLinksTable)
+              .select()
+              .eq('profile_id', profileId);
+
+          return ArchitectProfileMapper.fromMap({
+            ...architect,
+            'design_styles':
+                designStylesRes.map((e) => e['design_style']).toList(),
+            'portfolio_links':
+                portfolioLinksRes.map((e) => e['portfolio_link']).toList(),
+          });
+
+        case ProfileType.contractor:
+          final contractor =
+              await _supabase
+                  .from(SupabaseConstants.contractorProfilesTable)
+                  .select()
+                  .eq('profile_id', profileId)
+                  .maybeSingle();
+          if (contractor == null) {
+            debugPrint('Contractor profile is null');
+            return ContractorProfile.empty();
+          }
+
+          final servicesRes = await _supabase
+              .from(SupabaseConstants.contractorServicesTable)
+              .select()
+              .eq('profile_id', profileId);
+
+          return ContractorProfileMapper.fromMap({
+            ...contractor,
+            'services': servicesRes.map((e) => e['service_type']).toList(),
+          });
+
+        case ProfileType.supplier:
+          final supplier =
+              await _supabase
+                  .from(SupabaseConstants.supplierProfilesTable)
+                  .select()
+                  .eq('profile_id', profileId)
+                  .maybeSingle();
+
+          if (supplier == null) {
+            debugPrint('Supplier profile is null');
+            return SupplierProfile.empty();
+          }
+
+          final materialCategoriesRes = await _supabase
+              .from(SupabaseConstants.supplierMaterialCategoriesTable)
+              .select()
+              .eq('profile_id', profileId);
+
+          return SupplierProfileMapper.fromMap({
+            ...supplier,
+            'material_categories':
+                materialCategoriesRes
+                    .map((e) => e['material_category'])
+                    .toList(),
+          });
+
+        case ProfileType.constructionTeam:
+          final constructionTeam =
+              await _supabase
+                  .from(SupabaseConstants.constructionTeamProfilesTable)
+                  .select()
+                  .eq('profile_id', profileId)
+                  .maybeSingle();
+
+          if (constructionTeam == null) {
+            debugPrint('Construction team profile is null');
+            return ConstructionTeamProfile.empty();
+          }
+
+          final servicesRes = await _supabase
+              .from(SupabaseConstants.constructionTeamServicesTable)
+              .select()
+              .eq('profile_id', profileId);
+
+          return ConstructionTeamProfileMapper.fromMap({
+            ...constructionTeam,
+            'services': servicesRes.map((e) => e['service_type']).toList(),
+          });
+      }
     } catch (e) {
-      debugPrint('Error at fetch: $e');
-      return Profile.empty();
+      debugPrint('Error at fetch SUBPROFILE: $e');
+      throw Exception('Error at fetch SUBPROFILE: $e');
     }
   }
 
@@ -111,10 +441,72 @@ class ProfileDataService implements IProfileDataService {
       throw Exception('Error at upsert ProfileData: ProfileData is null');
     }
 
-    await upsertProfile(userId, profileData.profile);
-    await upsertSubProfile(userId, profileData);
+    try {
+      final savedProfile = await upsertProfile(userId, profileData.profile);
+      await upsertSubProfile(savedProfile.id!, profileData);
+    } catch (e) {
+      debugPrint('Error at upsert Profile: $e');
+      throw Exception('Error at upsert Profile: $e');
+    }
+
+    // await upsertSubProfile(userId, profileData);
 
     // await Future.delayed(const Duration(seconds: 5));
+  }
+
+  Future<Profile?> fetchProfile(String userId) async {
+    debugPrint('========================= fetchProfile called');
+    final profileRes =
+        await _supabase
+            .from(SupabaseConstants.profilesTable)
+            .select('*, ${SupabaseConstants.profileContactsTable}(contact)')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+    if (profileRes == null) {
+      debugPrint('Fetched profile but is null <<');
+      return Profile.empty();
+    }
+
+    final contacts =
+        (profileRes['profile_contacts'] as List? ?? [])
+            .map(
+              (e) =>
+                  ContactMapper.fromMap(e['contact'] as Map<String, dynamic>),
+            )
+            .toList();
+
+    final domainsRes = await _supabase
+        .from(SupabaseConstants.profileDomainsTable)
+        .select()
+        .eq('profile_id', profileRes['id']);
+
+    final domains = domainsRes.map((e) => e['domain']).toList();
+
+    final paymentMethodsRes = await _supabase
+        .from(SupabaseConstants.profilePaymentMethodsTable)
+        .select()
+        .eq('profile_id', profileRes['id']);
+
+    final paymentMethods =
+        paymentMethodsRes.map((e) => e['payment_method']).toList();
+
+    final operatingAreasRes = await _supabase
+        .from(SupabaseConstants.profileOperatingAreasTable)
+        .select()
+        .eq('profile_id', profileRes['id']);
+
+    final operatingAreas = operatingAreasRes.map((e) => e['city']).toList();
+
+    final fullMap =
+        Map<String, dynamic>.from(profileRes)
+          ..['contacts'] = contacts
+          ..['domains'] = domains
+          ..['payment_methods'] = paymentMethods
+          ..['operating_areas'] = operatingAreas;
+
+    debugPrint('=⚪=======⚪=======⚪= ProfileDataService fetchProfile: $fullMap');
+    return ProfileMapper.fromMap(fullMap);
   }
 
   @override
@@ -122,7 +514,7 @@ class ProfileDataService implements IProfileDataService {
     // await Future.delayed(const Duration(seconds: 1));
 
     //
-    // debugPrint('========================= getProfileData called');
+    debugPrint('========================= getProfileData called');
     // final userId = _supabase.auth.currentUser?.id;
 
     if (userId == null) {
@@ -130,23 +522,77 @@ class ProfileDataService implements IProfileDataService {
       throw Exception('Error at fetch: User ID is null');
     }
 
-    try {
-      final profileDataRes =
-          await _supabase
-              .from(SupabaseConstants.profilesTable)
-              .select()
-              .eq('user_id', userId)
-              .single();
+    // try {
+    //   debugPrint('Hello!!');
+    //   final profileDataRes =
+    //       await _supabase
+    //           .from(SupabaseConstants.profilesTable)
+    //           .select()
+    //           .eq('user_id', userId)
+    //           .single();
 
-      debugPrint(
-        '========================= ProfileDataService getProfileData: $profileDataRes',
-      );
-      return ProfileDataMapper.fromMap(profileDataRes);
-    } on PostgrestException catch (e) {
-      debugPrint('Error at fetch: $e');
-      return ProfileData.empty();
+    //   debugPrint('');
+    //   debugPrint('');
+    //   debugPrint(
+    //     '%%%%%%%%%%%% *********============ ProfileDataService getProfileData: $profileDataRes',
+    //   );
+    //   debugPrint('');
+    //   debugPrint('');
+    //   // return ProfileDataMapper.fromMap(profileDataRes);
+    //   return ProfileData.empty();
+    // } on PostgrestException catch (e) {
+    //   debugPrint('Error at fetch ProfileData: $e');
+    //   return ProfileData.empty();
+    // } catch (e) {
+    //   debugPrint('Error at fetch ProfileData: $e');
+    //   return ProfileData.empty();
+    // }
+
+    try {
+      final fetchedProfile = await fetchProfile(userId);
+      if (fetchedProfile == null) {
+        debugPrint('❌ Error at fetch ProfileData: Profile is null');
+        return ProfileData.empty();
+      }
+
+      final profile = ProfileMapper.fromMap(fetchedProfile.toMap());
+
+      // Fetch subprofile depending on profile type
+      Object? fetchedSubProfile;
+      try {
+        fetchedSubProfile = await fetchSubProfile(
+          profile.id!,
+          profile.profileType,
+        );
+      } catch (e) {
+        debugPrint('⚠️ Failed to fetch subprofile: $e');
+        // Continue without throwing to return base profile
+      }
+
+      // Compose result
+      final profileData = switch (profile.profileType) {
+        ProfileType.architect => ProfileData(
+          profile: profile,
+          architectProfile: fetchedSubProfile as ArchitectProfile?,
+        ),
+        ProfileType.contractor => ProfileData(
+          profile: profile,
+          contractorProfile: fetchedSubProfile as ContractorProfile?,
+        ),
+        ProfileType.supplier => ProfileData(
+          profile: profile,
+          supplierProfile: fetchedSubProfile as SupplierProfile?,
+        ),
+        ProfileType.constructionTeam => ProfileData(
+          profile: profile,
+          constructionTeamProfile:
+              fetchedSubProfile as ConstructionTeamProfile?,
+        ),
+      };
+
+      return profileData;
     } catch (e) {
-      debugPrint('Error at fetch: $e');
+      debugPrint('❌ Error at fetch ProfileData: $e');
       return ProfileData.empty();
     }
   }

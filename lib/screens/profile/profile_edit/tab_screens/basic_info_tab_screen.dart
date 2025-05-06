@@ -5,16 +5,18 @@ import 'package:buildconnect/shared/common_widgets.dart';
 import 'package:buildconnect/models/enums/enums.dart';
 import 'package:flutter/scheduler.dart';
 
+import 'package:buildconnect/models/shared/shared_models.dart';
+
 import 'package:buildconnect/models/profile/profile_model.dart';
 
 class BasicInfoTabScreen extends ConsumerStatefulWidget {
   const BasicInfoTabScreen({super.key});
 
   @override
-  ConsumerState<BasicInfoTabScreen> createState() => _BasicInfoTabScreenState();
+  ConsumerState<BasicInfoTabScreen> createState() => BasicInfoTabScreenState();
 }
 
-class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
+class BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
   late final ProfileDataNotifier _profileDataNotifier;
 
   ////
@@ -30,6 +32,10 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
   final Set<Domain> _domains = {};
   final Set<PaymentMethod> _paymentMethods = {};
   BusinessEntityType _businessEntityType = BusinessEntityType.values.first;
+
+  City _mainCity = City.values.first;
+  final _mainAddress = TextEditingController();
+  final Set<City> _operatingAreasSet = {};
 
   ///
 
@@ -60,6 +66,10 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
         _paymentMethods.addAll(data.paymentMethods);
         _businessEntityType = data.businessEntityType;
 
+        _mainCity = data.mainCity;
+        _mainAddress.text = data.mainAddress ?? '';
+        _operatingAreasSet.addAll(data.operatingAreas);
+
         ///////////////
         _initialized = true;
       });
@@ -70,9 +80,7 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    debugPrint('Disposing');
+  Future<void> dumpFromControllers() async {
     // Future(() {
     Profile newProfile = Profile(
       displayName: _displayName.text,
@@ -85,15 +93,26 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
       paymentMethods: _paymentMethods.toList(),
       businessEntityType: _businessEntityType,
       contacts: [],
+
+      mainCity: _mainCity, 
+      mainAddress: _mainAddress.text,
+      operatingAreas: _operatingAreasSet.toList(), 
     );
     debugPrint('Right before dumping at basic info: $newProfile');
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _profileDataNotifier.dumpFromControllers(
+    await Future.microtask(() async {
+      // SchedulerBinding.instance.addPostFrameCallback((_) {
+      await _profileDataNotifier.dumpFromControllers(
         // designStyles: _designStyles.toList(),
         // portfolioLinks: _portfolioLinks,
         profile: newProfile,
       );
     });
+  }
+
+  @override
+  void dispose() {
+    debugPrint('Disposing');
+    dumpFromControllers();
 
     // _email.dispose();
     super.dispose();
@@ -140,6 +159,69 @@ class _BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
                 maxLines: 3,
               ),
             ),
+
+            // heightWidget(
+            //   widget: buildDrowndownButtonFormField(
+            //     selectedValue: _mainCity,
+            //     values: City.values,
+            //     onChanged: (v) {
+            //       setState(() {
+            //         _mainCity = v!;
+            //       });
+            //     },
+            //   ),
+            // ),
+            const Text(
+              'Main Location',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
+                children: [
+                  heightWidget(
+                    widget: buildDropdownSearch(
+                      title: '',
+                      boldTitle: false,
+                      selectedValue: _mainCity,
+                      values: City.values,
+                      onChanged: (v) {
+                        setState(() {
+                          _mainCity = v!;
+                        });
+                      },
+                    ),
+                    height: 8,
+                  ),
+                  heightWidget(
+                    widget: buildTextFormField(
+                      controller: _mainAddress,
+                      labelText: "Address",
+                      hintText: 'Type your address',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            heightWidget(
+              widget: buildFilterChip(
+                title: 'Operating Areas',
+                values: City.values,
+                selectedValues: _operatingAreasSet,
+                onSelected: (v, selected) {
+                  setState(() {
+                    if (selected) {
+                      _operatingAreasSet.add(v);
+                    } else {
+                      _operatingAreasSet.remove(v);
+                    }
+                  });
+                },
+              ),
+            ),
+
             heightWidget(
               widget: buildDrowndownButtonFormField(
                 selectedValue: _availabilityStatus,

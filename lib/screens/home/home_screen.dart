@@ -62,7 +62,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           _buildMenu(
             context,
             onProfileTap: () {
-              context.push('/profile_edit');
+              // context.push('/profile_edit');
+              auth.when(
+                loading: () => null,
+                error: (e, _) => null,
+                data: (user) {
+                  if (user != null) {
+                    context.push('/profile/view/${user.id}');
+                  }
+                  else {
+                    context.push('/login');
+                  }
+                }
+              );
             },
             onLogoutTap: () {
               _signOut();

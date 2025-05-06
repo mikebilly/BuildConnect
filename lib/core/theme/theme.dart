@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color primary = Color(0xFF2E7D32);
+  static const Color greyBackground = Color.fromARGB(131, 227, 244, 223);
+  static const Color grey = Color.fromARGB(255, 126, 124, 124);
+  static const Color black = Color.fromARGB(255, 0, 0, 0);
   static const Color secondary = Color(0xFFFF8F00);
   static const Color accent = Color(0xFF0277BD);
   static const Color background = Color(0xFFF5F5F5);
@@ -13,6 +16,12 @@ class AppColors {
 }
 
 class AppTextStyles {
+  static TextStyle title = const TextStyle(
+    fontSize: 30,
+    fontWeight: FontWeight.bold,
+    height: 1.4,
+  );
+
   static TextStyle heading = const TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.bold,
