@@ -14,6 +14,7 @@ class ProfileMapper extends ClassMapperBase<Profile> {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = ProfileMapper._());
       ProfileTypeMapper.ensureInitialized();
+      CityMapper.ensureInitialized();
       AvailabilityStatusMapper.ensureInitialized();
       WorkingModeMapper.ensureInitialized();
       DomainMapper.ensureInitialized();
@@ -38,6 +39,15 @@ class ProfileMapper extends ClassMapperBase<Profile> {
   static ProfileType _$profileType(Profile v) => v.profileType;
   static const Field<Profile, ProfileType> _f$profileType =
       Field('profileType', _$profileType, key: r'profile_type');
+  static City _$mainCity(Profile v) => v.mainCity;
+  static const Field<Profile, City> _f$mainCity =
+      Field('mainCity', _$mainCity, key: r'main_city');
+  static String _$mainAddress(Profile v) => v.mainAddress;
+  static const Field<Profile, String> _f$mainAddress =
+      Field('mainAddress', _$mainAddress, key: r'main_address');
+  static List<City> _$operatingAreas(Profile v) => v.operatingAreas;
+  static const Field<Profile, List<City>> _f$operatingAreas =
+      Field('operatingAreas', _$operatingAreas, key: r'operating_areas');
   static String _$bio(Profile v) => v.bio;
   static const Field<Profile, String> _f$bio = Field('bio', _$bio);
   static AvailabilityStatus _$availabilityStatus(Profile v) =>
@@ -73,6 +83,9 @@ class ProfileMapper extends ClassMapperBase<Profile> {
     #userId: _f$userId,
     #displayName: _f$displayName,
     #profileType: _f$profileType,
+    #mainCity: _f$mainCity,
+    #mainAddress: _f$mainAddress,
+    #operatingAreas: _f$operatingAreas,
     #bio: _f$bio,
     #availabilityStatus: _f$availabilityStatus,
     #yearsOfExperience: _f$yearsOfExperience,
@@ -89,6 +102,9 @@ class ProfileMapper extends ClassMapperBase<Profile> {
         userId: data.dec(_f$userId),
         displayName: data.dec(_f$displayName),
         profileType: data.dec(_f$profileType),
+        mainCity: data.dec(_f$mainCity),
+        mainAddress: data.dec(_f$mainAddress),
+        operatingAreas: data.dec(_f$operatingAreas),
         bio: data.dec(_f$bio),
         availabilityStatus: data.dec(_f$availabilityStatus),
         yearsOfExperience: data.dec(_f$yearsOfExperience),
@@ -149,6 +165,7 @@ extension ProfileValueCopy<$R, $Out> on ObjectCopyWith<$R, Profile, $Out> {
 
 abstract class ProfileCopyWith<$R, $In extends Profile, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
+  ListCopyWith<$R, City, ObjectCopyWith<$R, City, City>> get operatingAreas;
   ListCopyWith<$R, Domain, ObjectCopyWith<$R, Domain, Domain>> get domains;
   ListCopyWith<$R, Contact, ContactCopyWith<$R, Contact, Contact>> get contacts;
   ListCopyWith<$R, PaymentMethod,
@@ -158,6 +175,9 @@ abstract class ProfileCopyWith<$R, $In extends Profile, $Out>
       String? userId,
       String? displayName,
       ProfileType? profileType,
+      City? mainCity,
+      String? mainAddress,
+      List<City>? operatingAreas,
       String? bio,
       AvailabilityStatus? availabilityStatus,
       int? yearsOfExperience,
@@ -177,6 +197,12 @@ class _ProfileCopyWithImpl<$R, $Out>
   @override
   late final ClassMapperBase<Profile> $mapper =
       ProfileMapper.ensureInitialized();
+  @override
+  ListCopyWith<$R, City, ObjectCopyWith<$R, City, City>> get operatingAreas =>
+      ListCopyWith(
+          $value.operatingAreas,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(operatingAreas: v));
   @override
   ListCopyWith<$R, Domain, ObjectCopyWith<$R, Domain, Domain>> get domains =>
       ListCopyWith($value.domains, (v, t) => ObjectCopyWith(v, $identity, t),
@@ -198,6 +224,9 @@ class _ProfileCopyWithImpl<$R, $Out>
           Object? userId = $none,
           String? displayName,
           ProfileType? profileType,
+          City? mainCity,
+          String? mainAddress,
+          List<City>? operatingAreas,
           String? bio,
           AvailabilityStatus? availabilityStatus,
           int? yearsOfExperience,
@@ -211,6 +240,9 @@ class _ProfileCopyWithImpl<$R, $Out>
         if (userId != $none) #userId: userId,
         if (displayName != null) #displayName: displayName,
         if (profileType != null) #profileType: profileType,
+        if (mainCity != null) #mainCity: mainCity,
+        if (mainAddress != null) #mainAddress: mainAddress,
+        if (operatingAreas != null) #operatingAreas: operatingAreas,
         if (bio != null) #bio: bio,
         if (availabilityStatus != null) #availabilityStatus: availabilityStatus,
         if (yearsOfExperience != null) #yearsOfExperience: yearsOfExperience,
@@ -226,6 +258,9 @@ class _ProfileCopyWithImpl<$R, $Out>
       userId: data.get(#userId, or: $value.userId),
       displayName: data.get(#displayName, or: $value.displayName),
       profileType: data.get(#profileType, or: $value.profileType),
+      mainCity: data.get(#mainCity, or: $value.mainCity),
+      mainAddress: data.get(#mainAddress, or: $value.mainAddress),
+      operatingAreas: data.get(#operatingAreas, or: $value.operatingAreas),
       bio: data.get(#bio, or: $value.bio),
       availabilityStatus:
           data.get(#availabilityStatus, or: $value.availabilityStatus),

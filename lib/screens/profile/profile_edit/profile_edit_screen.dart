@@ -53,6 +53,15 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     context.go('/');
   }
 
+  @override
+  void dispose() {
+    final profileData = ref.watch(profileDataNotifierProvider);
+    
+
+    super.dispose();
+    debugPrint('ProfileEditScreen disposed');
+  }
+
   Future<void> _dumpAllTabControllers() async {
     await basicInfoKey.currentState?.dumpFromControllers();
     await professionalInfoKey.currentState?.dumpFromControllers();

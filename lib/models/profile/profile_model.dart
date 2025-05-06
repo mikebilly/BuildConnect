@@ -14,7 +14,11 @@ class Profile with ProfileMappable {
   // final ContactInfo contactInfo;
   // final String profilePhoto;
   // final VerificationInfo verificationInfo;
-  // final Location mainLocation;
+
+  final City mainCity;
+  final String mainAddress;
+  final List<City> operatingAreas;
+
   final String bio;
   final AvailabilityStatus availabilityStatus;
   // final List<Project> projects;
@@ -52,7 +56,11 @@ class Profile with ProfileMappable {
     // required this.contactInfo,
     // required this.profilePhoto,
     // required this.verificationInfo,
-    // required this.mainLocation,
+
+    required this.mainCity,
+    required this.mainAddress,
+    required this.operatingAreas,
+
     required this.bio,
     required this.availabilityStatus,
     // required this.projects,
@@ -91,6 +99,10 @@ class Profile with ProfileMappable {
       contacts: [],
       paymentMethods: [],
       businessEntityType: BusinessEntityType.values.first,
+
+      mainCity: City.values.first,
+      mainAddress: '',
+      operatingAreas: [],
     );
   }
 }

@@ -44,6 +44,8 @@ class ProfileDataService implements IProfileDataService {
               'years_of_experience': profile.yearsOfExperience,
               'working_mode': profile.workingMode.name,
               'business_entity_type': profile.businessEntityType.name,
+              'main_city': profile.mainCity.name,
+              'main_address': profile.mainAddress,
             }, onConflict: 'user_id')
             .select()
             .maybeSingle();
@@ -83,7 +85,7 @@ class ProfileDataService implements IProfileDataService {
 
     // 🔄 Replace old domains
     await _supabase
-        .from('profile_domains')
+        .from(SupabaseConstants.profileDomainsTable)
         .delete()
         .eq('profile_id', profileId);
     final domains = profile.domains;
@@ -92,12 +94,14 @@ class ProfileDataService implements IProfileDataService {
             .map((domain) => {'profile_id': profileId, 'domain': domain.name})
             .toList();
     if (domainInserts.isNotEmpty) {
-      await _supabase.from('profile_domains').insert(domainInserts);
+      await _supabase
+          .from(SupabaseConstants.profileDomainsTable)
+          .insert(domainInserts);
     }
 
     // 🔄 Replace old payment methods
     await _supabase
-        .from('profile_payment_methods')
+        .from(SupabaseConstants.profilePaymentMethodsTable)
         .delete()
         .eq('profile_id', profileId);
     final paymentMethods = profile.paymentMethods;
@@ -114,14 +118,31 @@ class ProfileDataService implements IProfileDataService {
       await _supabase.from('profile_payment_methods').insert(paymentInserts);
     }
 
+    await _supabase
+        .from(SupabaseConstants.profileOperatingAreasTable)
+        .delete()
+        .eq('profile_id', profileId);
+    final operatingAreas = profile.operatingAreas;
+    final operatingAreasInserts =
+        profile.operatingAreas
+            .map((city) => {'profile_id': profileId, 'city': city.name})
+            .toList();
+    if (operatingAreasInserts.isNotEmpty) {
+      await _supabase
+          .from(SupabaseConstants.profileOperatingAreasTable)
+          .insert(operatingAreasInserts);
+    }
+
     // ✅ Return reconstructed Profile
     final fullMap = {
       ...profileResponse,
       'contacts': contacts,
       'domains': domains,
       'payment_methods': paymentMethods,
+      'operating_areas': operatingAreas,
     };
 
+    debugPrint('🟢 Supabase full map: $fullMap');
     return ProfileMapper.fromMap(fullMap);
   }
 
@@ -435,45 +456,56 @@ class ProfileDataService implements IProfileDataService {
 
   Future<Profile?> fetchProfile(String userId) async {
     debugPrint('========================= fetchProfile called');
-    final response =
+    final profileRes =
         await _supabase
             .from(SupabaseConstants.profilesTable)
             .select('*, ${SupabaseConstants.profileContactsTable}(contact)')
             .eq('user_id', userId)
             .maybeSingle();
 
-    if (response == null) {
+    if (profileRes == null) {
       debugPrint('Fetched profile but is null <<');
       return Profile.empty();
     }
 
     final contacts =
-        (response['profile_contacts'] as List? ?? [])
+        (profileRes['profile_contacts'] as List? ?? [])
             .map(
               (e) =>
                   ContactMapper.fromMap(e['contact'] as Map<String, dynamic>),
             )
             .toList();
 
-    final domains =
-        (response['profile_domains'] as List? ?? [])
-            .map((e) => Domain.values.byName(e['domain']))
-            .toList();
+    final domainsRes = await _supabase
+        .from(SupabaseConstants.profileDomainsTable)
+        .select()
+        .eq('profile_id', profileRes['id']);
+
+    final domains = domainsRes.map((e) => e['domain']).toList();
+
+    final paymentMethodsRes = await _supabase
+        .from(SupabaseConstants.profilePaymentMethodsTable)
+        .select()
+        .eq('profile_id', profileRes['id']);
 
     final paymentMethods =
-        (response['profile_payment_methods'] as List? ?? [])
-            .map((e) => PaymentMethod.values.byName(e['payment_method']))
-            .toList();
+        paymentMethodsRes.map((e) => e['payment_method']).toList();
+
+    final operatingAreasRes = await _supabase
+        .from(SupabaseConstants.profileOperatingAreasTable)
+        .select()
+        .eq('profile_id', profileRes['id']);
+
+    final operatingAreas = operatingAreasRes.map((e) => e['city']).toList();
 
     final fullMap =
-        Map<String, dynamic>.from(response)
+        Map<String, dynamic>.from(profileRes)
           ..['contacts'] = contacts
           ..['domains'] = domains
-          ..['payment_methods'] = paymentMethods;
+          ..['payment_methods'] = paymentMethods
+          ..['operating_areas'] = operatingAreas;
 
-    debugPrint(
-      '========================= ProfileDataService fetchProfile: $fullMap',
-    );
+    debugPrint('=⚪=======⚪=======⚪= ProfileDataService fetchProfile: $fullMap');
     return ProfileMapper.fromMap(fullMap);
   }
 

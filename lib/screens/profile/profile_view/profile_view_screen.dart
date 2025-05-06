@@ -18,6 +18,15 @@ class ProfileViewScreen extends ConsumerStatefulWidget {
 
 class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(profileDataNotifierProvider);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
 
@@ -70,6 +79,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
 
 Widget _buildShiftedWidget(BuildContext context, Widget child) {
   return Transform.translate(offset: const Offset(0, -65), child: child);
+  // return child;
 }
 
 Widget _buildBodySection(BuildContext context, ProfileData profileData) {
@@ -97,7 +107,7 @@ Widget _buildAvatar(BuildContext context, ProfileData profileData) {
             backgroundColor: AppColors.primary,
             child: Icon(
               profileData.profile.profileType.icon,
-              size: 75,
+              size: 60,
               color: Colors.white,
             ),
           ),
@@ -122,11 +132,11 @@ Widget _buildAvatar(BuildContext context, ProfileData profileData) {
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Icon(Icons.location_on, color: AppColors.grey),
             SizedBox(width: 4),
             Text(
-              'Ho Chi Minh city, Vietnam',
+              '${profileData.profile.mainAddress}, ${profileData.profile.mainCity.label}',
               style: TextStyle(color: AppColors.grey),
             ),
           ],

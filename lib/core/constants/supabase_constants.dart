@@ -8,6 +8,9 @@ class SupabaseConstants {
   static const String constructionTeamProfilesTable = 'construction_team_profiles';
 
   static const String profileContactsTable = 'profile_contacts';
+  static const String profileDomainsTable = 'profile_domains';
+  static const String profilePaymentMethodsTable = 'profile_payment_methods';
+  static const String profileOperatingAreasTable = 'profile_operating_areas';
 
   static const String architectDesignStylesTable = 'architect_design_styles';
   static const String architectPortfolioLinksTable = 'architect_portfolio_links';

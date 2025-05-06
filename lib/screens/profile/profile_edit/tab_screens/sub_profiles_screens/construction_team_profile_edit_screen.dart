@@ -149,7 +149,7 @@ class ConstructionTeamProfileEditScreenState
 
             heightWidget(
               widget: buildSlider(
-                labelText: 'Team size',
+                labelText: 'Team Size',
                 value: _teamSize,
                 controller: _teamSizeController,
                 min: 1,
