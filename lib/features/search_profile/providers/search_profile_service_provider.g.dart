@@ -1,26 +1,29 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'router.dart';
+part of 'search_profile_service_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$routerHash() => r'822463866658eeaf6b924f0e4eafaf6daa47bcbd';
+String _$searchProfileServiceHash() =>
+    r'2a022196fb528c1de1b1ea4c676fb6e41a5b5aa0';
 
-/// See also [router].
-@ProviderFor(router)
-final routerProvider = AutoDisposeProvider<GoRouter>.internal(
-  router,
-  name: r'routerProvider',
+/// See also [searchProfileService].
+@ProviderFor(searchProfileService)
+final searchProfileServiceProvider = Provider<SearchProfileService>.internal(
+  searchProfileService,
+  name: r'searchProfileServiceProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$routerHash,
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$searchProfileServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef RouterRef = AutoDisposeProviderRef<GoRouter>;
+typedef SearchProfileServiceRef = ProviderRef<SearchProfileService>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

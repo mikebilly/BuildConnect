@@ -24,7 +24,8 @@ enum ProfileType {
   String get table => switch (this) {
     ProfileType.architect => SupabaseConstants.architectProfilesTable,
     ProfileType.contractor => SupabaseConstants.contractorProfilesTable,
-    ProfileType.constructionTeam => SupabaseConstants.constructionTeamProfilesTable,
+    ProfileType.constructionTeam =>
+      SupabaseConstants.constructionTeamProfilesTable,
     ProfileType.supplier => SupabaseConstants.supplierProfilesTable,
   };
 
@@ -106,6 +107,18 @@ enum City {
     City.daLat => 'Đà Lạt',
     City.bienHoa => 'Biên Hòa',
     City.vungTau => 'Vũng Tàu',
+  };
+  String get normalize_label => switch (this) {
+    City.hanoi => 'hanoi',
+    City.hoChiMinh => 'hochiminh',
+    City.daNang => 'danang',
+    City.haiPhong => 'haiphong',
+    City.canTho => 'cantho',
+    City.ninhBinh => 'ninhbinh',
+    City.hue => 'hue',
+    City.daLat => 'dalat',
+    City.bienHoa => 'bienhoa',
+    City.vungTau => 'vungtau',
   };
 }
 
@@ -450,16 +463,49 @@ enum ContactType {
   };
 
   Widget icon(BuildContext context) => switch (this) {
-    ContactType.email => Icon(Icons.email, color: Theme.of(context).colorScheme.primary),
-    ContactType.phone => Icon(Icons.phone, color: Theme.of(context).colorScheme.primary),
-    ContactType.website => Icon(Icons.language, color: Theme.of(context).colorScheme.primary),
-    ContactType.github => const FaIcon(FontAwesomeIcons.github, color: Colors.black),
-    ContactType.linkedin => const FaIcon(FontAwesomeIcons.linkedin, color: Color(0xFF0A66C2)),
-    ContactType.twitter => const FaIcon(FontAwesomeIcons.twitter, color: Color(0xFF1DA1F2)),
-    ContactType.facebook => const FaIcon(FontAwesomeIcons.facebook, color: Color(0xFF1877F2)),
-    ContactType.instagram => const FaIcon(FontAwesomeIcons.instagram, color: Color(0xFFC13584)),
-    ContactType.youtube => const FaIcon(FontAwesomeIcons.youtube, color: Color(0xFFFF0000)),
-    ContactType.tiktok => const FaIcon(FontAwesomeIcons.tiktok, color: Color(0xFF010101)),
-    ContactType.other => Icon(Icons.device_unknown, color: Theme.of(context).colorScheme.secondary),
+    ContactType.email => Icon(
+      Icons.email,
+      color: Theme.of(context).colorScheme.primary,
+    ),
+    ContactType.phone => Icon(
+      Icons.phone,
+      color: Theme.of(context).colorScheme.primary,
+    ),
+    ContactType.website => Icon(
+      Icons.language,
+      color: Theme.of(context).colorScheme.primary,
+    ),
+    ContactType.github => const FaIcon(
+      FontAwesomeIcons.github,
+      color: Colors.black,
+    ),
+    ContactType.linkedin => const FaIcon(
+      FontAwesomeIcons.linkedin,
+      color: Color(0xFF0A66C2),
+    ),
+    ContactType.twitter => const FaIcon(
+      FontAwesomeIcons.twitter,
+      color: Color(0xFF1DA1F2),
+    ),
+    ContactType.facebook => const FaIcon(
+      FontAwesomeIcons.facebook,
+      color: Color(0xFF1877F2),
+    ),
+    ContactType.instagram => const FaIcon(
+      FontAwesomeIcons.instagram,
+      color: Color(0xFFC13584),
+    ),
+    ContactType.youtube => const FaIcon(
+      FontAwesomeIcons.youtube,
+      color: Color(0xFFFF0000),
+    ),
+    ContactType.tiktok => const FaIcon(
+      FontAwesomeIcons.tiktok,
+      color: Color(0xFF010101),
+    ),
+    ContactType.other => Icon(
+      Icons.device_unknown,
+      color: Theme.of(context).colorScheme.secondary,
+    ),
   };
 }

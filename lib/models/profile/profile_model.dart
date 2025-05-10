@@ -53,10 +53,10 @@ class Profile with ProfileMappable {
     required this.displayName,
     // required this.logo,
     required this.profileType,
+
     // required this.contactInfo,
     // required this.profilePhoto,
     // required this.verificationInfo,
-
     required this.mainCity,
     required this.mainAddress,
     required this.operatingAreas,
@@ -75,12 +75,12 @@ class Profile with ProfileMappable {
     // required this.links,
     // this.warranty,
     required this.domains,
+
     // required this.paymentTerms,
     // this.architectProfile,
     // this.contractorProfile,
     // this.constructionTeamProfile,
     // this.supplierProfile,
-
     required this.contacts,
     required this.paymentMethods,
     required this.businessEntityType,
@@ -103,6 +103,53 @@ class Profile with ProfileMappable {
       mainCity: City.values.first,
       mainAddress: '',
       operatingAreas: [],
+    );
+  }
+}
+
+extension ProfileMapperExt on Profile {
+  static Profile fromSupabaseMap(Map<String, dynamic> map) {
+    return Profile(
+      id: map['id'],
+      userId: map['user_id'],
+      displayName: map['display_name'],
+      profileType: ProfileTypeMapper.fromValue(map['profile_type']),
+      bio: map['bio'],
+      availabilityStatus: AvailabilityStatusMapper.fromValue(
+        map['availability_status'],
+      ),
+      yearsOfExperience: map['years_of_experience'],
+      workingMode: WorkingModeMapper.fromValue(map['working_mode']),
+      businessEntityType: BusinessEntityTypeMapper.fromValue(
+        map['business_entity_type'],
+      ),
+      mainCity: CityMapper.fromValue(map['main_city']),
+      mainAddress: map['main_address'],
+
+      // nested mapping
+      operatingAreas:
+          (map['profile_operating_areas'] as List<dynamic>?)
+              ?.map((e) => CityMapper.fromValue(e['city']))
+              .toList() ??
+          [],
+
+      domains:
+          (map['profile_domains'] as List<dynamic>?)
+              ?.map((e) => DomainMapper.fromValue(e['domain']))
+              .toList() ??
+          [],
+
+      contacts:
+          (map['profile_contacts'] as List<dynamic>?)
+              ?.map((e) => ContactMapper.fromMap(e['contact']))
+              .toList() ??
+          [],
+
+      paymentMethods:
+          (map['profile_payment_methods'] as List<dynamic>?)
+              ?.map((e) => PaymentMethodMapper.fromValue(e['payment_method']))
+              .toList() ??
+          [],
     );
   }
 }
