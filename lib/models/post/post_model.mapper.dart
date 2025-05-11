@@ -27,7 +27,7 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
   static const Field<PostModel, String> _f$title = Field('title', _$title);
   static JobPostingType _$jobPostingType(PostModel v) => v.jobPostingType;
   static const Field<PostModel, JobPostingType> _f$jobPostingType =
-      Field('jobPostingType', _$jobPostingType);
+      Field('jobPostingType', _$jobPostingType, key: r'job_posting_type');
   static String _$location(PostModel v) => v.location;
   static const Field<PostModel, String> _f$location =
       Field('location', _$location);
@@ -41,14 +41,12 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
   static const Field<PostModel, DateTime> _f$deadline =
       Field('deadline', _$deadline, opt: true);
   static List<String>? _$requiredSkills(PostModel v) => v.requiredSkills;
-  static const Field<PostModel, List<String>> _f$requiredSkills =
-      Field('requiredSkills', _$requiredSkills, opt: true);
-  static List<String>? _$categories(PostModel v) => v.categories;
-  static const Field<PostModel, List<String>> _f$categories =
-      Field('categories', _$categories, opt: true);
+  static const Field<PostModel, List<String>> _f$requiredSkills = Field(
+      'requiredSkills', _$requiredSkills,
+      key: r'required_skills', opt: true);
   static String _$authorId(PostModel v) => v.authorId;
   static const Field<PostModel, String> _f$authorId =
-      Field('authorId', _$authorId);
+      Field('authorId', _$authorId, key: r'author_id');
   static DateTime? _$createdAt(PostModel v) => v.createdAt;
   static const Field<PostModel, DateTime> _f$createdAt =
       Field('createdAt', _$createdAt, opt: true);
@@ -63,7 +61,6 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
     #budget: _f$budget,
     #deadline: _f$deadline,
     #requiredSkills: _f$requiredSkills,
-    #categories: _f$categories,
     #authorId: _f$authorId,
     #createdAt: _f$createdAt,
   };
@@ -78,7 +75,6 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
         budget: data.dec(_f$budget),
         deadline: data.dec(_f$deadline),
         requiredSkills: data.dec(_f$requiredSkills),
-        categories: data.dec(_f$categories),
         authorId: data.dec(_f$authorId),
         createdAt: data.dec(_f$createdAt));
   }
@@ -136,7 +132,6 @@ abstract class PostModelCopyWith<$R, $In extends PostModel, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>?
       get requiredSkills;
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>? get categories;
   $R call(
       {String? id,
       String? title,
@@ -146,7 +141,6 @@ abstract class PostModelCopyWith<$R, $In extends PostModel, $Out>
       double? budget,
       DateTime? deadline,
       List<String>? requiredSkills,
-      List<String>? categories,
       String? authorId,
       DateTime? createdAt});
   PostModelCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
@@ -169,14 +163,6 @@ class _PostModelCopyWithImpl<$R, $Out>
               (v) => call(requiredSkills: v))
           : null;
   @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>?
-      get categories => $value.categories != null
-          ? ListCopyWith(
-              $value.categories!,
-              (v, t) => ObjectCopyWith(v, $identity, t),
-              (v) => call(categories: v))
-          : null;
-  @override
   $R call(
           {Object? id = $none,
           String? title,
@@ -186,7 +172,6 @@ class _PostModelCopyWithImpl<$R, $Out>
           Object? budget = $none,
           Object? deadline = $none,
           Object? requiredSkills = $none,
-          Object? categories = $none,
           String? authorId,
           Object? createdAt = $none}) =>
       $apply(FieldCopyWithData({
@@ -198,7 +183,6 @@ class _PostModelCopyWithImpl<$R, $Out>
         if (budget != $none) #budget: budget,
         if (deadline != $none) #deadline: deadline,
         if (requiredSkills != $none) #requiredSkills: requiredSkills,
-        if (categories != $none) #categories: categories,
         if (authorId != null) #authorId: authorId,
         if (createdAt != $none) #createdAt: createdAt
       }));
@@ -212,7 +196,6 @@ class _PostModelCopyWithImpl<$R, $Out>
       budget: data.get(#budget, or: $value.budget),
       deadline: data.get(#deadline, or: $value.deadline),
       requiredSkills: data.get(#requiredSkills, or: $value.requiredSkills),
-      categories: data.get(#categories, or: $value.categories),
       authorId: data.get(#authorId, or: $value.authorId),
       createdAt: data.get(#createdAt, or: $value.createdAt));
 

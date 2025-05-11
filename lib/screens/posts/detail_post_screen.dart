@@ -1,3 +1,7 @@
+import 'package:buildconnect/features/profile_data/providers/profile_data_service_provider.dart';
+import 'package:buildconnect/features/profile_data/services/profile_data_service.dart';
+import 'package:buildconnect/models/profile/profile_model.dart';
+import 'package:buildconnect/models/profile_data/profile_data_model.dart';
 import 'package:intl/intl.dart';
 
 import 'package:buildconnect/features/posting/services/posting_service.dart';
@@ -24,10 +28,13 @@ class JobPostingViewScreen extends ConsumerStatefulWidget {
 }
 
 class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
+  ProfileDataService get _profileDataService =>
+      ref.watch(profileDataServiceProvider);
   bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     final postAsync = ref.watch(postByIdProvider(widget.jobPostingId));
+    debugPrint('Post : $postAsync');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Chi tiết bài đăng')),
@@ -53,7 +60,10 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
     final userProvider = ref.watch(authProvider);
     final isOwnJobPosting =
         userProvider.hasValue && userProvider.hasValue! == jobPosting.authorId;
-
+    // final ownerPost = _profileDataService.fetchProfile(jobPosting.authorId);
+    // debugPrint(
+    //   'vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvOwner Post: ${ownerPost.profile.displayName}',
+    // );
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -258,63 +268,149 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
           const SizedBox(height: 24),
 
           // Posted by
+          // const Text(
+          //   'Posted By',
+          //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          // ),
+          // const SizedBox(height: 8),
+          // InkWell(
+          //   onTap: () {
+          //     // Navigate to poster's profile
+          //     Navigator.pushNamed(
+          //       context,
+          //       '/profile/view',
+          //       arguments: {'profileId': jobPosting.authorId},
+          //     );
+          //   },
+          //   borderRadius: BorderRadius.circular(8),
+          //   child: Card(
+          //     elevation: 0,
+          //     color: Colors.grey[50],
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(8),
+          //     ),
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(12),
+          //       child: Row(
+          //         children: [
+          //           Container(
+          //             width: 50,
+          //             height: 50,
+          //             decoration: BoxDecoration(
+          //               color: AppColors.primary.withValues(alpha: 0.1),
+          //               shape: BoxShape.circle,
+          //             ),
+          //             child: const Icon(Icons.person, color: AppColors.primary),
+          //           ),
+          //           const SizedBox(width: 16),
+          //           Expanded(
+          //             child: Column(
+          //               crossAxisAlignment: CrossAxisAlignment.start,
+          //               children: [
+          //                 Text(
+          //                   // jobPosting.authorId,
+          //                   "Author Name", // Replace with actual author name
+          //                   style: const TextStyle(fontWeight: FontWeight.bold),
+          //                 ),
+          //                 const SizedBox(height: 4),
+          //                 Text(
+          //                   'View Profile',
+          //                   style: TextStyle(color: AppColors.accent),
+          //                 ),
+          //               ],
+          //             ),
+          //           ),
+          //           const Icon(Icons.chevron_right, color: Colors.grey),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
+          // const SizedBox(height: 24),
+          // Posted by
           const Text(
             'Posted By',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          InkWell(
-            onTap: () {
-              // Navigate to poster's profile
-              Navigator.pushNamed(
-                context,
-                '/profile/view',
-                arguments: {'profileId': jobPosting.authorId},
+
+          FutureBuilder<Profile>(
+            future: _profileDataService.fetchProfile(jobPosting.authorId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text(
+                  'Lỗi khi tải thông tin người đăng: ${snapshot.error}',
+                );
+              } else if (!snapshot.hasData) {
+                return const Text('Không tìm thấy thông tin người đăng');
+              }
+              debugPrint(
+                'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx - Profile: ${snapshot}',
+              );
+
+              final profile = snapshot.data!;
+
+              return InkWell(
+                onTap: () {
+                  // Navigate to poster's profile
+                  Navigator.pushNamed(
+                    context,
+                    '/profile/view',
+                    arguments: {'profileId': jobPosting.authorId},
+                  );
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Card(
+                  elevation: 0,
+                  color: Colors.grey[50],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.person,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                profile.displayName ?? 'No name',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'View Profile',
+                                style: TextStyle(color: AppColors.accent),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right, color: Colors.grey),
+                      ],
+                    ),
+                  ),
+                ),
               );
             },
-            borderRadius: BorderRadius.circular(8),
-            child: Card(
-              elevation: 0,
-              color: Colors.grey[50],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.person, color: AppColors.primary),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            // jobPosting.authorId,
-                            "Author Name", // Replace with actual author name
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'View Profile',
-                            style: TextStyle(color: AppColors.accent),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right, color: Colors.grey),
-                  ],
-                ),
-              ),
-            ),
           ),
 
           const SizedBox(height: 24),

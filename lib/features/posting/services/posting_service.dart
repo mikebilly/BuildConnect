@@ -5,8 +5,9 @@ import 'package:buildconnect/models/enums/enums.dart';
 import 'package:buildconnect/core/constants/supabase_constants.dart';
 import 'package:buildconnect/models/post/post_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
+// import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:buildconnect/core/services/supabase/supabase_client_provider.dart';
 
@@ -29,12 +30,28 @@ class PostingService {
   }
 
   Future<List<PostModel>> fetchAllPosts() async {
-    final response = await _client
-        .from(SupabaseConstants.postsTable)
-        .select()
-        .order('created_at', ascending: false);
-
-    return (response as List).map((e) => PostModelMapper.fromMap(e)).toList();
+    try {
+      final response = await _client
+          .from(SupabaseConstants.postsTable)
+          .select()
+          .order('created_at', ascending: false);
+      if (response.isEmpty) {
+        debugPrint('No posts found');
+        return [];
+      }
+      if (response is! List) {
+        debugPrint('Invalid response type: ${response.runtimeType}');
+        throw Exception('Invalid response type: ${response.runtimeType}');
+      }
+      debugPrint('Fetched posts: $response');
+      return (response as List).map((e) => PostModelMapper.fromMap(e)).toList();
+    } on PostgrestException catch (e) {
+      debugPrint('Error fetching posts: $e');
+      throw Exception('Error fetching posts: $e');
+    } catch (e) {
+      debugPrint('Error fetching posts: $e');
+      throw Exception('Error fetching posts: $e');
+    }
   }
 
   Future<void> deleteJobPosting(String postId) async {

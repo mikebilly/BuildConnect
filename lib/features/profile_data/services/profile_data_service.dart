@@ -40,12 +40,10 @@ class ProfileDataService implements IProfileDataService {
   Future<void> upsertSubProfile(String id, ProfileData profileData) async {
     debugPrint('========================= upsertSubProfile called');
 
-    final subProfileMap = profileData.subProfileMap;    
+    final subProfileMap = profileData.subProfileMap;
     final subProfileTable = profileData.subProfileTable;
 
-    debugPrint(
-      '========================= UPSERT subProfileMap $subProfileMap',
-    );
+    debugPrint('========================= UPSERT subProfileMap $subProfileMap');
 
     try {
       final response =
@@ -68,15 +66,19 @@ class ProfileDataService implements IProfileDataService {
     debugPrint('========================= userId: $userId');
 
     try {
-      final profileRes = await _supabase
-          .from(SupabaseConstants.profilesTable)
-          .select()
-          .eq('user_id', userId)
-          .single();
+      final profileRes =
+          await _supabase
+              .from(SupabaseConstants.profilesTable)
+              .select()
+              .eq('user_id', userId)
+              .single();
 
       debugPrint(
         '========================= ProfileDataService fetchProfile: $profileRes',
       );
+      debugPrint('Profile raw response: ${profileRes.runtimeType}'); // Xem kiểu
+      debugPrint('Profile raw response (JSON): $profileRes');
+
       return ProfileMapper.fromMap(profileRes);
     } on PostgrestException catch (e) {
       debugPrint('Error at fetch: $e');

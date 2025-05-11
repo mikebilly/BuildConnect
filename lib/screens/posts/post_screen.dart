@@ -79,22 +79,22 @@ class _PostScreenState extends ConsumerState<PostScreen> {
     );
     print(newPostModel);
 
-    // try {
-    //   await _postingNotifier.createNewPost(newPostModel);
-    //   print(newPostModel);
-    //   if (mounted) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(content: Text('Post created successfully')),
-    //     );
-    //   }
-    // } catch (e) {
-    //   print("Error: $e");
-    //   if (mounted) {
-    //     ScaffoldMessenger.of(
-    //       context,
-    //     ).showSnackBar(SnackBar(content: Text('Failed to create post: $e')));
-    //   }
-    // }
+    try {
+      await _postingNotifier.createNewPost(newPostModel);
+      print(newPostModel);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post created successfully')),
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to create post: $e')));
+      }
+    }
   }
 
   @override
