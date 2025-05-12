@@ -38,7 +38,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
     final postAsync = ref.watch(postByIdProvider(widget.jobPostingId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiết bài đăng')),
+      appBar: AppBar(title: const Text('Post details')),
       body: postAsync.when(
         data: (post) {
           if (post == null) {
@@ -98,7 +98,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              jobPosting.jobPostingType.name,
+              jobPosting.jobPostingType.label,
               style: TextStyle(
                 color: _getJobTypeColor(jobPosting.jobPostingType),
                 fontWeight: FontWeight.bold,
@@ -321,7 +321,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
                       ),
                       child: Icon(
                         profileDataByUserId.profile.profileType.icon,
-                        // size: 60,
+                        size: 30,
                         color: AppColors.primary,
                       ),
                     ),
@@ -532,21 +532,21 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
             ),
           ] else ...[
             // Contact button for others
-            const SizedBox(height: 32),
-            CustomButton(
-              text: 'Contact Now',
-              onPressed: () {
-                // In a real app, this might open messaging or calling functionality
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Use the contact information above to reach out directly.',
-                    ),
-                  ),
-                );
-              },
-              icon: Icons.chat,
-            ),
+            // const SizedBox(height: 32),
+            // CustomButton(
+            //   text: 'Contact Now',
+            //   onPressed: () {
+            //     // In a real app, this might open messaging or calling functionality
+            //     ScaffoldMessenger.of(context).showSnackBar(
+            //       const SnackBar(
+            //         content: Text(
+            //           'Use the contact information above to reach out directly.',
+            //         ),
+            //       ),
+            //     );
+            //   },
+            //   icon: Icons.chat,
+            // ),
           ],
         ],
       ),

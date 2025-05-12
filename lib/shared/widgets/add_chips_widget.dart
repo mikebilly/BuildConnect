@@ -103,8 +103,8 @@ class _SkillInputFieldState extends State<SkillInputField> {
                 final skill = entry.value;
                 return Chip(
                   label: Text(skill),
-                  backgroundColor: widget.chipBackgroundColor,
-                  labelStyle: TextStyle(color: widget.chipTextColor),
+                  // backgroundColor: widget.chipBackgroundColor,
+                  // labelStyle: TextStyle(color: widget.chipTextColor),
                   deleteIcon: const Icon(Icons.close, size: 16),
                   onDeleted: () => _removeSkill(index),
                 );

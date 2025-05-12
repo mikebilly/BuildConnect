@@ -1,3 +1,4 @@
+import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/features/auth/providers/auth_service_provider.dart';
 import 'package:buildconnect/features/auth/services/auth_service.dart';
 import 'package:buildconnect/features/posting/providers/posting_provider.dart';
@@ -83,18 +84,18 @@ class _PostScreenState extends ConsumerState<PostScreen> {
       requiredSkills: _requiredSkillsList,
       jobPostingType: _jobPostingType,
     );
-    print(newPostModel);
+    debugPrint(newPostModel.toString());
 
     try {
       await _postingNotifier.createNewPost(newPostModel);
-      print(newPostModel);
+      debugPrint(newPostModel.toString());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Post created successfully')),
         );
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -128,7 +129,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create a Post')),
+      appBar: AppBar(title: const Text('Create a post')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -248,19 +249,19 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               heightWidget(
                 widget: SkillInputField(
                   title: 'Required Skills (Optional)',
-                  buttonColor: Colors.greenAccent,
-                  chipTextColor: Colors.white,
+                  buttonColor: AppColors.primary,
+                  chipTextColor: AppColors.grey,
                   chipBackgroundColor: const Color.fromARGB(
                     255,
-                    8,
-                    218,
-                    92,
+                    247,
+                    251,
+                    241,
                   ).withAlpha((0.6 * 255).round()),
                   onSkillListChanged: (skills) {
                     setState(() {
                       _requiredSkillsList = skills;
                     });
-                    print('Danh sách kỹ năng: $_requiredSkillsList');
+                    debugPrint('Danh sách kỹ năng: $_requiredSkillsList');
                   },
                 ),
               ),
