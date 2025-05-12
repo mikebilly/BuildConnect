@@ -200,11 +200,16 @@ class FeedScreen extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                post.deadline!.isBefore(DateTime.now())
+                                post.deadline == null
+                                    ? 'Unknown'
+                                    : post.deadline!.isBefore(DateTime.now())
                                     ? 'Expired'
-                                    : post.deadline!.isAfter(DateTime.now())
+                                    : post.deadline!
+                                            .difference(DateTime.now())
+                                            .inDays >
+                                        0
                                     ? 'Deadline in ${post.deadline!.difference(DateTime.now()).inDays} days'
-                                    : 'Unknown',
+                                    : 'Deadline today',
 
                                 style: TextStyle(
                                   color: _getDeadlineColor(post.deadline!),
