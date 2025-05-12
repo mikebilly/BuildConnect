@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:buildconnect/models/app_user/app_user_model.dart';
 import 'package:buildconnect/features/auth/services/auth_service.dart';
@@ -23,10 +24,7 @@ class Auth extends _$Auth {
     return await _authService.fetchAppUser();
   }
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     state = const AsyncLoading();
 
     try {
@@ -38,18 +36,22 @@ class Auth extends _$Auth {
     }
   }
 
+  void invalidateProviders() {
+    debugPrint('%%%%%%%%%%%%%%%%%Invalidating providers');
+    ref.invalidate(profileDataNotifierProvider);
+    ref.invalidate(profileDataByUserIdProvider);
+  }
+
   Future<void> signOut() async {
     state = const AsyncLoading();
     await _authService.signOut();
 
-    await _profileDataNotifier.clearProfileData();
+    // await _profileDataNotifier.clearProfileData();
+    invalidateProviders();
     state = const AsyncData(null);
   }
 
-  Future<void> signUp({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signUp({required String email, required String password}) async {
     state = const AsyncLoading();
 
     try {

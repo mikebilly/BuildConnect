@@ -1,3 +1,4 @@
+import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
 import 'package:buildconnect/features/profile_data/providers/profile_data_service_provider.dart';
 import 'package:buildconnect/features/profile_data/services/profile_data_service.dart';
 import 'package:buildconnect/models/profile/profile_model.dart';
@@ -14,6 +15,8 @@ import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/shared/common_widgets.dart';
 import 'package:buildconnect/shared/widgets/map_widgets.dart';
 import 'package:buildconnect/features/auth/providers/auth_provider.dart';
+
+import 'package:go_router/go_router.dart';
 // import 'package:intl/intl.dart';
 
 class JobPostingViewScreen extends ConsumerStatefulWidget {
@@ -28,13 +31,11 @@ class JobPostingViewScreen extends ConsumerStatefulWidget {
 }
 
 class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
-  ProfileDataService get _profileDataService =>
-      ref.watch(profileDataServiceProvider);
   bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final postAsync = ref.watch(postByIdProvider(widget.jobPostingId));
-    debugPrint('Post : $postAsync');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Chi tiết bài đăng')),
@@ -43,7 +44,18 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
           if (post == null) {
             return const Center(child: Text("Không tìm thấy bài đăng."));
           }
-          return _buildJobPostingDetails(context, post, ref);
+
+          final profileDataByUserId = ref.watch(
+            profileDataByUserIdProvider(post.authorId),
+          );
+
+          return profileDataByUserId.when(
+            data: (profile) {
+              return _buildJobPostingDetails(context, post, profile!);
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text('Lỗi tải dữ liệu: $e')),
+          );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Lỗi tải dữ liệu: $e')),
@@ -54,16 +66,23 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
   Widget _buildJobPostingDetails(
     BuildContext context,
     PostModel jobPosting,
-    WidgetRef ref,
+    ProfileData profileDataByUserId,
+    // WidgetRef ref,
     // PostingService jobProvider,
   ) {
+    late final ProfileDataService _profileDataService = ref.read(
+      profileDataServiceProvider,
+    );
+
     final userProvider = ref.watch(authProvider);
     final isOwnJobPosting =
         userProvider.hasValue && userProvider.hasValue! == jobPosting.authorId;
     // final ownerPost = _profileDataService.fetchProfile(jobPosting.authorId);
+    debugPrint(profileDataByUserId.toString());
     // debugPrint(
-    //   'vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvOwner Post: ${ownerPost.profile.displayName}',
+    //   'vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvOwner Post: ${profileDataByUserId.profile.displayName}',
     // );
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -268,152 +287,156 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
           const SizedBox(height: 24),
 
           // Posted by
-          // const Text(
-          //   'Posted By',
-          //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          // ),
-          // const SizedBox(height: 8),
-          // InkWell(
-          //   onTap: () {
-          //     // Navigate to poster's profile
-          //     Navigator.pushNamed(
-          //       context,
-          //       '/profile/view',
-          //       arguments: {'profileId': jobPosting.authorId},
-          //     );
-          //   },
-          //   borderRadius: BorderRadius.circular(8),
-          //   child: Card(
-          //     elevation: 0,
-          //     color: Colors.grey[50],
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.circular(8),
-          //     ),
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(12),
-          //       child: Row(
-          //         children: [
-          //           Container(
-          //             width: 50,
-          //             height: 50,
-          //             decoration: BoxDecoration(
-          //               color: AppColors.primary.withValues(alpha: 0.1),
-          //               shape: BoxShape.circle,
-          //             ),
-          //             child: const Icon(Icons.person, color: AppColors.primary),
-          //           ),
-          //           const SizedBox(width: 16),
-          //           Expanded(
-          //             child: Column(
-          //               crossAxisAlignment: CrossAxisAlignment.start,
-          //               children: [
-          //                 Text(
-          //                   // jobPosting.authorId,
-          //                   "Author Name", // Replace with actual author name
-          //                   style: const TextStyle(fontWeight: FontWeight.bold),
-          //                 ),
-          //                 const SizedBox(height: 4),
-          //                 Text(
-          //                   'View Profile',
-          //                   style: TextStyle(color: AppColors.accent),
-          //                 ),
-          //               ],
-          //             ),
-          //           ),
-          //           const Icon(Icons.chevron_right, color: Colors.grey),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
-          // const SizedBox(height: 24),
-          // Posted by
           const Text(
             'Posted By',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-
-          FutureBuilder<Profile>(
-            future: _profileDataService.fetchProfile(jobPosting.authorId),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text(
-                  'Lỗi khi tải thông tin người đăng: ${snapshot.error}',
-                );
-              } else if (!snapshot.hasData) {
-                return const Text('Không tìm thấy thông tin người đăng');
-              }
-              debugPrint(
-                'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx - Profile: ${snapshot}',
-              );
-
-              final profile = snapshot.data!;
-
-              return InkWell(
-                onTap: () {
-                  // Navigate to poster's profile
-                  Navigator.pushNamed(
-                    context,
-                    '/profile/view',
-                    arguments: {'profileId': jobPosting.authorId},
-                  );
-                },
-                borderRadius: BorderRadius.circular(8),
-                child: Card(
-                  elevation: 0,
-                  color: Colors.grey[50],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.person,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                profile.displayName ?? 'No name',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'View Profile',
-                                style: TextStyle(color: AppColors.accent),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(Icons.chevron_right, color: Colors.grey),
-                      ],
-                    ),
-                  ),
-                ),
+          InkWell(
+            onTap: () {
+              // Navigate to poster's profile
+              context.push(
+                // context,
+                '/profile/view/${jobPosting.authorId}',
+                //   arguments: {'profileId': jobPosting.authorId},
               );
             },
+            borderRadius: BorderRadius.circular(8),
+            child: Card(
+              elevation: 0,
+              color: Colors.grey[50],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        profileDataByUserId.profile.profileType.icon,
+                        // size: 60,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            // jobPosting.authorId,
+                            "${profileDataByUserId.profile.displayName}", // Replace with actual author name
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'View Profile',
+                            style: TextStyle(color: AppColors.accent),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, color: Colors.grey),
+                  ],
+                ),
+              ),
+            ),
           ),
 
           const SizedBox(height: 24),
+          // Posted by
+          // const Text(
+          //   'Posted By',
+          //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          // ),
+          // const SizedBox(height: 8),
+
+          // FutureBuilder<Profile>(
+          //   future: _profileDataService.fetchProfile(jobPosting.authorId),
+          //   builder: (context, snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.waiting) {
+          //       return const CircularProgressIndicator();
+          //     } else if (snapshot.hasError) {
+          //       return Text(
+          //         'Lỗi khi tải thông tin người đăng: ${snapshot.error}',
+          //       );
+          //     } else if (!snapshot.hasData) {
+          //       return const Text('Không tìm thấy thông tin người đăng');
+          //     }
+          //     debugPrint(
+          //       'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx - Profile: ${snapshot}',
+          //     );
+
+          //     final profile = snapshot.data!;
+
+          //     return InkWell(
+          //       onTap: () {
+          //         // Navigate to poster's profile
+          //         Navigator.pushNamed(
+          //           context,
+          //           '/profile/view',
+          //           arguments: {'profileId': jobPosting.authorId},
+          //         );
+          //       },
+          //       borderRadius: BorderRadius.circular(8),
+          //       child: Card(
+          //         elevation: 0,
+          //         color: Colors.grey[50],
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(8),
+          //         ),
+          //         child: Padding(
+          //           padding: const EdgeInsets.all(12),
+          //           child: Row(
+          //             children: [
+          //               Container(
+          //                 width: 50,
+          //                 height: 50,
+          //                 decoration: BoxDecoration(
+          //                   color: AppColors.primary.withOpacity(0.1),
+          //                   shape: BoxShape.circle,
+          //                 ),
+          //                 child: const Icon(
+          //                   Icons.person,
+          //                   color: AppColors.primary,
+          //                 ),
+          //               ),
+          //               const SizedBox(width: 16),
+          //               Expanded(
+          //                 child: Column(
+          //                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                   children: [
+          //                     Text(
+          //                       profile.displayName ?? 'No name',
+          //                       style: const TextStyle(
+          //                         fontWeight: FontWeight.bold,
+          //                       ),
+          //                     ),
+          //                     const SizedBox(height: 4),
+          //                     Text(
+          //                       'View Profile',
+          //                       style: TextStyle(color: AppColors.accent),
+          //                     ),
+          //                   ],
+          //                 ),
+          //               ),
+          //               const Icon(Icons.chevron_right, color: Colors.grey),
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
+
+          // const SizedBox(height: 24),
 
           // Contact information
           const Text(
@@ -421,31 +444,48 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Card(
-            elevation: 0,
-            color: Colors.grey[50],
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  _buildContactRow(
-                    Icons.phone,
-                    'Phone',
-                    // jobPosting.contactPhone,
-                    'NumberPhone Virtual',
-                  ),
-                  const Divider(),
-                  _buildContactRow(
-                    Icons.email,
-                    'Email',
-                    // jobPosting.contactEmail,
-                    'Email Virtual',
-                  ),
-                ],
-              ),
+
+          // Card(
+          //   elevation: 0,
+          //   color: Colors.grey[50],
+          //   shape: RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.circular(8),
+          //   ),
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(12),
+          //     child: Column(
+          //       children: [
+          //         _buildContactRow(
+          //           Icons.phone,
+          //           'Phone',
+          //           // jobPosting.contactPhone,
+          //           'NumberPhone Virtual',
+          //         ),
+          //         const Divider(),
+          //         _buildContactRow(
+          //           Icons.email,
+          //           'Email',
+          //           // jobPosting.contactEmail,
+          //           'Email Virtual',
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          heightWidget(
+            widget: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...profileDataByUserId.profile.contacts.map((contact) {
+                  return Card(
+                    child: ListTile(
+                      title: Text(contact.type.label),
+                      subtitle: Text(contact.value),
+                      leading: contact.type.icon(context),
+                    ),
+                  );
+                }),
+              ],
             ),
           ),
 

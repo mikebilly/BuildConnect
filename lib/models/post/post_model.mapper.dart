@@ -49,7 +49,7 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
       Field('authorId', _$authorId, key: r'author_id');
   static DateTime? _$createdAt(PostModel v) => v.createdAt;
   static const Field<PostModel, DateTime> _f$createdAt =
-      Field('createdAt', _$createdAt, opt: true);
+      Field('createdAt', _$createdAt, key: r'created_at', opt: true);
 
   @override
   final MappableFields<PostModel> fields = const {

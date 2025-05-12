@@ -25,18 +25,20 @@ class ConstructionTeamProfileMapper
 
   static String? _$profileId(ConstructionTeamProfile v) => v.profileId;
   static const Field<ConstructionTeamProfile, String> _f$profileId =
-      Field('profileId', _$profileId, opt: true);
+      Field('profileId', _$profileId, key: r'profile_id', opt: true);
   static String _$representativeName(ConstructionTeamProfile v) =>
       v.representativeName;
   static const Field<ConstructionTeamProfile, String> _f$representativeName =
-      Field('representativeName', _$representativeName);
+      Field('representativeName', _$representativeName,
+          key: r'representative_name');
   static String _$representativePhone(ConstructionTeamProfile v) =>
       v.representativePhone;
   static const Field<ConstructionTeamProfile, String> _f$representativePhone =
-      Field('representativePhone', _$representativePhone);
+      Field('representativePhone', _$representativePhone,
+          key: r'representative_phone');
   static int _$teamSize(ConstructionTeamProfile v) => v.teamSize;
   static const Field<ConstructionTeamProfile, int> _f$teamSize =
-      Field('teamSize', _$teamSize);
+      Field('teamSize', _$teamSize, key: r'team_size');
   static List<ServiceType> _$services(ConstructionTeamProfile v) => v.services;
   static const Field<ConstructionTeamProfile, List<ServiceType>> _f$services =
       Field('services', _$services);

@@ -188,6 +188,84 @@ extension DomainMapperExtension on Domain {
   }
 }
 
+class CityMapper extends EnumMapper<City> {
+  CityMapper._();
+
+  static CityMapper? _instance;
+  static CityMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = CityMapper._());
+    }
+    return _instance!;
+  }
+
+  static City fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  City decode(dynamic value) {
+    switch (value) {
+      case r'hanoi':
+        return City.hanoi;
+      case r'hoChiMinh':
+        return City.hoChiMinh;
+      case r'daNang':
+        return City.daNang;
+      case r'haiPhong':
+        return City.haiPhong;
+      case r'canTho':
+        return City.canTho;
+      case r'ninhBinh':
+        return City.ninhBinh;
+      case r'hue':
+        return City.hue;
+      case r'daLat':
+        return City.daLat;
+      case r'bienHoa':
+        return City.bienHoa;
+      case r'vungTau':
+        return City.vungTau;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(City self) {
+    switch (self) {
+      case City.hanoi:
+        return r'hanoi';
+      case City.hoChiMinh:
+        return r'hoChiMinh';
+      case City.daNang:
+        return r'daNang';
+      case City.haiPhong:
+        return r'haiPhong';
+      case City.canTho:
+        return r'canTho';
+      case City.ninhBinh:
+        return r'ninhBinh';
+      case City.hue:
+        return r'hue';
+      case City.daLat:
+        return r'daLat';
+      case City.bienHoa:
+        return r'bienHoa';
+      case City.vungTau:
+        return r'vungTau';
+    }
+  }
+}
+
+extension CityMapperExtension on City {
+  String toValue() {
+    CityMapper.ensureInitialized();
+    return MapperContainer.globals.toValue<City>(this) as String;
+  }
+}
+
 class ProjectRoleMapper extends EnumMapper<ProjectRole> {
   ProjectRoleMapper._();
 

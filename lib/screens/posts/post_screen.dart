@@ -1,3 +1,5 @@
+import 'package:buildconnect/features/auth/providers/auth_service_provider.dart';
+import 'package:buildconnect/features/auth/services/auth_service.dart';
 import 'package:buildconnect/features/posting/providers/posting_provider.dart';
 import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
 import 'package:buildconnect/shared/common_widgets.dart';
@@ -19,6 +21,7 @@ class PostScreen extends ConsumerStatefulWidget {
 
 class _PostScreenState extends ConsumerState<PostScreen> {
   late final PostingNotifier _postingNotifier;
+  late final AuthService _authService = ref.read(authServiceProvider);
 
   /// Local states
   JobPostingType _jobPostingType = JobPostingType.values.first;
@@ -38,7 +41,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
       TextEditingController();
   List<String> _requiredSkillsList = [];
 
-  double _budget = 1;
+  // double _budget = 1;
   final _budgetController = TextEditingController(text: "1");
 
   ///
@@ -67,12 +70,15 @@ class _PostScreenState extends ConsumerState<PostScreen> {
 
   Future<void> _submit() async {
     final newPostModel = PostModel(
-      // authorId: _postingNotifier.authorId,
-      authorId: "vanhID",
+      authorId: _authService.currentUserId ?? 'unknown',
+      // authorId: "vanhID",
       title: _jobTitleController.text,
       location: _locationController.text,
       description: _descriptionController.text,
-      budget: _budget,
+      budget:
+          _budgetController.text.isEmpty
+              ? 0
+              : double.tryParse(_budgetController.text) ?? 0,
       deadline: _deadline ?? DateTime.now(),
       requiredSkills: _requiredSkillsList,
       jobPostingType: _jobPostingType,
@@ -166,19 +172,32 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                   hintText: 'Enter the Description of the job posting',
                 ),
               ),
+
+              // heightWidget(
+              //   widget: buildSlider(
+              //     controller: _budgetController,
+              //     labelText: 'Job Budget',
+              //     value: 1000,
+              //     min: 1000,
+              //     max: 10000000000,
+              //     unit: "VND",
+              //     onChanged: (val) {
+              //       setState(() {
+              //         _budget = val.round();
+              //       });
+              //     },
+              //   ),
+              // ),
               heightWidget(
-                widget: buildSlider(
+                widget: buildTextFormField(
                   controller: _budgetController,
                   labelText: 'Job Budget',
-                  value: 1000,
-                  min: 1000,
-                  max: 10000000000,
-                  unit: "VND",
-                  onChanged: (val) {
-                    setState(() {
-                      _budget = val.roundToDouble();
-                    });
-                  },
+                  maxLines: 1,
+                  hintText: 'Enter the budget of the job posting',
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
                 ),
               ),
               heightWidget(
@@ -237,7 +256,10 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                     218,
                     92,
                   ).withAlpha((0.6 * 255).round()),
-                  onSkillListChanged: (_requiredSkillsList) {
+                  onSkillListChanged: (skills) {
+                    setState(() {
+                      _requiredSkillsList = skills;
+                    });
                     print('Danh sách kỹ năng: $_requiredSkillsList');
                   },
                 ),

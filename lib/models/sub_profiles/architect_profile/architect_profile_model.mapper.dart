@@ -24,19 +24,19 @@ class ArchitectProfileMapper extends ClassMapperBase<ArchitectProfile> {
 
   static String? _$profileId(ArchitectProfile v) => v.profileId;
   static const Field<ArchitectProfile, String> _f$profileId =
-      Field('profileId', _$profileId, opt: true);
+      Field('profileId', _$profileId, key: r'profile_id', opt: true);
   static ArchitectRole _$architectRole(ArchitectProfile v) => v.architectRole;
   static const Field<ArchitectProfile, ArchitectRole> _f$architectRole =
-      Field('architectRole', _$architectRole);
+      Field('architectRole', _$architectRole, key: r'architect_role');
   static String _$designPhilosophy(ArchitectProfile v) => v.designPhilosophy;
   static const Field<ArchitectProfile, String> _f$designPhilosophy =
-      Field('designPhilosophy', _$designPhilosophy);
+      Field('designPhilosophy', _$designPhilosophy, key: r'design_philosophy');
   static List<DesignStyle> _$designStyles(ArchitectProfile v) => v.designStyles;
   static const Field<ArchitectProfile, List<DesignStyle>> _f$designStyles =
-      Field('designStyles', _$designStyles);
+      Field('designStyles', _$designStyles, key: r'design_styles');
   static List<String> _$portfolioLinks(ArchitectProfile v) => v.portfolioLinks;
   static const Field<ArchitectProfile, List<String>> _f$portfolioLinks =
-      Field('portfolioLinks', _$portfolioLinks);
+      Field('portfolioLinks', _$portfolioLinks, key: r'portfolio_links');
 
   @override
   final MappableFields<ArchitectProfile> fields = const {

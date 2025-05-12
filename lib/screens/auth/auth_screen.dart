@@ -4,6 +4,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/features/auth/providers/auth_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 enum AuthMode { login, register }
 
@@ -38,25 +39,36 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     final authNotifier = ref.read(authProvider.notifier);
 
-    try {
-      if (widget.mode == AuthMode.login) {
-        await authNotifier.signIn(
-          email: _email.text.trim(),
-          password: _password.text,
-        );
-      } else {
-        await authNotifier.signUp(
-          email: _email.text.trim(),
-          password: _password.text,
-        );
-      }
+    if (widget.mode == AuthMode.login) {
+      await authNotifier.signIn(
+        email: _email.text.trim(),
+        password: _password.text,
+      );
+    } else {
+      await authNotifier.signUp(
+        email: _email.text.trim(),
+        password: _password.text,
+      );
+    }
 
-      if (mounted) context.go('/');
-    } catch (e) {
-      if (mounted) {
+    final authState = ref.read(authProvider);
+
+    if (mounted) {
+      if (authState.hasError) {
+        final error = authState.error;
+        final message =
+            error is AuthException ? error.message : 'Unexpected error';
+        debugPrint("❌ Auth error: $message");
+
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error: $message')));
+      } else if (!authState.isLoading && authState.value != null) {
+        debugPrint("✅ Auth success: ${authState.value?.email}");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login successful!')));
+        context.go('/');
       }
     }
   }

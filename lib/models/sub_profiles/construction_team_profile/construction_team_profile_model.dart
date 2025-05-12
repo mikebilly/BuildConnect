@@ -3,7 +3,7 @@ import 'package:buildconnect/models/enums/enums.dart';
 
 part 'construction_team_profile_model.mapper.dart';
 
-@MappableClass()
+@MappableClass(caseStyle: CaseStyle.snakeCase)
 class ConstructionTeamProfile with ConstructionTeamProfileMappable {
   final String? profileId;
   // final Representative representative;

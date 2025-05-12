@@ -171,16 +171,16 @@ class FeedScreen extends ConsumerWidget {
                         // Posted by & location
                         Row(
                           children: [
-                            const Icon(
-                              Icons.person,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
+                            // const Icon(
+                            //   Icons.person,
+                            //   size: 16,
+                            //   color: Colors.grey,
+                            // ),
                             const SizedBox(width: 4),
-                            Text(
-                              'Posted by ${post.authorId}', // Replace with actual author info
-                              style: TextStyle(color: Colors.grey),
-                            ),
+                            // Text(
+                            //   'Posted by ${post.authorId}', // Replace with actual author info
+                            //   style: TextStyle(color: Colors.grey),
+                            // ),
                             const SizedBox(width: 16),
                             const Icon(
                               Icons.location_on,

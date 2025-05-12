@@ -11,10 +11,10 @@ class SupplierProfileEditScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<SupplierProfileEditScreen> createState() =>
-      _SupplierProfileEditScreenState();
+      SupplierProfileEditScreenState();
 }
 
-class _SupplierProfileEditScreenState
+class SupplierProfileEditScreenState
     extends ConsumerState<SupplierProfileEditScreen> {
   late final ProfileDataNotifier _profileDataNotifier;
 
@@ -55,18 +55,31 @@ class _SupplierProfileEditScreenState
     }
   }
 
-  @override
-  void dispose() {
-    final newSupplierProfile = SupplierProfile(supplierType: _supplierType!, materialCategories: _materialCategoriesSet.toList(), deliveryRadius: _deliveryRadiusController.text.isNotEmpty ? int.parse(_deliveryRadiusController.text) : 1);
+  Future<void> dumpFromControllers() async {
+    final newSupplierProfile = SupplierProfile(
+      supplierType: _supplierType!,
+      materialCategories: _materialCategoriesSet.toList(),
+      deliveryRadius:
+          _deliveryRadiusController.text.isNotEmpty
+              ? int.parse(_deliveryRadiusController.text)
+              : 1,
+    );
     debugPrint('Disposing');
     // Future(() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    debugPrint('Right before dumping at supplier: $newSupplierProfile');
+    await Future.microtask(() async {
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
       _profileDataNotifier.dumpFromControllers(
         supplierProfile: newSupplierProfile,
         // designStyles: _designStyles.toList(),
         // portfolioLinks: _portfolioLinks,
       );
     });
+  }
+
+  @override
+  void dispose() {
+    dumpFromControllers();
 
     // _email.dispose();
     super.dispose();

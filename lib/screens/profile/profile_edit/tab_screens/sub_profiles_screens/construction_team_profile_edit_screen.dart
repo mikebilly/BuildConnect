@@ -12,10 +12,10 @@ class ConstructionTeamProfileEditScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConstructionTeamProfileEditScreen> createState() =>
-      _ConstructionTeamProfileEditScreenState();
+      ConstructionTeamProfileEditScreenState();
 }
 
-class _ConstructionTeamProfileEditScreenState
+class ConstructionTeamProfileEditScreenState
     extends ConsumerState<ConstructionTeamProfileEditScreen> {
   late final ProfileDataNotifier _profileDataNotifier;
 
@@ -68,9 +68,7 @@ class _ConstructionTeamProfileEditScreenState
     }
   }
 
-  @override
-  void dispose() {
-    debugPrint('Disposing');
+  Future<void> dumpFromControllers() async {
     final newConstructionTeamProfile = ConstructionTeamProfile(
       representativeName: _representativeNameController.text,
       representativePhone: _representativePhoneController.text,
@@ -78,14 +76,21 @@ class _ConstructionTeamProfileEditScreenState
       teamSize: _teamSize,
     );
     // Future(() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    debugPrint('Right before dumping at construction: $newConstructionTeamProfile');
+    await Future.microtask(() async {
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
       _profileDataNotifier.dumpFromControllers(
         // designStyles: _designStyles.toList(),
         // portfolioLinks: _portfolioLinks,
         constructionTeamProfile: newConstructionTeamProfile,
       );
     });
+  }
 
+  @override
+  void dispose() {
+    debugPrint('Disposing');
+    dumpFromControllers();
     // _email.dispose();
     super.dispose();
   }
@@ -144,7 +149,7 @@ class _ConstructionTeamProfileEditScreenState
 
             heightWidget(
               widget: buildSlider(
-                labelText: 'Team size',
+                labelText: 'Team Size',
                 value: _teamSize,
                 controller: _teamSizeController,
                 min: 1,

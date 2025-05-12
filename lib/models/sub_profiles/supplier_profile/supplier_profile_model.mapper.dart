@@ -24,17 +24,18 @@ class SupplierProfileMapper extends ClassMapperBase<SupplierProfile> {
 
   static String? _$profileId(SupplierProfile v) => v.profileId;
   static const Field<SupplierProfile, String> _f$profileId =
-      Field('profileId', _$profileId, opt: true);
+      Field('profileId', _$profileId, key: r'profile_id', opt: true);
   static SupplierType _$supplierType(SupplierProfile v) => v.supplierType;
   static const Field<SupplierProfile, SupplierType> _f$supplierType =
-      Field('supplierType', _$supplierType);
+      Field('supplierType', _$supplierType, key: r'supplier_type');
   static List<MaterialCategory> _$materialCategories(SupplierProfile v) =>
       v.materialCategories;
   static const Field<SupplierProfile, List<MaterialCategory>>
-      _f$materialCategories = Field('materialCategories', _$materialCategories);
+      _f$materialCategories = Field('materialCategories', _$materialCategories,
+          key: r'material_categories');
   static int _$deliveryRadius(SupplierProfile v) => v.deliveryRadius;
   static const Field<SupplierProfile, int> _f$deliveryRadius =
-      Field('deliveryRadius', _$deliveryRadius);
+      Field('deliveryRadius', _$deliveryRadius, key: r'delivery_radius');
 
   @override
   final MappableFields<SupplierProfile> fields = const {

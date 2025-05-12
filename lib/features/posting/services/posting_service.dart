@@ -24,9 +24,30 @@ class PostingService {
   PostingService(this._client);
 
   Future<PostModel> createNewPost({required PostModel postModel}) async {
-    final data = postModel.toJson();
-    final response = await _client.from('posts').insert(data).select();
-    return PostModelMapper.fromMap(response[0]);
+    // Convert PostModel to Map and clean up
+    final data = {
+      'title': postModel.title,
+      'job_posting_type': postModel.jobPostingType.name,
+      'location': postModel.location,
+      'description': postModel.description,
+      'budget': postModel.budget?.toDouble(), // ensure double
+      'deadline':
+          postModel.deadline?.toIso8601String().split('T').first, // DATE only
+      'required_skills': postModel.requiredSkills,
+      'author_id': postModel.authorId,
+      // Do not send `id` or `created_at`, let DB handle
+    };
+
+    debugPrint('Creating new post with data: $data');
+
+    try {
+      final response =
+          await _client.from('posts').insert(data).select(); // get inserted row
+      return PostModelMapper.fromMap(response[0]);
+    } catch (e) {
+      debugPrint('Error creating post: $e');
+      rethrow;
+    }
   }
 
   Future<List<PostModel>> fetchAllPosts() async {

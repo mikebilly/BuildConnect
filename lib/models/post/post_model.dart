@@ -19,7 +19,7 @@ class PostModel with PostModelMappable {
     @MappableField(key: 'required_skills') this.requiredSkills,
     // this.categories,
     @MappableField(key: 'author_id') required this.authorId,
-    this.createdAt,
+    @MappableField(key: 'created_at') this.createdAt,
   });
 
   String? id; // We will use uuid

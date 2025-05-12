@@ -9,6 +9,7 @@ import 'package:buildconnect/screens/home/home_screen.dart';
 
 //profile
 import 'package:buildconnect/screens/profile/profile_edit/profile_edit_screen.dart';
+import 'package:buildconnect/screens/profile/profile_view/profile_view_screen.dart';
 
 // import 'package:flutter_masterclass/presentation/screens/home/home_screen.dart';
 // import 'package:flutter_masterclass/presentation/screens/loading/loading_screen.dart';
@@ -18,6 +19,7 @@ import 'package:buildconnect/screens/profile/profile_edit/profile_edit_screen.da
 //posting
 import 'package:buildconnect/screens/posts/post_screen.dart';
 import 'package:buildconnect/screens/posts/detail_post_screen.dart';
+
 part 'router.g.dart';
 
 @riverpod
@@ -50,7 +52,7 @@ GoRouter router(Ref ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
-        path: '/profile_edit',
+        path: '/profile/edit',
         name: 'profile_edit',
         builder: (context, state) => const ProfileEditScreen(),
       ),
@@ -66,7 +68,16 @@ GoRouter router(Ref ref) {
           return JobPostingViewScreen(jobPostingId: jobPostingId);
         },
       ),
-
+      GoRoute(
+        path: '/profile/view/:userId',
+        name: 'profile_view',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId'];
+          return ProfileViewScreen(
+            userId: userId,
+          );
+        },
+      ),
       // GoRoute(
       //   path: '/location',
       //   name: 'location',
