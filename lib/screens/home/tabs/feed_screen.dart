@@ -238,7 +238,7 @@ class FeedScreen extends ConsumerWidget {
                           ),
                         TextButton.icon(
                           onPressed: () {
-                            print(post.id);
+                            print('post id in feed_screen is: ${post.id}');
                             context.push('/job-posting/view/${post.id}');
                           },
 

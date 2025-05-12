@@ -1,28 +1,28 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'search_profile_provider.dart';
+part of 'search_post_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchProfileNotifierHash() =>
-    r'1f8c83be8700f4e4e23ddd3ff76930d8ee76e62a';
+String _$searchPostNotifierHash() =>
+    r'58dd033c7e3fcb40ac715be44e8817e8e3d188a5';
 
-/// See also [SearchProfileNotifier].
-@ProviderFor(SearchProfileNotifier)
-final searchProfileNotifierProvider =
-    NotifierProvider<SearchProfileNotifier, SearchProfileModel>.internal(
-      SearchProfileNotifier.new,
-      name: r'searchProfileNotifierProvider',
+/// See also [SearchPostNotifier].
+@ProviderFor(SearchPostNotifier)
+final searchPostNotifierProvider =
+    AsyncNotifierProvider<SearchPostNotifier, SearchPostStateInternal>.internal(
+      SearchPostNotifier.new,
+      name: r'searchPostNotifierProvider',
       debugGetCreateSourceHash:
           const bool.fromEnvironment('dart.vm.product')
               ? null
-              : _$searchProfileNotifierHash,
+              : _$searchPostNotifierHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$SearchProfileNotifier = Notifier<SearchProfileModel>;
+typedef _$SearchPostNotifier = AsyncNotifier<SearchPostStateInternal>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

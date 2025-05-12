@@ -1,8 +1,6 @@
-// lib/models/post/post_model.dart
+//
 import 'package:buildconnect/models/enums/enums.dart';
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:postgrest/src/types.dart';
-
 part 'post_model.mapper.dart';
 
 @MappableClass()
@@ -21,15 +19,23 @@ class PostModel with PostModelMappable {
     this.createdAt,
   });
 
-  String? id; // We will use uuid
+  String? id;
+
   final String title;
+
+  @MappableField(key: 'job_posting_type')
   final JobPostingType jobPostingType;
+
   final String location;
   final String description;
   final double? budget;
   final DateTime? deadline;
   final List<String>? requiredSkills;
   final List<String>? categories;
-  final String authorId; // ID of the user who created the post
+
+  @MappableField(key: 'author_id')
+  final String authorId;
+
+  @MappableField(key: 'created_at')
   final DateTime? createdAt;
 }

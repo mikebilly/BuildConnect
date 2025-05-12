@@ -27,7 +27,7 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
   static const Field<PostModel, String> _f$title = Field('title', _$title);
   static JobPostingType _$jobPostingType(PostModel v) => v.jobPostingType;
   static const Field<PostModel, JobPostingType> _f$jobPostingType =
-      Field('jobPostingType', _$jobPostingType);
+      Field('jobPostingType', _$jobPostingType, key: r'job_posting_type');
   static String _$location(PostModel v) => v.location;
   static const Field<PostModel, String> _f$location =
       Field('location', _$location);
@@ -48,10 +48,10 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
       Field('categories', _$categories, opt: true);
   static String _$authorId(PostModel v) => v.authorId;
   static const Field<PostModel, String> _f$authorId =
-      Field('authorId', _$authorId);
+      Field('authorId', _$authorId, key: r'author_id');
   static DateTime? _$createdAt(PostModel v) => v.createdAt;
   static const Field<PostModel, DateTime> _f$createdAt =
-      Field('createdAt', _$createdAt, opt: true);
+      Field('createdAt', _$createdAt, key: r'created_at', opt: true);
 
   @override
   final MappableFields<PostModel> fields = const {

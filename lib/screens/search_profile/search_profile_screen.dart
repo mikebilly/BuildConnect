@@ -34,7 +34,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
   List<ProfileType>? _selectedProfileTypeList = [];
   City? _selectedCity;
   Future<List<Profile>?>? _searchFuture;
-  late final SearchProfileService _searchProfileService;
+  late final SearchPostService _searchProfileService;
   Map<ProfileType, bool> openFilterByProfileType = {
     ProfileType.architect: false,
     ProfileType.constructionTeam: false,
@@ -119,7 +119,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
             .watch(searchProfileNotifierProvider.notifier)
             .isSelectedProfileType();
     return Scaffold(
-      appBar: AppBar(title: const Text('Search Profiles')),
+      // appBar: AppBar(title: const Text('Search Profiles')),
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -849,7 +849,7 @@ Widget showProfileListResult(List<Profile> profiles, BuildContext context) {
               // Avatar/Icon
               CircleAvatar(
                 radius: 28,
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: AppTheme.lightTheme.primaryColor,
                 child: Text(
                   profile.displayName.isNotEmpty
                       ? profile.displayName[0].toUpperCase()

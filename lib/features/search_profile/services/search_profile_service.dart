@@ -1,13 +1,14 @@
 import 'package:buildconnect/core/constants/supabase_constants.dart';
 import 'package:buildconnect/models/enums/enums.dart';
 import 'package:buildconnect/models/profile/profile_model.dart';
+import 'package:buildconnect/models/search_post/search_post_model.dart';
 import 'package:buildconnect/models/search_profile/search_profile_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SearchProfileService {
+class SearchPostService {
   final SupabaseClient _supabaseClient;
-  SearchProfileService(this._supabaseClient);
+  SearchPostService(this._supabaseClient);
 
   Future<List<Profile>?> searchProfile(SearchProfileModel model) async {
     if (model.cityList.isEmpty) {

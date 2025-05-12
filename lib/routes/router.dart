@@ -1,4 +1,5 @@
-import 'package:buildconnect/screens/search_job/search_job_screen.dart';
+import 'package:buildconnect/screens/search/search_screen.dart';
+import 'package:buildconnect/screens/search_post/search_post_screen.dart';
 import 'package:buildconnect/screens/search_profile/search_profile_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -79,15 +80,21 @@ GoRouter router(Ref ref) {
         },
       ),
       GoRoute(
+        path: '/search',
+        name: 'search',
+        builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
         path: '/search_profile',
         name: 'search_profile',
         builder: (context, state) => const SearchProfileScreen(),
       ),
       GoRoute(
-        path: '/search_job',
-        name: 'search_job',
-        builder: (context, state) => const SearchJobScreen(),
+        path: '/search_post',
+        name: 'search_post',
+        builder: (context, state) => const SearchPostScreen(),
       ),
+
       // GoRoute(
       //   path: '/location',
       //   name: 'location',

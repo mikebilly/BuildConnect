@@ -24,10 +24,10 @@ class HomeTabScreen extends StatelessWidget {
                     child: TextField(
                       decoration: InputDecoration(
                         icon: Icon(Icons.search),
-                        label: Text('Search Profile or Job'),
+                        label: Text('Search'),
                         labelStyle: TextStyle(color: Colors.grey),
                       ),
-                      onTap: () => context.pushNamed('search_profile'),
+                      onTap: () => context.pushNamed('search'),
                     ),
                   ),
                 ],
