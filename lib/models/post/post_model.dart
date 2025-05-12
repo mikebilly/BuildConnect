@@ -2,6 +2,7 @@
 import 'package:buildconnect/models/enums/enums.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:postgrest/src/types.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'post_model.mapper.dart';
 
@@ -10,15 +11,15 @@ class PostModel with PostModelMappable {
   PostModel({
     this.id,
     required this.title,
-    required this.jobPostingType,
+    @MappableField(key: 'job_posting_type') required this.jobPostingType,
     required this.location,
     required this.description,
     this.budget,
     this.deadline,
-    this.requiredSkills,
-    this.categories,
-    required this.authorId,
-    this.createdAt,
+    @MappableField(key: 'required_skills') this.requiredSkills,
+    // this.categories,
+    @MappableField(key: 'author_id') required this.authorId,
+    @MappableField(key: 'created_at') this.createdAt,
   });
 
   String? id; // We will use uuid
@@ -29,7 +30,7 @@ class PostModel with PostModelMappable {
   final double? budget;
   final DateTime? deadline;
   final List<String>? requiredSkills;
-  final List<String>? categories;
+  // final List<String>? categories;
   final String authorId; // ID of the user who created the post
   final DateTime? createdAt;
 }
