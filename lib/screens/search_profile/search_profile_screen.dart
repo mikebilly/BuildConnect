@@ -25,14 +25,26 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
 
   // State cục bộ cho filter UI
   bool _showFilterPanel = false;
+  bool _showSuggestionPanel = true;
   bool _locationFilterExpanded = false;
   bool _profileTypeFilterExpanded = false;
+  bool _professionalFilterWithEachProfileTypeExpanded = false;
   bool _addLocation = false;
   List<City>? _selectedLocationList = [];
   List<ProfileType>? _selectedProfileTypeList = [];
   City? _selectedCity;
   Future<List<Profile>?>? _searchFuture;
   late final SearchProfileService _searchProfileService;
+  Map<ProfileType, bool> openFilterByProfileType = {
+    ProfileType.architect: false,
+    ProfileType.constructionTeam: false,
+    ProfileType.contractor: false,
+    ProfileType.supplier: false,
+  };
+  bool openDesignStyleFilter = false;
+  bool openServiceTypeFilterOfConstructionTeam = false;
+  bool openServiceTypeFilterOfContractor = false;
+  bool openMaterialCategoryFilter = false;
 
   @override
   void initState() {
@@ -90,6 +102,22 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
     final panelWidth = MediaQuery.of(context).size.width * 0.9;
     final current_location_list =
         ref.read(searchProfileNotifierProvider).cityList;
+    String profileTypeName =
+        ref.read(searchProfileNotifierProvider.notifier).profileTypeName();
+    List<ProfileType> profileTypeChoosingList =
+        ref.watch(searchProfileNotifierProvider).profileType;
+    ArchitectFilterModel? currentArchitectFilter =
+        ref.watch(searchProfileNotifierProvider).architectFilterModel;
+    ContractorFilterModel? currentContractorFilter =
+        ref.watch(searchProfileNotifierProvider).contractorFilterModel;
+    ConstructionTeamFilterModel? currentConstructionTeamFilter =
+        ref.watch(searchProfileNotifierProvider).constructionTeamFilterModel;
+    SupplierFilterModel? currentSupplierFilter =
+        ref.watch(searchProfileNotifierProvider).supplierFilterModel;
+    Map<ProfileType, bool> isSelectedProfileType =
+        ref
+            .watch(searchProfileNotifierProvider.notifier)
+            .isSelectedProfileType();
     return Scaffold(
       appBar: AppBar(title: const Text('Search Profiles')),
       body: Padding(
@@ -185,6 +213,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                       children: [
                         // --- Location Filter ---
                         _buildExpandable(
+                          labelLevel: 1,
                           label: 'Location',
                           expanded: _locationFilterExpanded,
                           onTap:
@@ -199,8 +228,9 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                               children: [
                                 // all citys are selected
                                 if (current_location_list!.isNotEmpty)
-                                  Row(
-                                    spacing: 10,
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 5,
                                     children:
                                         current_location_list
                                             .map(
@@ -302,6 +332,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
 
                         // --- Profile Type Filter ---
                         _buildExpandable(
+                          labelLevel: 1,
                           label: 'Profile Type',
                           expanded: _profileTypeFilterExpanded,
                           onTap:
@@ -317,11 +348,9 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                               runSpacing: 8,
                               children:
                                   ProfileType.values.map((type) {
-                                    final isSelected = searchProfileNotifier
-                                        .isSelectedProfileType(type);
                                     return ChoiceChip(
                                       label: Text(type.label),
-                                      selected: isSelected,
+                                      selected: isSelectedProfileType[type]!,
                                       onSelected: (selected) {
                                         Icon(
                                           Icons.check,
@@ -345,7 +374,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                                           AppTheme.lightTheme.primaryColor,
                                       labelStyle: TextStyle(
                                         color:
-                                            isSelected
+                                            isSelectedProfileType[type]!
                                                 ? Theme.of(context).primaryColor
                                                 : Colors.black87,
                                       ),
@@ -354,7 +383,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                                         borderRadius: BorderRadius.circular(8),
                                         side: BorderSide(
                                           color:
-                                              isSelected
+                                              isSelectedProfileType[type]!
                                                   ? Theme.of(
                                                     context,
                                                   ).primaryColor
@@ -369,31 +398,56 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
 
                         // TODO: Thêm _buildExpandable cho Experience Level
                         const Divider(height: 24),
-                        // Nút áp dụng filters và tìm kiếm
+
+                        // filter theo từng profile type
+                        if (profileTypeChoosingList.isNotEmpty)
+                          for (var element in profileTypeChoosingList)
+                            _buildExpandable(
+                              labelLevel: 1,
+                              label: element.label,
+                              expanded: openFilterByProfileType[element]!,
+
+                              onTap: () {
+                                setState(
+                                  () =>
+                                      openFilterByProfileType[element] =
+                                          !openFilterByProfileType[element]!,
+                                );
+                              },
+                              child: buildFilterByProfileType(
+                                element,
+                                currentArchitectFilter,
+                                currentContractorFilter,
+                                currentConstructionTeamFilter,
+                                currentSupplierFilter,
+                              ),
+                            ),
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                ref
-                                    .read(
-                                      searchProfileNotifierProvider.notifier,
-                                    )
-                                    .clearAllFilters();
-                                setState(() {});
+                                setState(() {
+                                  ref
+                                      .read(
+                                        searchProfileNotifierProvider.notifier,
+                                      )
+                                      .clearAllFilters();
+                                });
                               },
-                              child: const Text('Clear All Filters'),
+                              child: const Text('Clear All'),
                               style: ElevatedButton.styleFrom(
-                                textStyle: TextStyle(fontSize: 12),
+                                textStyle: TextStyle(fontSize: 14),
                                 backgroundColor: Colors.red[500],
                                 minimumSize: const Size(50, 40),
                               ),
                             ),
                             ElevatedButton(
                               onPressed: _triggerSearch,
-                              child: const Text('Apply Filters & Search'),
+                              child: const Text('Apply & Search'),
                               style: ElevatedButton.styleFrom(
-                                textStyle: TextStyle(fontSize: 12),
+                                textStyle: TextStyle(fontSize: 14),
                                 minimumSize: const Size(50, 40),
                               ),
                             ),
@@ -461,24 +515,33 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
     required bool expanded,
     required VoidCallback onTap,
     required Widget child,
+    required int labelLevel,
   }) {
+    TextStyle getLabelStyle(int labelLevel) {
+      switch (labelLevel) {
+        case 1:
+          return const TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
+        case 2:
+          return const TextStyle(fontSize: 14, fontWeight: FontWeight.w700);
+        default:
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.normal,
+          ); // Default style
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
+                Text(label, style: getLabelStyle(labelLevel)),
                 Icon(
                   expanded
                       ? Icons.keyboard_arrow_up
@@ -506,6 +569,254 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
         break;
       }
     }
+  }
+
+  Widget buildFilterByProfileType(
+    ProfileType element,
+    ArchitectFilterModel? currentArchitectFilter,
+    ContractorFilterModel? currentContractorFilter,
+    ConstructionTeamFilterModel? currentConstructionTeamFilter,
+    SupplierFilterModel? currentSupplierFilter,
+  ) {
+    Widget filterWidget;
+
+    switch (element) {
+      case ProfileType.architect:
+        filterWidget = _buildExpandable(
+          labelLevel: 2,
+          label: '  Design Style',
+          expanded: openDesignStyleFilter,
+          onTap: () {
+            setState(() {
+              openDesignStyleFilter = !openDesignStyleFilter;
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  DesignStyle.values.map((type) {
+                    final isSelected = searchProfileNotifier
+                        .isSelectedDesignStyle(type);
+                    return ChoiceChip(
+                      label: Text(type.label, style: TextStyle(fontSize: 13)),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        Icon(
+                          Icons.check,
+                          size: 16,
+                          color: AppTheme.lightTheme.primaryColor,
+                        );
+                        searchProfileNotifier.toggleDesignStyle(type);
+                        setState(() {});
+                      },
+                      selectedColor: Color.fromARGB(255, 207, 235, 210),
+
+                      checkmarkColor: AppTheme.lightTheme.primaryColor,
+                      labelStyle: TextStyle(
+                        color:
+                            isSelected
+                                ? Theme.of(context).primaryColor
+                                : Colors.black87,
+                      ),
+                      backgroundColor: Colors.grey.shade100,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(
+                          color:
+                              isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey.shade300,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
+        );
+
+        break;
+      case ProfileType.constructionTeam:
+        filterWidget = _buildExpandable(
+          labelLevel: 2,
+          label: '  Service Type',
+          expanded: openServiceTypeFilterOfConstructionTeam,
+          onTap: () {
+            setState(() {
+              openServiceTypeFilterOfConstructionTeam =
+                  !openServiceTypeFilterOfConstructionTeam;
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  ServiceType.values.map((type) {
+                    final isSelected = searchProfileNotifier
+                        .isSelectedServiceTypeOfConstructionTeam(type);
+                    return ChoiceChip(
+                      label: Text(type.label, style: TextStyle(fontSize: 13)),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        Icon(
+                          Icons.check,
+                          size: 16,
+                          color: AppTheme.lightTheme.primaryColor,
+                        );
+                        searchProfileNotifier
+                            .toggleServiceTypeOfConstructionTeam(type);
+                        setState(() {});
+                      },
+                      selectedColor: Color.fromARGB(255, 207, 235, 210),
+
+                      checkmarkColor: AppTheme.lightTheme.primaryColor,
+                      labelStyle: TextStyle(
+                        color:
+                            isSelected
+                                ? Theme.of(context).primaryColor
+                                : Colors.black87,
+                      ),
+                      backgroundColor: Colors.grey.shade100,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(
+                          color:
+                              isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey.shade300,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
+        );
+        break;
+      case ProfileType.contractor:
+        filterWidget = _buildExpandable(
+          labelLevel: 2,
+          label: '  Service Type',
+          expanded: openServiceTypeFilterOfContractor,
+          onTap: () {
+            setState(() {
+              openServiceTypeFilterOfContractor =
+                  !openServiceTypeFilterOfContractor;
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  ServiceType.values.map((type) {
+                    final isSelected = searchProfileNotifier
+                        .isSelectedServiceTypeOfContractor(type);
+                    return ChoiceChip(
+                      label: Text(type.label, style: TextStyle(fontSize: 13)),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        Icon(
+                          Icons.check,
+                          size: 16,
+                          color: AppTheme.lightTheme.primaryColor,
+                        );
+                        searchProfileNotifier.toggleServiceTypeOfContractor(
+                          type,
+                        );
+                        setState(() {});
+                      },
+                      selectedColor: Color.fromARGB(255, 207, 235, 210),
+
+                      checkmarkColor: AppTheme.lightTheme.primaryColor,
+                      labelStyle: TextStyle(
+                        color:
+                            isSelected
+                                ? Theme.of(context).primaryColor
+                                : Colors.black87,
+                      ),
+                      backgroundColor: Colors.grey.shade100,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(
+                          color:
+                              isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey.shade300,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
+        );
+        break;
+      case ProfileType.supplier:
+        filterWidget = _buildExpandable(
+          labelLevel: 2,
+          label: '  Material Category',
+          expanded: openMaterialCategoryFilter!,
+          onTap: () {
+            setState(() {
+              openMaterialCategoryFilter = !openMaterialCategoryFilter;
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  MaterialCategory.values.map((type) {
+                    final isSelected = searchProfileNotifier
+                        .isSelectedMaterialCategory(type);
+                    return ChoiceChip(
+                      label: Text(type.label, style: TextStyle(fontSize: 13)),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        Icon(
+                          Icons.check,
+                          size: 16,
+                          color: AppTheme.lightTheme.primaryColor,
+                        );
+                        searchProfileNotifier.toggleMaterialCategory(type);
+                        setState(() {});
+                      },
+                      selectedColor: Color.fromARGB(255, 207, 235, 210),
+
+                      checkmarkColor: AppTheme.lightTheme.primaryColor,
+                      labelStyle: TextStyle(
+                        color:
+                            isSelected
+                                ? Theme.of(context).primaryColor
+                                : Colors.black87,
+                      ),
+                      backgroundColor: Colors.grey.shade100,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(
+                          color:
+                              isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey.shade300,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
+        );
+        break;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Wrap(spacing: 8, runSpacing: 8, children: [filterWidget]),
+    );
   }
 }
 
@@ -584,6 +895,7 @@ Widget showProfileListResult(List<Profile> profiles, BuildContext context) {
                 icon: const Icon(Icons.arrow_forward_ios),
                 onPressed: () {
                   // TODO: Navigate to Profile detail page
+                  context.push('/profile/view/${profile.userId}');
                 },
               ),
             ],

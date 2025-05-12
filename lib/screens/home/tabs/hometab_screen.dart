@@ -24,7 +24,7 @@ class HomeTabScreen extends StatelessWidget {
                     child: TextField(
                       decoration: InputDecoration(
                         icon: Icon(Icons.search),
-                        label: Text('Search'),
+                        label: Text('Search Profile or Job'),
                         labelStyle: TextStyle(color: Colors.grey),
                       ),
                       onTap: () => context.pushNamed('search_profile'),

@@ -55,46 +55,202 @@ class SearchProfileNotifier extends _$SearchProfileNotifier {
   }
 
   Future<List<Profile>?> searchProfile() async {
+    debugPrint('---------------------------');
     debugPrint(state.toString());
+    debugPrint(state.architectFilterModel.toString());
+    debugPrint('---------------------------');
     final model = state;
     if (model.isEmptyModel()) {
       debugPrint('Search model is empty');
       return null;
     }
-    debugPrint('Searching with model: ${model.toString()}');
     final service = ref.read(searchProfileServiceProvider);
     final result = await service.searchProfile(model);
     return result;
   }
 
   void toggleProfileType(ProfileType type) {
-    final current = state.profileType ?? [];
+    final current = state.profileType;
+    final updatedList = List<ProfileType>.from(
+      current,
+    ); // bản sao có thể thay đổi
 
-    final updatedList =
-        current.contains(type)
-            ? current.where((c) => c != type).toList()
-            : [...current, type];
+    if (updatedList.contains(type)) {
+      updatedList.remove(type);
+      resetFilterByEachProfileType(type);
+    } else {
+      updatedList.add(type);
+    }
 
     state = state.copyWith(profileType: updatedList);
   }
 
-  bool isSelectedProfileType(ProfileType? p) {
-    if (state.profileType == null)
-      return false;
+  bool isSelectedProfileTypeDetail(ProfileType? p) {
+    bool check = state.profileType.contains(p);
+    return check;
+  }
+
+  Map<ProfileType, bool> isSelectedProfileType() {
+    return {
+      ProfileType.architect: isSelectedProfileTypeDetail(ProfileType.architect),
+      ProfileType.contractor: isSelectedProfileTypeDetail(
+        ProfileType.contractor,
+      ),
+      ProfileType.constructionTeam: isSelectedProfileTypeDetail(
+        ProfileType.constructionTeam,
+      ),
+      ProfileType.supplier: isSelectedProfileTypeDetail(ProfileType.supplier),
+    };
+  }
+
+  String profileTypeName() {
+    if (state.profileType.isEmpty)
+      return 'No profile chosen';
     else {
-      bool check = state.profileType!.contains(p);
-      return check;
+      String res = '';
+      for (final p in state.profileType) {
+        res += p.label;
+      }
+      return res;
     }
-    ;
   }
 
   void clearAllFilters() {
+    debugPrint(
+      '---------------------Curren state: ${state.toString()}-----------------',
+    );
     state = state.copyWith(
-      query: '',
+      query: state.query,
       cityList: const [], // empty list, not null
-      profileType: null,
+      profileType: const [],
+      architectFilterModel: null,
+      contractorFilterModel: null,
+      constructionTeamFilterModel: null,
+      supplierFilterModel: null,
       // yearsOfExperience: null,
       // suggestions: const [], // if you have suggestions
     );
+    debugPrint(
+      '---------------------State sau khi clear All Filters: ${state.toString()}-----------------',
+    );
+  }
+
+  bool isSelectedDesignStyle(DesignStyle type) {
+    final model = state.architectFilterModel;
+    if (model == null) return false;
+    return model.designStyle.contains(type);
+  }
+
+  void toggleDesignStyle(DesignStyle type) {
+    var model = state.architectFilterModel ?? ArchitectFilterModel();
+    final currentList = List<DesignStyle>.from(model.designStyle);
+
+    if (currentList.contains(type)) {
+      currentList.remove(type);
+    } else {
+      currentList.add(type);
+    }
+
+    // Giả sử bạn có copyWith
+    state = state.copyWith(
+      architectFilterModel: model.copyWith(designStyle: currentList),
+    );
+  }
+
+  void resetFilterByEachProfileType(ProfileType type) {
+    switch (type) {
+      case ProfileType.architect:
+        state = state.copyWith(architectFilterModel: ArchitectFilterModel());
+        break;
+      case ProfileType.contractor:
+        state = state.copyWith(contractorFilterModel: ContractorFilterModel());
+        break;
+      case ProfileType.constructionTeam:
+        state = state.copyWith(
+          constructionTeamFilterModel: ConstructionTeamFilterModel(),
+        );
+        break;
+      case ProfileType.supplier:
+        state = state.copyWith(supplierFilterModel: SupplierFilterModel());
+        break;
+      default:
+        break;
+    }
+  }
+
+  bool isSelectedServiceTypeOfConstructionTeam(ServiceType type) {
+    final model = state.constructionTeamFilterModel;
+    if (model == null) return false;
+    return model.serviceType.contains(type);
+  }
+
+  void toggleServiceTypeOfConstructionTeam(ServiceType type) {
+    var model =
+        state.constructionTeamFilterModel ?? ConstructionTeamFilterModel();
+    final currentList = List<ServiceType>.from(model.serviceType);
+
+    if (currentList.contains(type)) {
+      currentList.remove(type);
+    } else {
+      currentList.add(type);
+    }
+
+    // Giả sử bạn có copyWith
+    state = state.copyWith(
+      constructionTeamFilterModel: model.copyWith(serviceType: currentList),
+    );
+  }
+
+  bool isSelectedServiceTypeOfContractor(ServiceType type) {
+    final model = state.contractorFilterModel;
+    if (model == null) return false;
+    return model.serviceType.contains(type);
+  }
+
+  void toggleServiceTypeOfContractor(ServiceType type) {
+    var model = state.contractorFilterModel ?? ContractorFilterModel();
+    final currentList = List<ServiceType>.from(model.serviceType);
+
+    if (currentList.contains(type)) {
+      currentList.remove(type);
+    } else {
+      currentList.add(type);
+    }
+
+    // Giả sử bạn có copyWith
+    state = state.copyWith(
+      contractorFilterModel: model.copyWith(serviceType: currentList),
+    );
+  }
+
+  isSelectedMaterialCategory(MaterialCategory type) {
+    final model = state.supplierFilterModel;
+    if (model == null) return false;
+    return model.materialCategory.contains(type);
+  }
+
+  void toggleMaterialCategory(MaterialCategory type) {
+    var model = state.supplierFilterModel ?? SupplierFilterModel();
+    final currentList = List<MaterialCategory>.from(model.materialCategory);
+
+    if (currentList.contains(type)) {
+      currentList.remove(type);
+    } else {
+      currentList.add(type);
+    }
+
+    // Giả sử bạn có copyWith
+    state = state.copyWith(
+      supplierFilterModel: model.copyWith(materialCategory: currentList),
+    );
+  }
+}
+
+class ProfileTypeChoosingNotifier extends StateNotifier<List<ProfileType>> {
+  ProfileTypeChoosingNotifier(super.state);
+
+  @override
+  List<ProfileType> build() {
+    return [];
   }
 }
