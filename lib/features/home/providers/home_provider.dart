@@ -22,7 +22,7 @@ final constructionNewsProvider = FutureProvider<List<ArticleModel>>((
   ref,
 ) async {
   final newsService = ref.watch(newsServiceProvider);
-  return newsService.fetchBaoXayDungNews();
+  return newsService.fetchArticles();
 });
 
 final recentPostsProvider = FutureProvider<List<PostModel>>((ref) async {

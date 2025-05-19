@@ -10,7 +10,8 @@ import 'package:buildconnect/models/profile/profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart'; // Để format ngày tháng
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart'; // Để format ngày tháng
 
 class HomeTabScreen extends ConsumerWidget {
   const HomeTabScreen({super.key});
@@ -139,7 +140,7 @@ class HomeTabScreen extends ConsumerWidget {
           children: [
             // Phần "Đề nghị đăng nhập" có thể hiển thị ở đây nếu muốn
             // if (!isLoggedIn) _buildLoginPrompt(context, theme),
-            _buildSectionTitle(context, 'Tin tức Xây dựng', () {
+            _buildSectionTitle(context, 'Tin tức Xây dựng mới nhất', () {
               // TODO: Navigate to full news list screen
             }),
             _buildHorizontalList<ArticleModel>(
@@ -300,14 +301,42 @@ class HomeTabScreen extends ConsumerWidget {
   Widget _buildArticleCard(BuildContext context, ArticleModel article) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    Future<void> _launchArticleUrl() async {
+      if (article.url == null || article.url!.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Không tìm thấy đường dẫn bài báo.')),
+          );
+        }
+        return;
+      }
+
+      final Uri uriToLaunch = Uri.parse(article.url!);
+
+      if (await canLaunchUrl(uriToLaunch)) {
+        try {
+          // Mở URL
+          await launchUrl(uriToLaunch, mode: LaunchMode.externalApplication);
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Không thể mở đường dẫn: $e')),
+            );
+          }
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Không thể mở đường dẫn: ${article.url}')),
+          );
+        }
+      }
+    }
+
     return InkWell(
       onTap: () {
-        // TODO: Mở link bài báo (dùng url_launcher)
-        // Ví dụ: if (await canLaunchUrl(Uri.parse(article.url))) { await launchUrl(Uri.parse(article.url)); }
-        context.push(
-          '/webview',
-          extra: {'url': article.url, 'title': article.title},
-        ); // Ví dụ điều hướng đến WebView
+        debugPrint(article.url);
+        _launchArticleUrl();
       },
       child: Card(
         elevation: 2, // Card theme sẽ quản lý
