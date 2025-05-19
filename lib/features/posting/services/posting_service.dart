@@ -36,6 +36,7 @@ class PostingService {
       'required_skills': postModel.requiredSkills?.map((e) => e.name).toList(),
       'author_id': postModel.authorId,
       'working_mode': postModel.workingMode?.name,
+      'profile_type': postModel.profileType?.name,
       // Do not send `id` or `created_at`, let DB handle
     };
 

@@ -235,7 +235,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
           // Required skills
           if (jobPosting.requiredSkills?.isNotEmpty ?? false) ...[
             const Text(
-              'Required Skills',
+              'Domain',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),

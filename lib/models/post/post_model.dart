@@ -21,6 +21,7 @@ class PostModel with PostModelMappable {
     @MappableField(key: 'author_id') required this.authorId,
     @MappableField(key: 'created_at') this.createdAt,
     @MappableField(key: 'working_mode') this.workingMode,
+    @MappableField(key: 'profile_type') this.profileType,
   });
 
   String? id; // We will use uuid
@@ -36,4 +37,5 @@ class PostModel with PostModelMappable {
   final String authorId; // ID of the user who created the post
   final DateTime? createdAt;
   final WorkingMode? workingMode;
+  final ProfileType? profileType;
 }

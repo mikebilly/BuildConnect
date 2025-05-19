@@ -3,6 +3,7 @@ import 'package:buildconnect/features/auth/providers/auth_service_provider.dart'
 import 'package:buildconnect/features/auth/services/auth_service.dart';
 import 'package:buildconnect/features/posting/providers/posting_provider.dart';
 import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
+import 'package:buildconnect/models/profile/profile_model.dart';
 import 'package:buildconnect/shared/common_widgets.dart';
 import 'package:buildconnect/shared/widgets/add_chips_widget.dart';
 
@@ -36,6 +37,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
   // final _mainAddress = TextEditingController();
   // final Set<City> _operatingAreasSet = {};
   WorkingMode _workingMode = WorkingMode.values.first;
+  ProfileType _profileType = ProfileType.values.first;
   String _description = "";
   final _descriptionController = TextEditingController();
 
@@ -90,6 +92,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
       requiredSkills: _requiredSkillsList.toList(),
       jobPostingType: _jobPostingType,
       workingMode: _workingMode,
+      profileType: _profileType,
     );
     debugPrint(newPostModel.toString());
 
@@ -146,11 +149,24 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               // heightWidget(widget: headerText(text: "Create a job posting")),
               heightWidget(
                 widget: buildDrowndownButtonFormField(
+                  gap: 4,
                   selectedValue: _jobPostingType,
                   values: JobPostingType.values,
                   onChanged: (v) {
                     setState(() {
                       _jobPostingType = v!;
+                    });
+                  },
+                ),
+              ),
+              heightWidget(
+                widget: buildDrowndownButtonFormField(
+                  gap: 4,
+                  selectedValue: _profileType,
+                  values: ProfileType.values,
+                  onChanged: (v) {
+                    setState(() {
+                      _profileType = v!;
                     });
                   },
                 ),
@@ -173,9 +189,10 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               //   ),
               // ),
               heightWidget(
-                widget: buildDropdownSearch(
-                  title: '',
-                  boldTitle: false,
+                widget: buildDrowndownButtonFormField(
+                  gap: 4,
+                  title: 'City',
+                  // boldTitle: true,
                   selectedValue: _mainCity,
                   values: City.values,
                   onChanged: (v) {
@@ -306,9 +323,9 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                 ),
               ),
               heightWidget(
-                widget: buildDropdownSearch(
+                widget: buildDrowndownButtonFormField(
+                  gap: 4,
                   title: 'Working Mode',
-                  boldTitle: false,
                   selectedValue: _workingMode,
                   values: WorkingMode.values,
                   onChanged: (v) {

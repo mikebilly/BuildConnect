@@ -78,21 +78,21 @@ class FeedScreen extends ConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          // Icon(
-                          //   // _getProfileTypeIcon(ProfileType.constructionTeam),
-                          //   ProfileType.constructionTeam.icon,
-                          //   color: Colors.blue,
-                          //   size: 16,
-                          // ),
-                          // const SizedBox(width: 8),
-                          // Text(
-                          //   ProfileType.constructionTeam.label,
-                          //   style: TextStyle(
-                          //     color: Colors.grey[800],
-                          //     fontWeight: FontWeight.bold,
-                          //   ),
-                          // ),
-                          // const Spacer(),
+                          Icon(
+                            // _getProfileTypeIcon(ProfileType.constructionTeam),
+                            post.profileType!.icon,
+                            color: AppColors.accent,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            post.profileType!.label,
+                            style: TextStyle(
+                              color: AppColors.text,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Spacer(),
                           Text(
                             'Posted ${-post.createdAt!.difference(DateTime.now()).inHours} hours ago',
                             style: TextStyle(
