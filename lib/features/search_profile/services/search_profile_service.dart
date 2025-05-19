@@ -43,7 +43,9 @@ class SearchPostService {
           result.where((profile) {
             // Có ít nhất 1 city trong model.cityList khớp với profile.operatingAreas
             return model.cityList.any(
-              (city) => profile.operatingAreas.contains(city),
+              (city) =>
+                  profile.operatingAreas.contains(city) ||
+                  profile.mainCity == city,
             );
           }).toList();
     }
