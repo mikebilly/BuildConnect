@@ -213,18 +213,18 @@ class CityMapper extends EnumMapper<City> {
         return City.hoChiMinh;
       case r'danang':
         return City.daNang;
-      case r'haiphong':
-        return City.haiPhong;
       case r'cantho':
         return City.canTho;
-      case r'ninhbinh':
-        return City.ninhBinh;
       case r'hue':
         return City.hue;
-      case r'dalat':
-        return City.daLat;
-      case r'bienhoa':
-        return City.bienHoa;
+      case r'nhatrang':
+        return City.nhaTrang;
+      case r'halong':
+        return City.haLong;
+      case r'quynhon':
+        return City.quyNhon;
+      case r'phanthiet':
+        return City.phanThiet;
       case r'vungtau':
         return City.vungTau;
       default:
@@ -241,18 +241,18 @@ class CityMapper extends EnumMapper<City> {
         return r'hochiminh';
       case City.daNang:
         return r'danang';
-      case City.haiPhong:
-        return r'haiphong';
       case City.canTho:
         return r'cantho';
-      case City.ninhBinh:
-        return r'ninhbinh';
       case City.hue:
         return r'hue';
-      case City.daLat:
-        return r'dalat';
-      case City.bienHoa:
-        return r'bienhoa';
+      case City.nhaTrang:
+        return r'nhatrang';
+      case City.haLong:
+        return r'halong';
+      case City.quyNhon:
+        return r'quynhon';
+      case City.phanThiet:
+        return r'phanthiet';
       case City.vungTau:
         return r'vungtau';
     }

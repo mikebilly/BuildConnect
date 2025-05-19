@@ -282,7 +282,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          LocationMapView(location: jobPosting.location.label),
+          LocationMapView(location: jobPosting.location.normalize_label),
 
           const SizedBox(height: 24),
 
@@ -304,7 +304,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
             borderRadius: BorderRadius.circular(8),
             child: Card(
               elevation: 0,
-              color: AppColors.grey,
+              color: AppColors.primary.withValues(alpha: 0.1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
