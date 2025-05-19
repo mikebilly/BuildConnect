@@ -209,23 +209,23 @@ class CityMapper extends EnumMapper<City> {
     switch (value) {
       case r'hanoi':
         return City.hanoi;
-      case r'hoChiMinh':
+      case r'hochiminh':
         return City.hoChiMinh;
-      case r'daNang':
+      case r'danang':
         return City.daNang;
-      case r'haiPhong':
+      case r'haiphong':
         return City.haiPhong;
-      case r'canTho':
+      case r'cantho':
         return City.canTho;
-      case r'ninhBinh':
+      case r'ninhbinh':
         return City.ninhBinh;
       case r'hue':
         return City.hue;
-      case r'daLat':
+      case r'dalat':
         return City.daLat;
-      case r'bienHoa':
+      case r'bienhoa':
         return City.bienHoa;
-      case r'vungTau':
+      case r'vungtau':
         return City.vungTau;
       default:
         throw MapperException.unknownEnumValue(value);
@@ -238,23 +238,23 @@ class CityMapper extends EnumMapper<City> {
       case City.hanoi:
         return r'hanoi';
       case City.hoChiMinh:
-        return r'hoChiMinh';
+        return r'hochiminh';
       case City.daNang:
-        return r'daNang';
+        return r'danang';
       case City.haiPhong:
-        return r'haiPhong';
+        return r'haiphong';
       case City.canTho:
-        return r'canTho';
+        return r'cantho';
       case City.ninhBinh:
-        return r'ninhBinh';
+        return r'ninhbinh';
       case City.hue:
         return r'hue';
       case City.daLat:
-        return r'daLat';
+        return r'dalat';
       case City.bienHoa:
-        return r'bienHoa';
+        return r'bienhoa';
       case City.vungTau:
-        return r'vungTau';
+        return r'vungtau';
     }
   }
 }

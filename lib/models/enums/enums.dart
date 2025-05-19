@@ -81,6 +81,7 @@ enum Domain {
   };
 }
 
+@MappableEnum(caseStyle: CaseStyle.lowerCase)
 @MappableEnum()
 enum City {
   hanoi,

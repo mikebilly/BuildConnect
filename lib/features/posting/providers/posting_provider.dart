@@ -16,11 +16,13 @@ class PostingNotifier extends _$PostingNotifier {
   Future<PostModel> createPost({
     required String title,
     required JobPostingType jobPostingType,
-    required String location,
+    required City location,
     required String description,
     double? budget,
     DateTime? deadline,
-    List<String>? requiredSkills,
+    // List<String>? requiredSkills,
+    final List<Domain>? requiredSkills,
+
     // List<String>? categories,
     required String authorId,
   }) async {

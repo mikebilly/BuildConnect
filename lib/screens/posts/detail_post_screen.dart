@@ -118,18 +118,18 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
           // Posted info & location
           Row(
             children: [
-              const Icon(Icons.access_time, size: 16, color: Colors.grey),
+              const Icon(Icons.access_time, size: 16, color: AppColors.grey),
               const SizedBox(width: 4),
               Text(
                 'Posted ${postedTimeAgo(jobPosting.createdAt)}',
-                style: TextStyle(color: Colors.grey[600]),
+                style: TextStyle(color: AppColors.text),
               ),
               const SizedBox(width: 16),
-              const Icon(Icons.location_on, size: 16, color: Colors.grey),
+              const Icon(Icons.location_on, size: 16, color: AppColors.grey),
               const SizedBox(width: 4),
               Text(
-                jobPosting.location,
-                style: TextStyle(color: Colors.grey[600]),
+                jobPosting.location.label,
+                style: TextStyle(color: AppColors.text),
               ),
             ],
           ),
@@ -207,14 +207,14 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
                   const Icon(
                     Icons.monetization_on,
-                    color: Colors.green,
+                    color: AppColors.primary,
                     size: 24,
                   ),
                   const SizedBox(width: 12),
@@ -223,7 +223,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green,
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -245,7 +245,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
               children:
                   (jobPosting.requiredSkills ?? []).map((skill) {
                     return Chip(
-                      label: Text(skill),
+                      label: Text(skill.label),
                       backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                       labelStyle: TextStyle(color: AppColors.text),
                     );
@@ -282,7 +282,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          LocationMapView(location: jobPosting.location),
+          LocationMapView(location: jobPosting.location.label),
 
           const SizedBox(height: 24),
 
@@ -304,7 +304,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
             borderRadius: BorderRadius.circular(8),
             child: Card(
               elevation: 0,
-              color: Colors.grey[50],
+              color: AppColors.grey,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -343,7 +343,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
                         ],
                       ),
                     ),
-                    const Icon(Icons.chevron_right, color: Colors.grey),
+                    const Icon(Icons.chevron_right, color: AppColors.grey),
                   ],
                 ),
               ),
@@ -574,7 +574,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
               children: [
                 Text(
                   label,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  style: TextStyle(color: AppColors.text, fontSize: 14),
                 ),
                 Text(value, style: const TextStyle(fontSize: 16)),
               ],

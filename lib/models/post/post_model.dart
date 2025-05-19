@@ -20,17 +20,20 @@ class PostModel with PostModelMappable {
     // this.categories,
     @MappableField(key: 'author_id') required this.authorId,
     @MappableField(key: 'created_at') this.createdAt,
+    @MappableField(key: 'working_mode') this.workingMode,
   });
 
   String? id; // We will use uuid
   final String title;
   final JobPostingType jobPostingType;
-  final String location;
+  final City location;
   final String description;
   final double? budget;
   final DateTime? deadline;
-  final List<String>? requiredSkills;
+  // final List<String>? requiredSkills;
+  final List<Domain>? requiredSkills;
   // final List<String>? categories;
   final String authorId; // ID of the user who created the post
   final DateTime? createdAt;
+  final WorkingMode? workingMode;
 }

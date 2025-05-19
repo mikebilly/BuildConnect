@@ -28,13 +28,14 @@ class PostingService {
     final data = {
       'title': postModel.title,
       'job_posting_type': postModel.jobPostingType.name,
-      'location': postModel.location,
+      'location': postModel.location.normalize_label,
       'description': postModel.description,
       'budget': postModel.budget?.toDouble(), // ensure double
       'deadline':
           postModel.deadline?.toIso8601String().split('T').first, // DATE only
-      'required_skills': postModel.requiredSkills,
+      'required_skills': postModel.requiredSkills?.map((e) => e.name).toList(),
       'author_id': postModel.authorId,
+      'working_mode': postModel.workingMode?.name,
       // Do not send `id` or `created_at`, let DB handle
     };
 
