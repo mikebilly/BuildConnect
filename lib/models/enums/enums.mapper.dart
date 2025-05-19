@@ -209,25 +209,31 @@ class CityMapper extends EnumMapper<City> {
     switch (value) {
       case r'hanoi':
         return City.hanoi;
-      case r'hochiminh':
+      case r'hoChiMinh':
         return City.hoChiMinh;
-      case r'danang':
+      case r'daNang':
         return City.daNang;
-      case r'ninhbinh':
+      case r'ninhBinh':
         return City.ninhBinh;
-      case r'cantho':
+      case r'haiPhong':
+        return City.haiPhong;
+      case r'canTho':
         return City.canTho;
       case r'hue':
         return City.hue;
-      case r'nhatrang':
+      case r'daLat':
+        return City.daLat;
+      case r'bienHoa':
+        return City.bienHoa;
+      case r'nhaTrang':
         return City.nhaTrang;
-      case r'halong':
+      case r'haLong':
         return City.haLong;
-      case r'quynhon':
+      case r'quyNhon':
         return City.quyNhon;
-      case r'phanthiet':
+      case r'phanThiet':
         return City.phanThiet;
-      case r'vungtau':
+      case r'vungTau':
         return City.vungTau;
       default:
         throw MapperException.unknownEnumValue(value);
@@ -240,25 +246,31 @@ class CityMapper extends EnumMapper<City> {
       case City.hanoi:
         return r'hanoi';
       case City.hoChiMinh:
-        return r'hochiminh';
+        return r'hoChiMinh';
       case City.daNang:
-        return r'danang';
+        return r'daNang';
       case City.ninhBinh:
-        return r'ninhbinh';
+        return r'ninhBinh';
+      case City.haiPhong:
+        return r'haiPhong';
       case City.canTho:
-        return r'cantho';
+        return r'canTho';
       case City.hue:
         return r'hue';
+      case City.daLat:
+        return r'daLat';
+      case City.bienHoa:
+        return r'bienHoa';
       case City.nhaTrang:
-        return r'nhatrang';
+        return r'nhaTrang';
       case City.haLong:
-        return r'halong';
+        return r'haLong';
       case City.quyNhon:
-        return r'quynhon';
+        return r'quyNhon';
       case City.phanThiet:
-        return r'phanthiet';
+        return r'phanThiet';
       case City.vungTau:
-        return r'vungtau';
+        return r'vungTau';
     }
   }
 }

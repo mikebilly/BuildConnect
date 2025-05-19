@@ -81,18 +81,21 @@ enum Domain {
   };
 }
 
-@MappableEnum(caseStyle: CaseStyle.lowerCase)
-@MappableEnum()
+@MappableEnum(caseStyle: CaseStyle.camelCase)
 enum City {
   hanoi,
   hoChiMinh,
   daNang,
   ninhBinh,
-  // haiPhong,
+
+  haiPhong,
+  
   canTho,
   hue,
-  // daLat,
-  // bienHoa,
+
+  daLat,
+  bienHoa,
+
   nhaTrang,
   haLong,
   quyNhon,
@@ -105,12 +108,16 @@ enum City {
     City.hanoi => 'Hà Nội',
     City.hoChiMinh => 'TP. Hồ Chí Minh',
     City.daNang => 'Đà Nẵng',
-    // City.haiPhong => 'Hải Phòng',
+
+    City.haiPhong => 'Hải Phòng',
+
     City.canTho => 'Cần Thơ',
-    // City.ninhBinh => 'Ninh Bình',
+    City.ninhBinh => 'Ninh Bình',
     City.hue => 'Huế',
-    // City.daLat => 'Đà Lạt',
-    // City.bienHoa => 'Biên Hòa',
+
+    City.daLat => 'Đà Lạt',
+    City.bienHoa => 'Biên Hòa',
+
     City.vungTau => 'Vũng Tàu',
     City.nhaTrang => 'Nha Trang',
     City.haLong => 'Hạ Long',
@@ -123,12 +130,17 @@ enum City {
     City.hanoi => 'hanoi',
     City.hoChiMinh => 'hochiminh',
     City.daNang => 'danang',
-    // City.haiPhong => 'haiphong',
+
+    City.haiPhong => 'haiphong',
+
     City.canTho => 'cantho',
-    // City.ninhBinh => 'ninhbinh',
+
+    City.ninhBinh => 'ninhbinh',
     City.hue => 'hue',
-    // City.daLat => 'dalat',
-    // City.bienHoa => 'bienhoa',
+
+    City.daLat => 'dalat',
+    City.bienHoa => 'bienhoa',
+
     City.vungTau => 'vungtau',
     City.nhaTrang => 'nhatrang',
     City.haLong => 'halong',
