@@ -87,6 +87,7 @@ enum City {
   hanoi,
   hoChiMinh,
   daNang,
+  ninhBinh,
   // haiPhong,
   canTho,
   hue,
@@ -115,7 +116,9 @@ enum City {
     City.haLong => 'Hạ Long',
     City.quyNhon => 'Quy Nhơn',
     City.phanThiet => 'Phan Thiết',
+    City.ninhBinh => 'Ninh Bình',
   };
+
   String get normalize_label => switch (this) {
     City.hanoi => 'hanoi',
     City.hoChiMinh => 'hochiminh',
@@ -131,6 +134,7 @@ enum City {
     City.haLong => 'halong',
     City.quyNhon => 'quynhon',
     City.phanThiet => 'phanthiet',
+    City.ninhBinh => 'ninhbinh',
   };
 }
 

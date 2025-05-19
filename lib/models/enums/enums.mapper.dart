@@ -213,6 +213,8 @@ class CityMapper extends EnumMapper<City> {
         return City.hoChiMinh;
       case r'danang':
         return City.daNang;
+      case r'ninhbinh':
+        return City.ninhBinh;
       case r'cantho':
         return City.canTho;
       case r'hue':
@@ -241,6 +243,8 @@ class CityMapper extends EnumMapper<City> {
         return r'hochiminh';
       case City.daNang:
         return r'danang';
+      case City.ninhBinh:
+        return r'ninhbinh';
       case City.canTho:
         return r'cantho';
       case City.hue:

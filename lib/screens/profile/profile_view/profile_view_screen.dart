@@ -22,7 +22,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.invalidate(profileDataNotifierProvider);
+      ref.invalidate(profileDataByUserIdProvider(widget.userId!));
     });
   }
 
@@ -59,14 +59,18 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
           if (profileData == null) {
             return const Center(child: Text('No profile data found'));
           } else {
-            return Column(
+            return Stack(
               children: [
                 Container(height: 70, color: AppColors.primary),
-                Expanded(
-                  child: _buildShiftedWidget(
-                    context,
-                    _buildBodySection(context, profileData),
-                  ),
+                
+                Column(
+                  children: [
+                    SizedBox(height: 5),
+                    _buildAvatar(context, profileData),
+                    const SizedBox(height: 10),
+                    const Divider(height: 0.5, color: AppColors.greyBackground),
+                    Expanded(child: ProfileViewTabs(profileData: profileData)),
+                  ],
                 ),
               ],
             );
@@ -75,22 +79,6 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       ),
     );
   }
-}
-
-Widget _buildShiftedWidget(BuildContext context, Widget child) {
-  return Transform.translate(offset: const Offset(0, -65), child: child);
-  // return child;
-}
-
-Widget _buildBodySection(BuildContext context, ProfileData profileData) {
-  return Column(
-    children: [
-      _buildAvatar(context, profileData),
-      const SizedBox(height: 10),
-      const Divider(height: 0.5, color: AppColors.greyBackground),
-      Expanded(child: ProfileViewTabs(profileData: profileData)),
-    ],
-  );
 }
 
 Widget _buildAvatar(BuildContext context, ProfileData profileData) {
