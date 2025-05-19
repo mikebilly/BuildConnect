@@ -29,18 +29,24 @@ class _PostScreenState extends ConsumerState<PostScreen> {
   String _jobTitle = "";
   final _jobTitleController = TextEditingController();
 
-  String _location = "";
-  final _locationController = TextEditingController();
-
+  // final City _location = "";
+  // City _location = City.values.first;
+  // final _locationController = TextEditingController();
+  City _mainCity = City.values.first;
+  // final _mainAddress = TextEditingController();
+  // final Set<City> _operatingAreasSet = {};
+  WorkingMode _workingMode = WorkingMode.values.first;
   String _description = "";
   final _descriptionController = TextEditingController();
 
   DateTime? _deadline;
   final _deadlineController = TextEditingController();
 
-  final TextEditingController _requiredSkillsController =
-      TextEditingController();
-  List<String> _requiredSkillsList = [];
+  // final TextEditingController _requiredSkillsController =
+  //     TextEditingController();
+  final Set<Domain> _requiredSkillsList = {};
+
+  // List<String> _requiredSkillsList = [];
 
   // double _budget = 1;
   final _budgetController = TextEditingController(text: "1");
@@ -74,15 +80,16 @@ class _PostScreenState extends ConsumerState<PostScreen> {
       authorId: _authService.currentUserId ?? 'unknown',
       // authorId: "vanhID",
       title: _jobTitleController.text,
-      location: _locationController.text,
+      location: _mainCity,
       description: _descriptionController.text,
       budget:
           _budgetController.text.isEmpty
               ? 0
               : double.tryParse(_budgetController.text) ?? 0,
       deadline: _deadline ?? DateTime.now(),
-      requiredSkills: _requiredSkillsList,
+      requiredSkills: _requiredSkillsList.toList(),
       jobPostingType: _jobPostingType,
+      workingMode: _workingMode,
     );
     debugPrint(newPostModel.toString());
 
@@ -157,13 +164,27 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                   hintText: 'Enter the title of the job posting',
                 ),
               ),
+              // heightWidget(
+              //   widget: buildTextFormField(
+              //     controller: _locationController,
+              //     labelText: 'Job Location',
+              //     maxLines: 1,
+              //     hintText: 'Enter the Location of the job ',
+              //   ),
+              // ),
               heightWidget(
-                widget: buildTextFormField(
-                  controller: _locationController,
-                  labelText: 'Job Location',
-                  maxLines: 1,
-                  hintText: 'Enter the Location of the job ',
+                widget: buildDropdownSearch(
+                  title: '',
+                  boldTitle: false,
+                  selectedValue: _mainCity,
+                  values: City.values,
+                  onChanged: (v) {
+                    setState(() {
+                      _mainCity = v!;
+                    });
+                  },
                 ),
+                height: 8,
               ),
               heightWidget(
                 widget: buildTextFormField(
@@ -205,7 +226,11 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                 widget: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Job Deadline'),
+                    const Text(
+                      'Job Deadline',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    // const Text('Job Deadline'),
                     const SizedBox(height: 8),
                     InkWell(
                       onTap: () async {
@@ -246,24 +271,53 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               //     hintText: 'Enter the Job skill of the job posting',
               //   ),
               // ),
+              // heightWidget(
+              //   widget: SkillInputField(
+              //     title: 'Required Skills (Optional)',
+              //     buttonColor: AppColors.primary,
+              //     chipTextColor: AppColors.grey,
+              //     chipBackgroundColor: const Color.fromARGB(
+              //       255,
+              //       247,
+              //       251,
+              //       241,
+              //     ).withAlpha((0.6 * 255).round()),
+              //     onSkillListChanged: (skills) {
+              //       setState(() {
+              //         _requiredSkillsList = skills;
+              //       });
+              //       debugPrint('Danh sách kỹ năng: $_requiredSkillsList');
+              //     },
+              //   ),
+              // ),
               heightWidget(
-                widget: SkillInputField(
-                  title: 'Required Skills (Optional)',
-                  buttonColor: AppColors.primary,
-                  chipTextColor: AppColors.grey,
-                  chipBackgroundColor: const Color.fromARGB(
-                    255,
-                    247,
-                    251,
-                    241,
-                  ).withAlpha((0.6 * 255).round()),
-                  onSkillListChanged: (skills) {
+                widget: buildFilterChip(
+                  values: Domain.values,
+                  selectedValues: _requiredSkillsList,
+                  onSelected: (v, selected) {
                     setState(() {
-                      _requiredSkillsList = skills;
+                      if (selected) {
+                        _requiredSkillsList.add(v);
+                      } else {
+                        _requiredSkillsList.remove(v);
+                      }
                     });
-                    debugPrint('Danh sách kỹ năng: $_requiredSkillsList');
                   },
                 ),
+              ),
+              heightWidget(
+                widget: buildDropdownSearch(
+                  title: 'Working Mode',
+                  boldTitle: false,
+                  selectedValue: _workingMode,
+                  values: WorkingMode.values,
+                  onChanged: (v) {
+                    setState(() {
+                      _workingMode = v!;
+                    });
+                  },
+                ),
+                height: 8,
               ),
             ],
           ),

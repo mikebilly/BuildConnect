@@ -161,7 +161,7 @@ class _PostByIdProviderElement
   String get id => (origin as PostByIdProvider).id;
 }
 
-String _$postingNotifierHash() => r'a70a679f323c50d948648dafcdbf2c9ae03ec43c';
+String _$postingNotifierHash() => r'71d5601b762b1e70c835eca0798afda04f7e6e76';
 
 /// See also [PostingNotifier].
 @ProviderFor(PostingNotifier)
