@@ -146,6 +146,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               // heightWidget(widget: headerText(text: "Create a job posting")),
               heightWidget(
                 widget: buildDrowndownButtonFormField(
+                  gap: 4,
                   selectedValue: _jobPostingType,
                   values: JobPostingType.values,
                   onChanged: (v) {
@@ -173,9 +174,10 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               //   ),
               // ),
               heightWidget(
-                widget: buildDropdownSearch(
-                  title: '',
-                  boldTitle: false,
+                widget: buildDrowndownButtonFormField(
+                  gap: 4,
+                  title: 'City',
+                  // boldTitle: true,
                   selectedValue: _mainCity,
                   values: City.values,
                   onChanged: (v) {
@@ -306,9 +308,9 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                 ),
               ),
               heightWidget(
-                widget: buildDropdownSearch(
+                widget: buildDrowndownButtonFormField(
+                  gap: 4,
                   title: 'Working Mode',
-                  boldTitle: false,
                   selectedValue: _workingMode,
                   values: WorkingMode.values,
                   onChanged: (v) {
