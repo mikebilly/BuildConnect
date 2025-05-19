@@ -13,6 +13,56 @@ class AppColors {
   static const Color text = Color(0xFF212121);
   static const Color textLight = Color(0xFF757575);
   static const Color divider = Color(0xFFEEEEEE);
+  static const Color chatBackground = Color(0xFFEFEFEF); // Nền tổng thể chat
+  static const Color myMessageBackground = Color(0xFFDCF8C6);
+  static const Color otherMessageBackground = Color(0xFFFFFFFF);
+  static const Color myMessageText = Color(0xFF000000);
+  static const Color otherMessageText = Color(0xFF333333);
+  static const Color timestampColor = Color(0xFF888888);
+
+  // color for search profile
+  static const Color filterPanelBorder = Color(
+    0xFFE0E0E0,
+  ); // Colors.grey.shade300
+  static const Color filterPanelShadow = Colors.black12;
+  static const Color chipBackground = Color(0xFFF5F5F5); // Colors.grey.shade100
+  static const Color chipSelectedBackground = Color.fromARGB(
+    255,
+    207,
+    235,
+    210,
+  ); // Custom green tint
+  static const Color chipBorder = Color(0xFFE0E0E0); // Colors.grey.shade300
+  static const Color iconGrey = Color(
+    0xFF757575,
+  ); // Colors.grey.shade600 for dropdown arrow
+  static const Color clearButtonBackground = Color(
+    0xFFEF5350,
+  ); // Colors.red[400] or [500]
+}
+
+class ChatTheme {
+  static const EdgeInsets messagePadding = EdgeInsets.symmetric(
+    horizontal: 12,
+    vertical: 8,
+  );
+  static const BorderRadius myMessageBorderRadius = BorderRadius.only(
+    topLeft: Radius.circular(12),
+    topRight: Radius.circular(0),
+    bottomLeft: Radius.circular(12),
+    bottomRight: Radius.circular(12),
+  );
+  static const BorderRadius otherMessageBorderRadius = BorderRadius.only(
+    topLeft: Radius.circular(0),
+    topRight: Radius.circular(12),
+    bottomLeft: Radius.circular(12),
+    bottomRight: Radius.circular(12),
+  );
+
+  static const TextStyle timestampStyle = TextStyle(
+    fontSize: 12,
+    color: AppColors.timestampColor,
+  );
 }
 
 class AppTextStyles {
@@ -63,14 +113,9 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      iconTheme: const IconThemeData(
-        color: AppColors.primary, 
-        size: 20,
-      ),
+      iconTheme: const IconThemeData(color: AppColors.primary, size: 20),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
@@ -99,22 +144,30 @@ class AppTheme {
           color: Colors.grey[600],
         ), // Add this for darker hint
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(InputDecorationConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(
+            InputDecorationConstants.borderRadiusCircular,
+          ),
           borderSide: const BorderSide(color: Colors.black45), // Darker
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(InputDecorationConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(
+            InputDecorationConstants.borderRadiusCircular,
+          ),
           borderSide: const BorderSide(color: Colors.black87), // Dark grey
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(InputDecorationConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(
+            InputDecorationConstants.borderRadiusCircular,
+          ),
           borderSide: BorderSide(
             color: AppColors.primary,
             width: 1.5,
           ), // Accent color
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(InputDecorationConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(
+            InputDecorationConstants.borderRadiusCircular,
+          ),
           borderSide: BorderSide(color: AppColors.error),
         ),
         contentPadding: const EdgeInsets.symmetric(

@@ -50,132 +50,137 @@ class SearchPostService {
 
     // 3) Nếu có profileType và không rỗng → lọc theo profileType
     if (model.profileType.isNotEmpty) {
+      debugPrint('profileType is choosing, not empty');
       result =
           result.where((profile) {
             return model.profileType.contains(profile.profileType);
           }).toList();
-    }
-    debugPrint('result length is : ${result.length}');
-    Map<ProfileType, Set<String>> resultByEachProfileType = {
-      ProfileType.architect: {},
-      ProfileType.contractor: {},
-      ProfileType.constructionTeam: {},
-      ProfileType.supplier: {},
-    };
+      debugPrint('result length is : ${result.length}');
+      Map<ProfileType, Set<String>> resultByEachProfileType = {
+        ProfileType.architect: {},
+        ProfileType.contractor: {},
+        ProfileType.constructionTeam: {},
+        ProfileType.supplier: {},
+      };
 
-    for (final p in result) {
-      debugPrint('p in result: ${p.profileType}: ${p.id}');
-      // nếu profileType của profile nằm trong list model.profileType thì thêm vào resultByEachProfileType
-      if (model.profileType.contains(p.profileType)) {
-        debugPrint('profile type ${p.profileType} is in model.profileType');
-        if (p.id != null) {
-          resultByEachProfileType[p.profileType]!.add(p.id!);
-          debugPrint('add successfully');
+      for (final p in result) {
+        debugPrint('p in result: ${p.profileType}: ${p.id}');
+        // nếu profileType của profile nằm trong list model.profileType thì thêm vào resultByEachProfileType
+        if (model.profileType.contains(p.profileType)) {
+          debugPrint('profile type ${p.profileType} is in model.profileType');
+          if (p.id != null) {
+            resultByEachProfileType[p.profileType]!.add(p.id!);
+            debugPrint('add successfully');
+          }
+        }
+        debugPrint(' oke more than 1 profile type');
+      }
+      // print map
+      debugPrint('resultByEachProfileType: $resultByEachProfileType');
+      Set<String> eachProfileIds = {};
+      // lấy unique profile_id của bảng architect_design_style với cột design_style chứa một trong các design_style của model.architectFilterModel.designStyle
+      if (model.architectFilterModel != null &&
+          model.architectFilterModel!.designStyle.isNotEmpty) {
+        debugPrint(
+          'Chuẩn bị lọc với design style: ${model.architectFilterModel!.designStyle.toString()}',
+        );
+        final designStyles =
+            model.architectFilterModel!.designStyle.map((e) => e.name).toList();
+        debugPrint(designStyles.toString());
+        final profileIds_architect = await _supabaseClient
+            .from(SupabaseConstants.architectDesignStylesTable)
+            .select('profile_id, design_style');
+
+        // Set<String> profile_Ids_architect = {};
+        for (final p in profileIds_architect) {
+          if (designStyles.contains(p['design_style']) &&
+              result.any((profile) => profile.id == p['profile_id'])) {
+            debugPrint(
+              'designStyle of profile_id ${p['profile_id']} is ${p['design_style']}',
+            );
+            eachProfileIds.add(p['profile_id']);
+          }
+        }
+        debugPrint(
+          'profile_id của architect trước khi lọc: ${resultByEachProfileType[ProfileType.architect]}',
+        );
+
+        // có list chứa các profile_id lọc thành công, có map<architect, List<String>> chứa các profile_id theo architect, giờ lọc tiếp
+        resultByEachProfileType[ProfileType.architect] = eachProfileIds;
+        debugPrint(
+          'profile_id của map sau khi lọc với architect: ${resultByEachProfileType[ProfileType.architect]}',
+        );
+      }
+      debugPrint(
+        'profile after filter with design style: ${eachProfileIds.length}',
+      );
+      eachProfileIds = {};
+      if (model.constructionTeamFilterModel != null &&
+          model.constructionTeamFilterModel!.serviceType.isNotEmpty) {
+        final serviceTypes =
+            model.constructionTeamFilterModel!.serviceType
+                .map((e) => e.name)
+                .toList();
+
+        final profileIds_construction_team = await _supabaseClient
+            .from(SupabaseConstants.constructionTeamServicesTable)
+            .select('profile_id, service_type');
+        // Set<String> profile_Ids_construction_team = {};
+        for (final p in profileIds_construction_team) {
+          if (serviceTypes.contains(p['service_type'])) {
+            eachProfileIds.add(p['profile_id']);
+          }
         }
       }
-      debugPrint(' oke more than 1 profile type');
-    }
-    // print map
-    debugPrint('resultByEachProfileType: $resultByEachProfileType');
-    Set<String> eachProfileIds = {};
-    // lấy unique profile_id của bảng architect_design_style với cột design_style chứa một trong các design_style của model.architectFilterModel.designStyle
-    if (model.architectFilterModel != null &&
-        model.architectFilterModel!.designStyle.isNotEmpty) {
-      debugPrint(
-        'Chuẩn bị lọc với design style: ${model.architectFilterModel!.designStyle.toString()}',
-      );
-      final designStyles =
-          model.architectFilterModel!.designStyle.map((e) => e.name).toList();
-      debugPrint(designStyles.toString());
-      final profileIds_architect = await _supabaseClient
-          .from(SupabaseConstants.architectDesignStylesTable)
-          .select('profile_id, design_style');
+      eachProfileIds = {};
+      if (model.contractorFilterModel != null &&
+          model.contractorFilterModel!.serviceType.isNotEmpty) {
+        final serviceTypes =
+            model.contractorFilterModel!.serviceType
+                .map((e) => e.name)
+                .toList();
 
-      // Set<String> profile_Ids_architect = {};
-      for (final p in profileIds_architect) {
-        if (designStyles.contains(p['design_style']) &&
-            result.any((profile) => profile.id == p['profile_id'])) {
-          debugPrint(
-            'designStyle of profile_id ${p['profile_id']} is ${p['design_style']}',
-          );
-          eachProfileIds.add(p['profile_id']);
+        final profileIds_contractor = await _supabaseClient
+            .from(SupabaseConstants.contractorServicesTable)
+            .select('profile_id, service_type');
+        // Set<String> profile_Ids_contractor = {};
+        for (final p in profileIds_contractor) {
+          if (serviceTypes.contains(p['service_type'])) {
+            eachProfileIds.add(p['profile_id']);
+          }
+        }
+        debugPrint(
+          'profile_id list sau khi lọc với contractor: $eachProfileIds',
+        );
+      }
+      eachProfileIds = {};
+      if (model.supplierFilterModel != null &&
+          model.supplierFilterModel!.materialCategory.isNotEmpty) {
+        final materialCategories =
+            model.supplierFilterModel!.materialCategory
+                .map((e) => e.name)
+                .toList();
+
+        final profileIds_supplier = await _supabaseClient
+            .from(SupabaseConstants.supplierMaterialCategoriesTable)
+            .select('profile_id, material_category');
+        // Set<String> profile_Ids_supplier = {};
+        for (final p in profileIds_supplier) {
+          if (materialCategories.contains(p['material_category'])) {
+            eachProfileIds.add(p['profile_id']);
+          }
         }
       }
-      debugPrint(
-        'profile_id của architect trước khi lọc: ${resultByEachProfileType[ProfileType.architect]}',
-      );
-
-      // có list chứa các profile_id lọc thành công, có map<architect, List<String>> chứa các profile_id theo architect, giờ lọc tiếp
-      resultByEachProfileType[ProfileType.architect] = eachProfileIds;
-      debugPrint(
-        'profile_id của map sau khi lọc với architect: ${resultByEachProfileType[ProfileType.architect]}',
-      );
-    }
-    debugPrint(
-      'profile after filter with design style: ${eachProfileIds.length}',
-    );
-    eachProfileIds = {};
-    if (model.constructionTeamFilterModel != null &&
-        model.constructionTeamFilterModel!.serviceType.isNotEmpty) {
-      final serviceTypes =
-          model.constructionTeamFilterModel!.serviceType
-              .map((e) => e.name)
+      var final_profile_ids = [];
+      for (final entry in resultByEachProfileType.entries) {
+        final profileIds = entry.value;
+        final_profile_ids.addAll(profileIds);
+      }
+      result =
+          result
+              .where((profile) => final_profile_ids.contains(profile.id))
               .toList();
-
-      final profileIds_construction_team = await _supabaseClient
-          .from(SupabaseConstants.constructionTeamServicesTable)
-          .select('profile_id, service_type');
-      // Set<String> profile_Ids_construction_team = {};
-      for (final p in profileIds_construction_team) {
-        if (serviceTypes.contains(p['service_type'])) {
-          eachProfileIds.add(p['profile_id']);
-        }
-      }
     }
-    eachProfileIds = {};
-    if (model.contractorFilterModel != null &&
-        model.contractorFilterModel!.serviceType.isNotEmpty) {
-      final serviceTypes =
-          model.contractorFilterModel!.serviceType.map((e) => e.name).toList();
-
-      final profileIds_contractor = await _supabaseClient
-          .from(SupabaseConstants.contractorServicesTable)
-          .select('profile_id, service_type');
-      // Set<String> profile_Ids_contractor = {};
-      for (final p in profileIds_contractor) {
-        if (serviceTypes.contains(p['service_type'])) {
-          eachProfileIds.add(p['profile_id']);
-        }
-      }
-      debugPrint('profile_id list sau khi lọc với contractor: $eachProfileIds');
-    }
-    eachProfileIds = {};
-    if (model.supplierFilterModel != null &&
-        model.supplierFilterModel!.materialCategory.isNotEmpty) {
-      final materialCategories =
-          model.supplierFilterModel!.materialCategory
-              .map((e) => e.name)
-              .toList();
-
-      final profileIds_supplier = await _supabaseClient
-          .from(SupabaseConstants.supplierMaterialCategoriesTable)
-          .select('profile_id, material_category');
-      // Set<String> profile_Ids_supplier = {};
-      for (final p in profileIds_supplier) {
-        if (materialCategories.contains(p['material_category'])) {
-          eachProfileIds.add(p['profile_id']);
-        }
-      }
-    }
-    var final_profile_ids = [];
-    for (final entry in resultByEachProfileType.entries) {
-      final profileIds = entry.value;
-      final_profile_ids.addAll(profileIds);
-    }
-    result =
-        result
-            .where((profile) => final_profile_ids.contains(profile.id))
-            .toList();
     return result;
   }
 }

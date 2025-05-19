@@ -102,6 +102,8 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
     final panelWidth = MediaQuery.of(context).size.width * 0.9;
     final current_location_list =
         ref.read(searchProfileNotifierProvider).cityList;
+    bool isLoggedIn =
+        ref.read(searchProfileNotifierProvider.notifier).isLoggedIn();
     String profileTypeName =
         ref.read(searchProfileNotifierProvider.notifier).profileTypeName();
     List<ProfileType> profileTypeChoosingList =
@@ -492,7 +494,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                     }
 
                     // Hiển thị danh sách kết quả
-                    return showProfileListResult(profiles, context);
+                    return showProfileListResult(profiles, context, isLoggedIn);
                   }
                   // 5. Trạng thái không xác định (hiếm gặp)
                   else {
@@ -826,7 +828,11 @@ extension on String {
   }
 }
 
-Widget showProfileListResult(List<Profile> profiles, BuildContext context) {
+Widget showProfileListResult(
+  List<Profile> profiles,
+  BuildContext context,
+  bool isLoggedIn,
+) {
   if (profiles.isEmpty) {
     return const Center(child: Text('Không có kết quả nào.'));
   }
@@ -898,6 +904,41 @@ Widget showProfileListResult(List<Profile> profiles, BuildContext context) {
                   context.push('/profile/view/${profile.userId}');
                 },
               ),
+              IconButton(
+                icon: const Icon(Icons.message),
+                onPressed: () {
+                  if (isLoggedIn) {
+                    context.push('/message/detail_view/${profile.userId}');
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Thông báo'),
+                          content: const Text(
+                            'Bạn cần đăng nhập để gửi tin nhắn.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                context.pop();
+                              },
+                              child: const Text('Đóng'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context.pop();
+                                context.push('/login');
+                              },
+                              child: const Text('Đăng nhập'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ],
           ),
         ),
@@ -905,12 +946,3 @@ Widget showProfileListResult(List<Profile> profiles, BuildContext context) {
     },
   );
 }
-
-// Xóa extension String.nomalize() nếu không còn dùng ở màn hình này
-/*
-extension on String {
-  nomalize() {
-    return this.toLowerCase().replaceAll(RegExp(r'\s+'), '');
-  }
-}
-*/

@@ -1,6 +1,7 @@
 import 'package:buildconnect/core/constants/supabase_constants.dart';
 import 'package:buildconnect/models/post/post_model.dart';
 import 'package:buildconnect/models/search_post/search_post_model.dart';
+import 'package:buildconnect/screens/search_post/search_post_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,22 +16,44 @@ class SearchPostService {
     }
 
     debugPrint('Searching posts with model: ${model.toString()}');
+    // final query = model.query.nomalize();
+    // Tìm kiếm theo title
+    final titleQuery1 = await _supabaseClient
+        .from(SupabaseConstants.postsTable)
+        .select()
+        .ilike('title', '%${model.query}%');
+    final titleQuery2 = await _supabaseClient
+        .from(SupabaseConstants.postsTable)
+        .select()
+        .ilike('title', '%${model.query.nomalize()}%');
+    // Tìm kiếm theo description
+    final descriptionQuery1 = await _supabaseClient
+        .from(SupabaseConstants.postsTable)
+        .select()
+        .ilike('description', '%${model.query}%');
+    final descriptionQuery2 = await _supabaseClient
+        .from(SupabaseConstants.postsTable)
+        .select()
+        .ilike('description', '%${model.query.nomalize()}%');
 
-    var queryBuilder =
-        _supabaseClient.from(SupabaseConstants.postsTable).select();
-    final rawData = await queryBuilder as List<dynamic>;
+    // Gộp kết quả và loại bỏ bản ghi trùng lặp theo id
+    final allResults = [
+      ...titleQuery1,
+      ...titleQuery2,
+      ...descriptionQuery1,
+      ...descriptionQuery2,
+    ];
+    final uniqueResults =
+        {for (var item in allResults) item['id']: item}.values.toList();
+
+    final rawData = uniqueResults;
+    // debugPrint(query);
+    // final rawData = await queryBuilder as List<dynamic>;
     final postList =
         rawData.map((row) => PostModelMapper.fromMap(row)).toList();
     // var result = <Profile>[];
     debugPrint('-------------- postList.toString():${postList.toString()}');
     var result = List<PostModel>.from(postList);
-
-    if (model.query.trim().isNotEmpty) {
-      result =
-          result
-              .where((post) => post.title.toLowerCase().contains(model.query))
-              .toList();
-    }
 
     // 2. Lọc theo địa điểm (location)
     if (model.location.trim().isNotEmpty) {

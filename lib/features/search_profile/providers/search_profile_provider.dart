@@ -6,6 +6,7 @@ import 'package:buildconnect/models/profile/profile_model.dart';
 import 'package:buildconnect/models/search_profile/search_profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'search_profile_provider.g.dart';
@@ -35,9 +36,14 @@ class SearchProfileNotifier extends _$SearchProfileNotifier {
   }
 
   void toggleLocation(City city) {
-    final current = state.cityList ?? [];
-
-    final updatedList = current.contains(city) ? current : [...current, city];
+    var current = state.cityList ?? [];
+    var updatedList = List<City>.from(current);
+    if (current.contains(city)) {
+      updatedList.remove(city);
+    } else {
+      updatedList.add(city);
+    }
+    // final updatedList = current.contains(city) ? current : [...current, city];
 
     state = state.copyWith(cityList: updatedList);
   }
@@ -244,6 +250,8 @@ class SearchProfileNotifier extends _$SearchProfileNotifier {
       supplierFilterModel: model.copyWith(materialCategory: currentList),
     );
   }
+
+  bool isLoggedIn() => _isLoggedIn;
 }
 
 class ProfileTypeChoosingNotifier extends StateNotifier<List<ProfileType>> {

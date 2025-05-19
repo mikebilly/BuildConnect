@@ -127,7 +127,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                       onSubmitted: (_) => _triggerSearch(),
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.search),
-                        hintText: 'Search posts (e.g., "Tuyển thợ hồ")...',
+                        hintText: 'Search posts...',
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 0,
                           horizontal: 12,
@@ -662,7 +662,6 @@ extension StringNormalizePost on String {
         .replaceAll(RegExp(r'[ìíịỉĩ]'), 'i')
         .replaceAll(RegExp(r'[òóọỏõôồốộổỗơờớợởỡ]'), 'o')
         .replaceAll(RegExp(r'[ùúụủũưừứựửữ]'), 'u')
-        .replaceAll(RegExp(r'[ỳýỵỷỹ]'), 'y')
-        .replaceAll(RegExp(r'\s+'), ''); // Bỏ hết khoảng trắng
+        .replaceAll(RegExp(r'[ỳýỵỷỹ]'), 'y'); // Bỏ hết khoảng trắng
   }
 }

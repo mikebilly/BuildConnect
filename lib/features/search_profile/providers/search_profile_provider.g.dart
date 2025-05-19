@@ -7,7 +7,7 @@ part of 'search_profile_provider.dart';
 // **************************************************************************
 
 String _$searchProfileNotifierHash() =>
-    r'1f8c83be8700f4e4e23ddd3ff76930d8ee76e62a';
+    r'eb2bf7f1d21da1b368a6fdf1a1442861968a4d7f';
 
 /// See also [SearchProfileNotifier].
 @ProviderFor(SearchProfileNotifier)

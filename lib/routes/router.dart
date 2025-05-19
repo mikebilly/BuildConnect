@@ -1,3 +1,6 @@
+import 'package:buildconnect/screens/message/detail_message_screen.dart';
+import 'package:buildconnect/screens/message/user_list_message_screen.dart';
+import 'package:buildconnect/screens/notification/notification_screen.dart';
 import 'package:buildconnect/screens/search/search_screen.dart';
 import 'package:buildconnect/screens/search_post/search_post_screen.dart';
 import 'package:buildconnect/screens/search_profile/search_profile_screen.dart';
@@ -94,7 +97,26 @@ GoRouter router(Ref ref) {
         name: 'search_post',
         builder: (context, state) => const SearchPostScreen(),
       ),
-
+      GoRoute(
+        path: '/message/detail_view/:userId',
+        name: 'message_detail',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId'];
+          return DetailMessageScreen(conversationPartnerId: userId!);
+        },
+      ),
+      GoRoute(
+        path: '/message/user_list_view/:userId',
+        name: 'message_user_list',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId'];
+          return UserListMessagesScreen(userId: userId!);
+        },
+      ),
+      GoRoute(
+        path: '/notification',
+        builder: (context, state) => NotificationScreen(),
+      ),
       // GoRoute(
       //   path: '/location',
       //   name: 'location',
