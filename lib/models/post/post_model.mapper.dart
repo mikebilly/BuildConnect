@@ -17,6 +17,7 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
       CityMapper.ensureInitialized();
       DomainMapper.ensureInitialized();
       WorkingModeMapper.ensureInitialized();
+      ProfileTypeMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -56,6 +57,9 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
   static WorkingMode? _$workingMode(PostModel v) => v.workingMode;
   static const Field<PostModel, WorkingMode> _f$workingMode =
       Field('workingMode', _$workingMode, key: r'working_mode', opt: true);
+  static ProfileType? _$profileType(PostModel v) => v.profileType;
+  static const Field<PostModel, ProfileType> _f$profileType =
+      Field('profileType', _$profileType, key: r'profile_type', opt: true);
 
   @override
   final MappableFields<PostModel> fields = const {
@@ -70,6 +74,7 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
     #authorId: _f$authorId,
     #createdAt: _f$createdAt,
     #workingMode: _f$workingMode,
+    #profileType: _f$profileType,
   };
 
   static PostModel _instantiate(DecodingData data) {
@@ -84,7 +89,8 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
         requiredSkills: data.dec(_f$requiredSkills),
         authorId: data.dec(_f$authorId),
         createdAt: data.dec(_f$createdAt),
-        workingMode: data.dec(_f$workingMode));
+        workingMode: data.dec(_f$workingMode),
+        profileType: data.dec(_f$profileType));
   }
 
   @override
@@ -151,7 +157,8 @@ abstract class PostModelCopyWith<$R, $In extends PostModel, $Out>
       List<Domain>? requiredSkills,
       String? authorId,
       DateTime? createdAt,
-      WorkingMode? workingMode});
+      WorkingMode? workingMode,
+      ProfileType? profileType});
   PostModelCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -183,7 +190,8 @@ class _PostModelCopyWithImpl<$R, $Out>
           Object? requiredSkills = $none,
           String? authorId,
           Object? createdAt = $none,
-          Object? workingMode = $none}) =>
+          Object? workingMode = $none,
+          Object? profileType = $none}) =>
       $apply(FieldCopyWithData({
         if (id != $none) #id: id,
         if (title != null) #title: title,
@@ -195,7 +203,8 @@ class _PostModelCopyWithImpl<$R, $Out>
         if (requiredSkills != $none) #requiredSkills: requiredSkills,
         if (authorId != null) #authorId: authorId,
         if (createdAt != $none) #createdAt: createdAt,
-        if (workingMode != $none) #workingMode: workingMode
+        if (workingMode != $none) #workingMode: workingMode,
+        if (profileType != $none) #profileType: profileType
       }));
   @override
   PostModel $make(CopyWithData data) => PostModel(
@@ -209,7 +218,8 @@ class _PostModelCopyWithImpl<$R, $Out>
       requiredSkills: data.get(#requiredSkills, or: $value.requiredSkills),
       authorId: data.get(#authorId, or: $value.authorId),
       createdAt: data.get(#createdAt, or: $value.createdAt),
-      workingMode: data.get(#workingMode, or: $value.workingMode));
+      workingMode: data.get(#workingMode, or: $value.workingMode),
+      profileType: data.get(#profileType, or: $value.profileType));
 
   @override
   PostModelCopyWith<$R2, PostModel, $Out2> $chain<$R2, $Out2>(
