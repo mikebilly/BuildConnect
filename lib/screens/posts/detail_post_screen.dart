@@ -238,7 +238,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    jobPosting.budget.toString(),
+                    jobPosting.budget.toString() + " VNĐ",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
