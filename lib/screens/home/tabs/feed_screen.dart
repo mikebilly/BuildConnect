@@ -14,13 +14,17 @@ class FeedScreen extends ConsumerWidget {
   Color _getJobTypeColor(JobPostingType type) {
     switch (type) {
       case JobPostingType.hiring:
-        return Colors.blue;
+        return AppColors.primary;
       case JobPostingType.partnership:
-        return const Color.fromARGB(255, 7, 214, 225);
+        return AppColors.primary;
+
       case JobPostingType.materials:
-        return Colors.orange;
+        return AppColors.primary;
+
       case JobPostingType.other:
-        return Colors.purple;
+        return AppColors.primary;
+        ;
+
       default:
         return Colors.grey;
     }

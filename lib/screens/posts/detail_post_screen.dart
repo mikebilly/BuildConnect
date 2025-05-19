@@ -112,8 +112,27 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
             jobPosting.title,
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Icon(
+                // _getProfileTypeIcon(ProfileType.constructionTeam),
+                jobPosting.profileType!.icon,
+                color: AppColors.accent,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                jobPosting.profileType!.label,
+                style: TextStyle(
+                  color: AppColors.text,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+            ],
+          ),
+          const SizedBox(height: 16),
 
           // Posted info & location
           Row(
@@ -219,7 +238,7 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    jobPosting.budget.toString(),
+                    jobPosting.budget.toString() + " VNĐ",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
