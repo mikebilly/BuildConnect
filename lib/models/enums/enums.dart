@@ -86,12 +86,20 @@ enum City {
   hanoi,
   hoChiMinh,
   daNang,
-  haiPhong,
-  canTho,
   ninhBinh,
+
+  haiPhong,
+
+  canTho,
   hue,
+
   daLat,
   bienHoa,
+
+  nhaTrang,
+  haLong,
+  quyNhon,
+  phanThiet,
   vungTau;
 
   String get title => 'City';
@@ -100,27 +108,86 @@ enum City {
     City.hanoi => 'Hà Nội',
     City.hoChiMinh => 'TP. Hồ Chí Minh',
     City.daNang => 'Đà Nẵng',
+
     City.haiPhong => 'Hải Phòng',
+
     City.canTho => 'Cần Thơ',
     City.ninhBinh => 'Ninh Bình',
     City.hue => 'Huế',
+
     City.daLat => 'Đà Lạt',
     City.bienHoa => 'Biên Hòa',
+
     City.vungTau => 'Vũng Tàu',
+    City.nhaTrang => 'Nha Trang',
+    City.haLong => 'Hạ Long',
+    City.quyNhon => 'Quy Nhơn',
+    City.phanThiet => 'Phan Thiết',
+    City.ninhBinh => 'Ninh Bình',
   };
+
   String get normalize_label => switch (this) {
     City.hanoi => 'hanoi',
     City.hoChiMinh => 'hochiminh',
     City.daNang => 'danang',
+
     City.haiPhong => 'haiphong',
+
     City.canTho => 'cantho',
+
     City.ninhBinh => 'ninhbinh',
     City.hue => 'hue',
+
     City.daLat => 'dalat',
     City.bienHoa => 'bienhoa',
+
     City.vungTau => 'vungtau',
+    City.nhaTrang => 'nhatrang',
+    City.haLong => 'halong',
+    City.quyNhon => 'quynhon',
+    City.phanThiet => 'phanthiet',
+    City.ninhBinh => 'ninhbinh',
   };
 }
+// enum City {
+//   hanoi,
+//   hoChiMinh,
+//   daNang,
+//   haiPhong,
+//   canTho,
+//   ninhBinh,
+//   hue,
+//   daLat,
+//   bienHoa,
+//   vungTau;
+
+//   String get title => 'City';
+
+//   String get label => switch (this) {
+//     City.hanoi => 'Hà Nội',
+//     City.hoChiMinh => 'TP. Hồ Chí Minh',
+//     City.daNang => 'Đà Nẵng',
+//     City.haiPhong => 'Hải Phòng',
+//     City.canTho => 'Cần Thơ',
+//     City.ninhBinh => 'Ninh Bình',
+//     City.hue => 'Huế',
+//     City.daLat => 'Đà Lạt',
+//     City.bienHoa => 'Biên Hòa',
+//     City.vungTau => 'Vũng Tàu',
+//   };
+//   String get normalize_label => switch (this) {
+//     City.hanoi => 'hanoi',
+//     City.hoChiMinh => 'hochiminh',
+//     City.daNang => 'danang',
+//     City.haiPhong => 'haiphong',
+//     City.canTho => 'cantho',
+//     City.ninhBinh => 'ninhbinh',
+//     City.hue => 'hue',
+//     City.daLat => 'dalat',
+//     City.bienHoa => 'bienhoa',
+//     City.vungTau => 'vungtau',
+//   };
+// }
 
 @MappableEnum()
 enum ProjectRole {

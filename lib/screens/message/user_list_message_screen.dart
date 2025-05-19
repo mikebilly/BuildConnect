@@ -1,3 +1,4 @@
+import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/features/conversation/providers/conversation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,6 +41,7 @@ class UserListMessagesScreen extends ConsumerWidget {
                   vertical: 8.0,
                 ),
                 leading: CircleAvatar(
+                  backgroundColor: AppTheme.lightTheme.primaryColor,
                   radius: 28,
                   child:
                       conversation.partnerAvatarUrl == null ||
@@ -116,12 +118,5 @@ class UserListMessagesScreen extends ConsumerWidget {
     } else {
       return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year.toString().substring(2)}';
     }
-  }
-
-  // Helper function để tạo màu cho avatar dựa trên tên
-  Color _getAvatarColor(String name) {
-    // Đơn giản hóa: dùng hashCode để tạo màu ngẫu nhiên nhưng ổn định
-    final hash = name.hashCode;
-    return Color((hash & 0xFFFFFF) | 0xFF000000).withOpacity(0.7);
   }
 }

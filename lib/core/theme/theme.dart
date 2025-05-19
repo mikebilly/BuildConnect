@@ -14,8 +14,13 @@ class AppColors {
   static const Color textLight = Color(0xFF757575);
   static const Color divider = Color(0xFFEEEEEE);
   static const Color chatBackground = Color(0xFFEFEFEF); // Nền tổng thể chat
-  static const Color myMessageBackground = Color(0xFFDCF8C6);
-  static const Color otherMessageBackground = Color(0xFFFFFFFF);
+  static const Color myMessageBackground = Color.fromARGB(255, 173, 230, 130);
+  static const Color otherMessageBackground = Color.fromARGB(
+    255,
+    226,
+    221,
+    221,
+  );
   static const Color myMessageText = Color(0xFF000000);
   static const Color otherMessageText = Color(0xFF333333);
   static const Color timestampColor = Color(0xFF888888);
