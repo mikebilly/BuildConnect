@@ -13,6 +13,7 @@ class SearchPostModelMapper extends ClassMapperBase<SearchPostModel> {
   static SearchPostModelMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = SearchPostModelMapper._());
+      CityMapper.ensureInitialized();
       JobPostingTypeMapper.ensureInitialized();
     }
     return _instance!;
@@ -24,9 +25,9 @@ class SearchPostModelMapper extends ClassMapperBase<SearchPostModel> {
   static String _$query(SearchPostModel v) => v.query;
   static const Field<SearchPostModel, String> _f$query =
       Field('query', _$query, opt: true, def: '');
-  static String _$location(SearchPostModel v) => v.location;
-  static const Field<SearchPostModel, String> _f$location =
-      Field('location', _$location, opt: true, def: '');
+  static List<City> _$location(SearchPostModel v) => v.location;
+  static const Field<SearchPostModel, List<City>> _f$location =
+      Field('location', _$location, opt: true, def: const []);
   static List<JobPostingType> _$jobType(SearchPostModel v) => v.jobType;
   static const Field<SearchPostModel, List<JobPostingType>> _f$jobType =
       Field('jobType', _$jobType, opt: true, def: const []);
@@ -114,11 +115,12 @@ extension SearchPostModelValueCopy<$R, $Out>
 
 abstract class SearchPostModelCopyWith<$R, $In extends SearchPostModel, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
+  ListCopyWith<$R, City, ObjectCopyWith<$R, City, City>> get location;
   ListCopyWith<$R, JobPostingType,
       ObjectCopyWith<$R, JobPostingType, JobPostingType>> get jobType;
   $R call(
       {String? query,
-      String? location,
+      List<City>? location,
       List<JobPostingType>? jobType,
       int? budget,
       DateTime? startDate,
@@ -136,6 +138,10 @@ class _SearchPostModelCopyWithImpl<$R, $Out>
   late final ClassMapperBase<SearchPostModel> $mapper =
       SearchPostModelMapper.ensureInitialized();
   @override
+  ListCopyWith<$R, City, ObjectCopyWith<$R, City, City>> get location =>
+      ListCopyWith($value.location, (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(location: v));
+  @override
   ListCopyWith<$R, JobPostingType,
           ObjectCopyWith<$R, JobPostingType, JobPostingType>>
       get jobType => ListCopyWith($value.jobType,
@@ -143,7 +149,7 @@ class _SearchPostModelCopyWithImpl<$R, $Out>
   @override
   $R call(
           {String? query,
-          String? location,
+          List<City>? location,
           List<JobPostingType>? jobType,
           Object? budget = $none,
           DateTime? startDate,

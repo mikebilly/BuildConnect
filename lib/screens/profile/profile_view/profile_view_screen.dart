@@ -22,7 +22,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.invalidate(profileDataNotifierProvider);
+      ref.invalidate(profileDataByUserIdProvider(widget.userId!));
     });
   }
 
@@ -30,6 +30,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final bool isLoggedIn = auth.asData?.value != null;
+    final bool isMe =
+        widget.userId != null && widget.userId == auth.asData?.value?.id;
     final currentProfileUserId = widget.userId;
     if (widget.userId == null) {
       return const Center(child: Text('User ID is null'));
@@ -43,7 +45,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       appBar: AppBar(
         title: const Text('Profile View'),
         actions: [
-          if (widget.userId != null && widget.userId == auth.asData?.value?.id)
+          if (isMe)
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () {
@@ -60,19 +62,24 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
           if (profileData == null) {
             return const Center(child: Text('No profile data found'));
           } else {
-            return Column(
+            return Stack(
               children: [
                 Container(height: 70, color: AppColors.primary),
-                Expanded(
-                  child: _buildShiftedWidget(
-                    context,
-                    _buildBodySection(
+
+                Column(
+                  children: [
+                    SizedBox(height: 5),
+                    _buildAvatar(
                       context,
                       profileData,
                       isLoggedIn,
                       currentProfileUserId!,
+                      isMe,
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    const Divider(height: 0.5, color: AppColors.greyBackground),
+                    Expanded(child: ProfileViewTabs(profileData: profileData)),
+                  ],
                 ),
               ],
             );
@@ -83,32 +90,12 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
   }
 }
 
-Widget _buildShiftedWidget(BuildContext context, Widget child) {
-  return Transform.translate(offset: const Offset(0, -65), child: child);
-  // return child;
-}
-
-Widget _buildBodySection(
-  BuildContext context,
-  ProfileData profileData,
-  bool isLoggedIn,
-  String currentProfileUserId,
-) {
-  return Column(
-    children: [
-      _buildAvatar(context, profileData, isLoggedIn, currentProfileUserId),
-      const SizedBox(height: 10),
-      const Divider(height: 0.5, color: AppColors.greyBackground),
-      Expanded(child: ProfileViewTabs(profileData: profileData)),
-    ],
-  );
-}
-
 Widget _buildAvatar(
   BuildContext context,
   ProfileData profileData,
   bool isLoggedIn,
   String currentProfileUserId,
+  bool isMe,
 ) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -148,49 +135,52 @@ Widget _buildAvatar(
                 ),
               ),
             ),
-            SizedBox(width: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.greyBackground,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.message, size: 16),
-                onPressed: () {
-                  if (isLoggedIn) {
-                    context.push('/message/detail_view/$currentProfileUserId');
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text('Thông báo'),
-                          content: const Text(
-                            'Bạn cần đăng nhập để gửi tin nhắn.',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                context.pop();
-                              },
-                              child: const Text('Đóng'),
+            SizedBox(width: 5),
+            if (!isMe)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.greyBackground,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.message, size: 16),
+                  onPressed: () {
+                    if (isLoggedIn) {
+                      context.push(
+                        '/message/detail_view/$currentProfileUserId',
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Thông báo'),
+                            content: const Text(
+                              'Bạn cần đăng nhập để gửi tin nhắn.',
                             ),
-                            TextButton(
-                              onPressed: () {
-                                context.pop();
-                                context.push('/login');
-                              },
-                              child: const Text('Đăng nhập'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                },
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  context.pop();
+                                },
+                                child: const Text('Đóng'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  context.pop();
+                                  context.push('/login');
+                                },
+                                child: const Text('Đăng nhập'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
           ],
         ),
         const SizedBox(height: 4),

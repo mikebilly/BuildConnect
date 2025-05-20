@@ -529,7 +529,7 @@ class HomeTabScreen extends ConsumerWidget {
                             MainAxisSize.min, // Để Column chỉ cao bằng nội dung
                         children: [
                           Text(
-                            'Kỹ năng:', // Rút gọn label
+                            'Domain:', // Rút gọn label
                             style: textTheme.labelMedium?.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -557,7 +557,7 @@ class HomeTabScreen extends ConsumerWidget {
                                       ) // Giới hạn số lượng skill hiển thị
                                       .map(
                                         (skill) => Chip(
-                                          label: Text(skill),
+                                          label: Text(skill.label),
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 6,
                                             vertical: 2,
@@ -650,7 +650,7 @@ class HomeTabScreen extends ConsumerWidget {
         child: Container(
           width: 190,
           height: 120,
-          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

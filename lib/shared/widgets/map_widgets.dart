@@ -15,16 +15,16 @@ class _LocationMapViewState extends State<LocationMapView> {
   late GoogleMapController mapController;
   Map<String, LatLng> locationCoordinates = {
     // Preset locations for demo purposes
-    'Ho Chi Minh City': const LatLng(10.762622, 106.660172),
-    'Hanoi': const LatLng(21.027763, 105.834160),
-    'Da Nang': const LatLng(16.047079, 108.206230),
-    'Can Tho': const LatLng(10.045162, 105.746857),
-    'Hue': const LatLng(16.463713, 107.590866),
-    'Nha Trang': const LatLng(12.248775, 109.196747),
-    'Vung Tau': const LatLng(10.346937, 107.085717),
-    'Ha Long': const LatLng(20.959902, 107.042542),
-    'Quy Nhon': const LatLng(13.770718, 109.223392),
-    'Phan Thiet': const LatLng(10.921435, 108.102253),
+    'hochiminh': const LatLng(10.762622, 106.660172),
+    'hanoi': const LatLng(21.027763, 105.834160),
+    'danang': const LatLng(16.047079, 108.206230),
+    'cantho': const LatLng(10.045162, 105.746857),
+    'hue': const LatLng(16.463713, 107.590866),
+    'nhatrang': const LatLng(12.248775, 109.196747),
+    'vungtau': const LatLng(10.346937, 107.085717),
+    'halong': const LatLng(20.959902, 107.042542),
+    'quynhon': const LatLng(13.770718, 109.223392),
+    'phanthiet': const LatLng(10.921435, 108.102253),
     // Default for other locations
     'Default': const LatLng(16.047079, 108.206230), // Da Nang as default
   };

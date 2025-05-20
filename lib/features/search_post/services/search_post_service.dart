@@ -56,12 +56,10 @@ class SearchPostService {
     var result = List<PostModel>.from(postList);
 
     // 2. Lọc theo địa điểm (location)
-    if (model.location.trim().isNotEmpty) {
+    if (model.location.isNotEmpty) {
       result =
           result
-              .where(
-                (post) => post.location.toLowerCase().contains(model.location),
-              )
+              .where((post) => model.location.contains(post.location))
               .toList();
     }
 

@@ -69,11 +69,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 data: (user) {
                   if (user != null) {
                     context.push('/profile/view/${user.id}');
-                  }
-                  else {
+                  } else {
                     context.push('/login');
                   }
-                }
+                },
               );
             },
             onLogoutTap: () {
@@ -100,12 +99,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           // return Center(child: Text('$auth'));
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _navigateToPosts,
-        icon: const Icon(Icons.post_add),
-        label: const Text('Post'),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 15.0), // Move up by 40 pixels
+        child: SizedBox(
+          height: 50, // Shrink height
+          child: FloatingActionButton.extended(
+            onPressed: _navigateToPosts,
+            icon: const Icon(Icons.post_add, size: 18),
+            label: const Text('Post', style: TextStyle(fontSize: 14)),
+          ),
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

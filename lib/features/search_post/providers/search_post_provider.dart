@@ -9,7 +9,7 @@ part 'search_post_provider.g.dart';
 class SearchPostStateInternal {
   final SearchPostModel currentSearchModel;
   final AsyncValue<List<PostModel>> searchResults;
-
+  SearchPostModel get _currentSearchModel => currentSearchModel;
   SearchPostStateInternal({
     required this.currentSearchModel,
     required this.searchResults,
@@ -55,17 +55,17 @@ class SearchPostNotifier extends _$SearchPostNotifier {
     );
   }
 
-  void updateLocation(String newLocation) {
+  void updateLocation(City newLocation) {
     final currentState = state.value;
     if (currentState == null) return;
 
-    state = AsyncData(
-      currentState.copyWith(
-        currentSearchModel: currentState.currentSearchModel.copyWith(
-          location: newLocation,
-        ),
-      ),
-    );
+    // state = AsyncData(
+    //   currentState.copyWith(
+    //     currentSearchModel: currentState.currentSearchModel.copyWith(
+    //       location: newLocation,
+    //     ),
+    //   ),
+    // );
   }
 
   void toggleJobType(JobPostingType type) {
@@ -139,7 +139,7 @@ class SearchPostNotifier extends _$SearchPostNotifier {
 
   bool get showRecentOrPopular =>
       currentSearchModel.query.trim().isEmpty &&
-      currentSearchModel.location.trim().isEmpty &&
+      currentSearchModel.location.isEmpty &&
       currentSearchModel.jobType.isEmpty &&
       !isSearchResultsLoading &&
       searchResultsList.isEmpty;

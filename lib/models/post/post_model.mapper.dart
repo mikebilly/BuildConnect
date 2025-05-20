@@ -14,6 +14,10 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = PostModelMapper._());
       JobPostingTypeMapper.ensureInitialized();
+      CityMapper.ensureInitialized();
+      DomainMapper.ensureInitialized();
+      WorkingModeMapper.ensureInitialized();
+      ProfileTypeMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -28,8 +32,8 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
   static JobPostingType _$jobPostingType(PostModel v) => v.jobPostingType;
   static const Field<PostModel, JobPostingType> _f$jobPostingType =
       Field('jobPostingType', _$jobPostingType, key: r'job_posting_type');
-  static String _$location(PostModel v) => v.location;
-  static const Field<PostModel, String> _f$location =
+  static City _$location(PostModel v) => v.location;
+  static const Field<PostModel, City> _f$location =
       Field('location', _$location);
   static String _$description(PostModel v) => v.description;
   static const Field<PostModel, String> _f$description =
@@ -40,18 +44,22 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
   static DateTime? _$deadline(PostModel v) => v.deadline;
   static const Field<PostModel, DateTime> _f$deadline =
       Field('deadline', _$deadline, opt: true);
-  static List<String>? _$requiredSkills(PostModel v) => v.requiredSkills;
-  static const Field<PostModel, List<String>> _f$requiredSkills =
-      Field('requiredSkills', _$requiredSkills, opt: true);
-  static List<String>? _$categories(PostModel v) => v.categories;
-  static const Field<PostModel, List<String>> _f$categories =
-      Field('categories', _$categories, opt: true);
+  static List<Domain>? _$requiredSkills(PostModel v) => v.requiredSkills;
+  static const Field<PostModel, List<Domain>> _f$requiredSkills = Field(
+      'requiredSkills', _$requiredSkills,
+      key: r'required_skills', opt: true);
   static String _$authorId(PostModel v) => v.authorId;
   static const Field<PostModel, String> _f$authorId =
       Field('authorId', _$authorId, key: r'author_id');
   static DateTime? _$createdAt(PostModel v) => v.createdAt;
   static const Field<PostModel, DateTime> _f$createdAt =
       Field('createdAt', _$createdAt, key: r'created_at', opt: true);
+  static WorkingMode? _$workingMode(PostModel v) => v.workingMode;
+  static const Field<PostModel, WorkingMode> _f$workingMode =
+      Field('workingMode', _$workingMode, key: r'working_mode', opt: true);
+  static ProfileType? _$profileType(PostModel v) => v.profileType;
+  static const Field<PostModel, ProfileType> _f$profileType =
+      Field('profileType', _$profileType, key: r'profile_type', opt: true);
 
   @override
   final MappableFields<PostModel> fields = const {
@@ -63,9 +71,10 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
     #budget: _f$budget,
     #deadline: _f$deadline,
     #requiredSkills: _f$requiredSkills,
-    #categories: _f$categories,
     #authorId: _f$authorId,
     #createdAt: _f$createdAt,
+    #workingMode: _f$workingMode,
+    #profileType: _f$profileType,
   };
 
   static PostModel _instantiate(DecodingData data) {
@@ -78,9 +87,10 @@ class PostModelMapper extends ClassMapperBase<PostModel> {
         budget: data.dec(_f$budget),
         deadline: data.dec(_f$deadline),
         requiredSkills: data.dec(_f$requiredSkills),
-        categories: data.dec(_f$categories),
         authorId: data.dec(_f$authorId),
-        createdAt: data.dec(_f$createdAt));
+        createdAt: data.dec(_f$createdAt),
+        workingMode: data.dec(_f$workingMode),
+        profileType: data.dec(_f$profileType));
   }
 
   @override
@@ -134,21 +144,21 @@ extension PostModelValueCopy<$R, $Out> on ObjectCopyWith<$R, PostModel, $Out> {
 
 abstract class PostModelCopyWith<$R, $In extends PostModel, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>?
+  ListCopyWith<$R, Domain, ObjectCopyWith<$R, Domain, Domain>>?
       get requiredSkills;
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>? get categories;
   $R call(
       {String? id,
       String? title,
       JobPostingType? jobPostingType,
-      String? location,
+      City? location,
       String? description,
       double? budget,
       DateTime? deadline,
-      List<String>? requiredSkills,
-      List<String>? categories,
+      List<Domain>? requiredSkills,
       String? authorId,
-      DateTime? createdAt});
+      DateTime? createdAt,
+      WorkingMode? workingMode,
+      ProfileType? profileType});
   PostModelCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -161,7 +171,7 @@ class _PostModelCopyWithImpl<$R, $Out>
   late final ClassMapperBase<PostModel> $mapper =
       PostModelMapper.ensureInitialized();
   @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>?
+  ListCopyWith<$R, Domain, ObjectCopyWith<$R, Domain, Domain>>?
       get requiredSkills => $value.requiredSkills != null
           ? ListCopyWith(
               $value.requiredSkills!,
@@ -169,26 +179,19 @@ class _PostModelCopyWithImpl<$R, $Out>
               (v) => call(requiredSkills: v))
           : null;
   @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>?
-      get categories => $value.categories != null
-          ? ListCopyWith(
-              $value.categories!,
-              (v, t) => ObjectCopyWith(v, $identity, t),
-              (v) => call(categories: v))
-          : null;
-  @override
   $R call(
           {Object? id = $none,
           String? title,
           JobPostingType? jobPostingType,
-          String? location,
+          City? location,
           String? description,
           Object? budget = $none,
           Object? deadline = $none,
           Object? requiredSkills = $none,
-          Object? categories = $none,
           String? authorId,
-          Object? createdAt = $none}) =>
+          Object? createdAt = $none,
+          Object? workingMode = $none,
+          Object? profileType = $none}) =>
       $apply(FieldCopyWithData({
         if (id != $none) #id: id,
         if (title != null) #title: title,
@@ -198,9 +201,10 @@ class _PostModelCopyWithImpl<$R, $Out>
         if (budget != $none) #budget: budget,
         if (deadline != $none) #deadline: deadline,
         if (requiredSkills != $none) #requiredSkills: requiredSkills,
-        if (categories != $none) #categories: categories,
         if (authorId != null) #authorId: authorId,
-        if (createdAt != $none) #createdAt: createdAt
+        if (createdAt != $none) #createdAt: createdAt,
+        if (workingMode != $none) #workingMode: workingMode,
+        if (profileType != $none) #profileType: profileType
       }));
   @override
   PostModel $make(CopyWithData data) => PostModel(
@@ -212,9 +216,10 @@ class _PostModelCopyWithImpl<$R, $Out>
       budget: data.get(#budget, or: $value.budget),
       deadline: data.get(#deadline, or: $value.deadline),
       requiredSkills: data.get(#requiredSkills, or: $value.requiredSkills),
-      categories: data.get(#categories, or: $value.categories),
       authorId: data.get(#authorId, or: $value.authorId),
-      createdAt: data.get(#createdAt, or: $value.createdAt));
+      createdAt: data.get(#createdAt, or: $value.createdAt),
+      workingMode: data.get(#workingMode, or: $value.workingMode),
+      profileType: data.get(#profileType, or: $value.profileType));
 
   @override
   PostModelCopyWith<$R2, PostModel, $Out2> $chain<$R2, $Out2>(

@@ -52,7 +52,7 @@ class BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
 
     if (_data != null && !_initialized) {
       final data = _data.profile;
-      debugPrint('Initializing data: $data');
+      debugPrint('&^&^&^&^&^&^&^&^& [Basic INFO]: Initializing data: $data');
       setState(() {
         /////////////// Load data
         _displayName.text = data.displayName;

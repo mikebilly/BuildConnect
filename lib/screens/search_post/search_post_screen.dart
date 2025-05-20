@@ -1,3 +1,4 @@
+import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/features/search_post/providers/search_post_provider.dart';
 import 'package:buildconnect/models/enums/enums.dart'; // Import Enums (cần JobPostingType)
 import 'package:buildconnect/models/post/post_model.dart'; // Import PostModel
@@ -38,8 +39,8 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
         ref.read(searchPostNotifierProvider).value?.currentSearchModel;
     if (initialSearchModel != null) {
       _queryController.text = initialSearchModel.query;
-      _locationController.text =
-          initialSearchModel.location; // Đồng bộ location
+      // _locationController.text =
+      //     initialSearchModel.location; // Đồng bộ location
       _selectedJobTypeList = List.from(
         initialSearchModel.jobType,
       ); // Đồng bộ jobType
@@ -77,7 +78,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
     final notifier = ref.read(searchPostNotifierProvider.notifier);
 
     // Cập nhật các filter vào Notifier trước khi search
-    notifier.updateLocation(_locationController.text.trim());
+    // notifier.updateLocation(_locationController.text.trim());
     // Notifier đã quản lý _selectedJobTypeList thông qua toggleJobType
 
     // Gọi phương thức thực hiện search trên Notifier
@@ -439,7 +440,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: AppColors.surface,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12),
@@ -448,22 +449,23 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      _getProfileTypeIcon(ProfileType.constructionTeam),
-                      color: Colors.blue,
+                      // _getProfileTypeIcon(ProfileType.constructionTeam),
+                      post.profileType!.icon,
+                      color: AppColors.accent,
                       size: 16,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      _getProfileTypeLabel(ProfileType.constructionTeam),
+                      post.profileType!.label,
                       style: TextStyle(
-                        color: Colors.grey[800],
+                        color: AppColors.text,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const Spacer(),
                     Text(
-                      'Posted 2 hours ago', // Placeholder, replace with actual time
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      'Posted ${-post.createdAt!.difference(DateTime.now()).inHours} hours ago',
+                      style: TextStyle(color: AppColors.grey, fontSize: 12),
                     ),
                   ],
                 ),
@@ -482,14 +484,14 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: _getJobTypeColor(
-                          JobPostingType.hiring,
-                        ).withOpacity(0.1),
+                          post.jobPostingType,
+                        ).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'Full-time', // Placeholder, replace with actual job type
+                        post.jobPostingType.label,
                         style: TextStyle(
-                          color: _getJobTypeColor(JobPostingType.hiring),
+                          color: _getJobTypeColor(post.jobPostingType),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -507,37 +509,101 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                     ),
                     const SizedBox(height: 8),
                     // Posted by & location
-                    Row(
-                      children: [
-                        const Icon(Icons.person, size: 16, color: Colors.grey),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Posted by ${post.authorId}', // Replace with actual author info
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        const SizedBox(width: 16),
-                        const Icon(
-                          Icons.location_on,
-                          size: 16,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            post.location, // Display job location
-                            style: TextStyle(color: Colors.grey),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                    // Row(
+                    //   children: [
+                    //     // const Icon(
+                    //     //   Icons.person,
+                    //     //   size: 16,
+                    //     //   color: Colors.grey,
+                    //     // ),
+                    //     // const SizedBox(width: 4),
+                    //     // Text(
+                    //     //   'Posted by ${post.authorId}', // Replace with actual author info
+                    //     //   style: TextStyle(color: Colors.grey),
+                    //     // ),
+                    //     // const SizedBox(width: 16),
+                    //     const Icon(
+                    //       Icons.location_on,
+                    //       size: 16,
+                    //       color: Colors.grey,
+                    //     ),
+                    //     const SizedBox(width: 4),
+                    //     Expanded(
+                    //       child: Text(
+                    //         post.location.label, // Display job location
+                    //         style: TextStyle(color: Colors.grey),
+                    //         maxLines: 1,
+                    //         overflow: TextOverflow.ellipsis,
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 8),
+
+                    //     // Working mode bên phải
+                    //     if (post.workingMode != null) ...[
+                    //       const Icon(
+                    //         Icons.work_outline,
+                    //         size: 16,
+                    //         color: Colors.grey,
+                    //       ),
+                    //       const SizedBox(width: 4),
+                    //       Text(
+                    //         post.workingMode!.label,
+                    //         style: TextStyle(color: Colors.grey),
+                    //         overflow: TextOverflow.ellipsis,
+                    //       ),
+                    //     ],
+                    //   ],
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Location bên trái
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: AppColors.text,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                post.location.label,
+                                style: TextStyle(color: AppColors.text),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+
+                          // Working mode bên phải
+                          if (post.workingMode != null)
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.work_outline,
+                                  size: 16,
+                                  color: AppColors.grey,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  post
+                                      .workingMode!
+                                      .label, // Optional: viết hoa chữ cái đầu
+                                  style: TextStyle(color: AppColors.grey),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 12),
+
                     // Description
                     Text(
                       post.description ??
                           'No description provided', // Display job description
-                      style: TextStyle(color: Colors.black54),
+                      style: TextStyle(color: AppColors.text),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -559,11 +625,21 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                         decoration: BoxDecoration(
                           color: _getDeadlineColor(
                             post.deadline!,
-                          ).withOpacity(0.1),
+                          ).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          'Deadline in 3 days', // Placeholder, replace with actual deadline
+                          post.deadline == null
+                              ? 'Unknown'
+                              : post.deadline!.isBefore(DateTime.now())
+                              ? 'Expired'
+                              : post.deadline!
+                                      .difference(DateTime.now())
+                                      .inDays >
+                                  0
+                              ? 'Deadline in ${post.deadline!.difference(DateTime.now()).inDays} days'
+                              : 'Deadline today',
+
                           style: TextStyle(
                             color: _getDeadlineColor(post.deadline!),
                             fontWeight: FontWeight.bold,
@@ -572,13 +648,15 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                       ),
                     TextButton.icon(
                       onPressed: () {
-                        print('post id in search_post_screen is: ${post.id}');
+                        debugPrint(post.id);
                         context.push('/job-posting/view/${post.id}');
                       },
 
                       icon: const Icon(Icons.visibility, size: 16),
                       label: const Text('View Details'),
-                      style: TextButton.styleFrom(foregroundColor: Colors.blue),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.accent,
+                      ),
                     ),
                   ],
                 ),

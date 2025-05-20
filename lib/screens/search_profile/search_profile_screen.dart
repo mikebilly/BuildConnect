@@ -209,251 +209,259 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                         ),
                       ],
                     ),
-                    child: ListView(
-                      padding: const EdgeInsets.all(16),
-                      shrinkWrap: true,
+                    child: Column(
                       children: [
-                        // --- Location Filter ---
-                        _buildExpandable(
-                          labelLevel: 1,
-                          label: 'Location',
-                          expanded: _locationFilterExpanded,
-                          onTap:
-                              () => setState(
-                                () =>
-                                    _locationFilterExpanded =
-                                        !_locationFilterExpanded,
-                              ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Column(
-                              children: [
-                                // all citys are selected
-                                if (current_location_list!.isNotEmpty)
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 5,
-                                    children:
-                                        current_location_list
-                                            .map(
-                                              (city) => Chip(
-                                                label: Text(city.label),
-                                                onDeleted: () {
-                                                  setState(() {
-                                                    current_location_list
-                                                        .remove(city);
-                                                    searchProfileNotifier
-                                                        .setLocation(
-                                                          current_location_list,
-                                                        );
-                                                  });
-                                                },
-                                              ),
-                                            )
-                                            .toList(),
-                                  ),
-                                Row(
-                                  spacing: 10,
-                                  children: [
-                                    // add button and if click then set _addLocation to true
-                                    ElevatedButton(
-                                      onPressed:
-                                          () => setState(
-                                            () {
-                                              _addLocation = !_addLocation;
-                                              searchProfileNotifier
-                                                  .toggleLocation(
-                                                    _selectedCity!,
-                                                  );
-                                              _selectedCity = null;
-                                            },
-                                          ), // Gọi triggerSearch để áp dụng và tìm kiếm
-                                      child: const Icon(Icons.add),
-                                      style: ElevatedButton.styleFrom(
-                                        // disable border cicular
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        textStyle: TextStyle(fontSize: 12),
-                                        minimumSize: const Size(40, 40),
-                                      ),
+                        // Scrollable filter content
+                        Expanded(
+                          child: ListView(
+                            padding: const EdgeInsets.all(16),
+                            children: [
+                              // --- Location Filter ---
+                              _buildExpandable(
+                                labelLevel: 1,
+                                label: 'Location',
+                                expanded: _locationFilterExpanded,
+                                onTap:
+                                    () => setState(
+                                      () =>
+                                          _locationFilterExpanded =
+                                              !_locationFilterExpanded,
                                     ),
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    0,
+                                    8,
+                                    0,
+                                    0,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      if (current_location_list!.isNotEmpty)
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 5,
+                                          children:
+                                              current_location_list.map((city) {
+                                                return Chip(
+                                                  label: Text(city.label),
+                                                  onDeleted: () {
+                                                    setState(() {
+                                                      current_location_list
+                                                          .remove(city);
+                                                      searchProfileNotifier
+                                                          .setLocation(
+                                                            current_location_list,
+                                                          );
+                                                    });
+                                                  },
+                                                );
+                                              }).toList(),
+                                        ),
 
-                                    Expanded(
-                                      child: DropdownButtonFormField<City>(
-                                        value:
-                                            _selectedCity, // ② show the currently selected city
-                                        isExpanded: true,
-                                        decoration: InputDecoration(
-                                          hintText: 'Select city…',
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 10,
+                                      const SizedBox(height: 8),
+
+                                      Row(
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed:
+                                                () => setState(() {
+                                                  _addLocation = !_addLocation;
+                                                  searchProfileNotifier
+                                                      .toggleLocation(
+                                                        _selectedCity!,
+                                                      );
+                                                  _selectedCity = null;
+                                                }),
+                                            child: const Icon(Icons.add),
+                                            style: ElevatedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                               ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
+                                              minimumSize: const Size(40, 40),
                                             ),
                                           ),
-                                        ),
-
-                                        // ③ build the list of options from your enum
-                                        items:
-                                            City.values.map((city) {
-                                              return DropdownMenuItem(
-                                                value: city,
-                                                child: Text(
-                                                  city.label,
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                  ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: DropdownButtonFormField<
+                                              City
+                                            >(
+                                              value: _selectedCity,
+                                              isExpanded: true,
+                                              decoration: InputDecoration(
+                                                hintText: 'Select city…',
+                                                contentPadding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 10,
+                                                    ),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
                                                 ),
-                                              );
-                                            }).toList(),
-
-                                        // ④ when the user picks a city, update our local state
-                                        onChanged: (city) {
-                                          setState(() {
-                                            _selectedCity = city;
-                                            _addLocation =
-                                                true; // optionally open the dropdown UI
-                                          });
-                                        },
+                                              ),
+                                              items:
+                                                  City.values.map((city) {
+                                                    return DropdownMenuItem(
+                                                      value: city,
+                                                      child: Text(
+                                                        city.label,
+                                                        style: const TextStyle(
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                              onChanged: (city) {
+                                                setState(() {
+                                                  _selectedCity = city;
+                                                  _addLocation = true;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const Divider(height: 24),
-
-                        // --- Profile Type Filter ---
-                        _buildExpandable(
-                          labelLevel: 1,
-                          label: 'Profile Type',
-                          expanded: _profileTypeFilterExpanded,
-                          onTap:
-                              () => setState(
-                                () =>
-                                    _profileTypeFilterExpanded =
-                                        !_profileTypeFilterExpanded,
                               ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children:
-                                  ProfileType.values.map((type) {
-                                    return ChoiceChip(
-                                      label: Text(type.label),
-                                      selected: isSelectedProfileType[type]!,
-                                      onSelected: (selected) {
-                                        Icon(
-                                          Icons.check,
-                                          size: 16,
-                                          color:
-                                              AppTheme.lightTheme.primaryColor,
-                                        );
-                                        searchProfileNotifier.toggleProfileType(
-                                          type,
-                                        );
-                                        setState(() {});
-                                      },
-                                      selectedColor: Color.fromARGB(
-                                        255,
-                                        207,
-                                        235,
-                                        210,
-                                      ),
 
-                                      checkmarkColor:
-                                          AppTheme.lightTheme.primaryColor,
-                                      labelStyle: TextStyle(
-                                        color:
-                                            isSelectedProfileType[type]!
-                                                ? Theme.of(context).primaryColor
-                                                : Colors.black87,
-                                      ),
-                                      backgroundColor: Colors.grey.shade100,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        side: BorderSide(
-                                          color:
-                                              isSelectedProfileType[type]!
-                                                  ? Theme.of(
-                                                    context,
-                                                  ).primaryColor
-                                                  : Colors.grey.shade300,
+                              const Divider(height: 24),
+
+                              // --- Profile Type Filter ---
+                              _buildExpandable(
+                                labelLevel: 1,
+                                label: 'Profile Type',
+                                expanded: _profileTypeFilterExpanded,
+                                onTap:
+                                    () => setState(
+                                      () =>
+                                          _profileTypeFilterExpanded =
+                                              !_profileTypeFilterExpanded,
+                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children:
+                                        ProfileType.values.map((type) {
+                                          return ChoiceChip(
+                                            label: Text(type.label),
+                                            selected:
+                                                isSelectedProfileType[type]!,
+                                            onSelected: (selected) {
+                                              searchProfileNotifier
+                                                  .toggleProfileType(type);
+                                              setState(() {});
+                                            },
+                                            selectedColor: const Color.fromARGB(
+                                              255,
+                                              207,
+                                              235,
+                                              210,
+                                            ),
+                                            checkmarkColor:
+                                                AppTheme
+                                                    .lightTheme
+                                                    .primaryColor,
+                                            labelStyle: TextStyle(
+                                              color:
+                                                  isSelectedProfileType[type]!
+                                                      ? Theme.of(
+                                                        context,
+                                                      ).primaryColor
+                                                      : Colors.black87,
+                                            ),
+                                            backgroundColor:
+                                                Colors.grey.shade100,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              side: BorderSide(
+                                                color:
+                                                    isSelectedProfileType[type]!
+                                                        ? Theme.of(
+                                                          context,
+                                                        ).primaryColor
+                                                        : Colors.grey.shade300,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                  ),
+                                ),
+                              ),
+
+                              const Divider(height: 24),
+
+                              // --- Filters by selected profile types ---
+                              if (profileTypeChoosingList.isNotEmpty)
+                                ...profileTypeChoosingList.map((element) {
+                                  return _buildExpandable(
+                                    labelLevel: 1,
+                                    label: element.label,
+                                    expanded: openFilterByProfileType[element]!,
+                                    onTap:
+                                        () => setState(
+                                          () =>
+                                              openFilterByProfileType[element] =
+                                                  !openFilterByProfileType[element]!,
                                         ),
-                                      ),
-                                    );
-                                  }).toList(),
-                            ),
+                                    child: buildFilterByProfileType(
+                                      element,
+                                      currentArchitectFilter,
+                                      currentContractorFilter,
+                                      currentConstructionTeamFilter,
+                                      currentSupplierFilter,
+                                    ),
+                                  );
+                                }).toList(),
+                            ],
                           ),
                         ),
 
-                        // TODO: Thêm _buildExpandable cho Experience Level
-                        const Divider(height: 24),
-
-                        // filter theo từng profile type
-                        if (profileTypeChoosingList.isNotEmpty)
-                          for (var element in profileTypeChoosingList)
-                            _buildExpandable(
-                              labelLevel: 1,
-                              label: element.label,
-                              expanded: openFilterByProfileType[element]!,
-
-                              onTap: () {
-                                setState(
-                                  () =>
-                                      openFilterByProfileType[element] =
-                                          !openFilterByProfileType[element]!,
-                                );
-                              },
-                              child: buildFilterByProfileType(
-                                element,
-                                currentArchitectFilter,
-                                currentContractorFilter,
-                                currentConstructionTeamFilter,
-                                currentSupplierFilter,
+                        // Fixed bottom buttons
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      ref
+                                          .read(
+                                            searchProfileNotifierProvider
+                                                .notifier,
+                                          )
+                                          .clearAllFilters();
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red[500],
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                  ),
+                                  child: const Text('Clear All'),
+                                ),
                               ),
-                            ),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  ref
-                                      .read(
-                                        searchProfileNotifierProvider.notifier,
-                                      )
-                                      .clearAllFilters();
-                                });
-                              },
-                              child: const Text('Clear All'),
-                              style: ElevatedButton.styleFrom(
-                                textStyle: TextStyle(fontSize: 14),
-                                backgroundColor: Colors.red[500],
-                                minimumSize: const Size(50, 40),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: _triggerSearch,
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                  ),
+                                  child: const Text('Apply & Search'),
+                                ),
                               ),
-                            ),
-                            ElevatedButton(
-                              onPressed: _triggerSearch,
-                              child: const Text('Apply & Search'),
-                              style: ElevatedButton.styleFrom(
-                                textStyle: TextStyle(fontSize: 14),
-                                minimumSize: const Size(50, 40),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -526,10 +534,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
         case 2:
           return const TextStyle(fontSize: 14, fontWeight: FontWeight.w700);
         default:
-          return const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.normal,
-          ); // Default style
+          return const TextStyle(fontSize: 12, fontWeight: FontWeight.normal);
       }
     }
 
@@ -554,10 +559,22 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
             ),
           ),
         ),
-        AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.fastOutSlowIn,
-          child: Visibility(visible: expanded, child: child),
+
+        // Animated expansion
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          child:
+              expanded
+                  ? ClipRect(
+                    child: SizeTransition(
+                      sizeFactor: const AlwaysStoppedAnimation(1.0),
+                      axis: Axis.vertical,
+                      child: child,
+                    ),
+                  )
+                  : const SizedBox.shrink(),
         ),
       ],
     );

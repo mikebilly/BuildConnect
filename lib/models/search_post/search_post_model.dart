@@ -6,7 +6,7 @@ part 'search_post_model.mapper.dart';
 @MappableClass()
 class SearchPostModel with SearchPostModelMappable {
   String query;
-  String location;
+  List<City> location;
   List<JobPostingType> jobType;
   final int? budget;
 
@@ -14,7 +14,7 @@ class SearchPostModel with SearchPostModelMappable {
   final DateTime endDate;
   SearchPostModel({
     this.query = '',
-    this.location = '',
+    this.location = const [],
     this.jobType = const [],
     this.budget,
     required this.startDate,

@@ -29,17 +29,17 @@ class ProfileViewTabs extends StatelessWidget {
             child: TabBarView(
               children: [
                 SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  padding: const EdgeInsets.all(20),
                   child: ProfileViewOverviewTab(profileData: profileData),
                 ),
                 SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  padding: const EdgeInsets.all(20),
                   child: ProfileViewProfessionalInfoTab(
                     profileData: profileData,
                   ),
                 ),
                 SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  padding: const EdgeInsets.all(20),
                   child: ProfileViewContactsTab(profileData: profileData),
                 ),
               ],

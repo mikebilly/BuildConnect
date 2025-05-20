@@ -6,7 +6,7 @@ part of 'posting_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$allPostsHash() => r'd19eebb2b9f7add2aef64821d8c268c20365f0ce';
+String _$allPostsHash() => r'855cc74130841e6e4e980a2cee1051ea7944a5c4';
 
 /// See also [allPosts].
 @ProviderFor(allPosts)
@@ -161,7 +161,7 @@ class _PostByIdProviderElement
   String get id => (origin as PostByIdProvider).id;
 }
 
-String _$postingNotifierHash() => r'eb46341a76af2b1cb61f6ed631986a52bc412e93';
+String _$postingNotifierHash() => r'71d5601b762b1e70c835eca0798afda04f7e6e76';
 
 /// See also [PostingNotifier].
 @ProviderFor(PostingNotifier)

@@ -1,5 +1,9 @@
+import 'package:buildconnect/core/theme/theme.dart';
+import 'package:buildconnect/features/auth/providers/auth_service_provider.dart';
+import 'package:buildconnect/features/auth/services/auth_service.dart';
 import 'package:buildconnect/features/posting/providers/posting_provider.dart';
 import 'package:buildconnect/features/profile_data/providers/profile_data_provider.dart';
+import 'package:buildconnect/models/profile/profile_model.dart';
 import 'package:buildconnect/shared/common_widgets.dart';
 import 'package:buildconnect/shared/widgets/add_chips_widget.dart';
 
@@ -19,26 +23,34 @@ class PostScreen extends ConsumerStatefulWidget {
 
 class _PostScreenState extends ConsumerState<PostScreen> {
   late final PostingNotifier _postingNotifier;
+  late final AuthService _authService = ref.read(authServiceProvider);
 
   /// Local states
   JobPostingType _jobPostingType = JobPostingType.values.first;
   String _jobTitle = "";
   final _jobTitleController = TextEditingController();
 
-  String _location = "";
-  final _locationController = TextEditingController();
-
+  // final City _location = "";
+  // City _location = City.values.first;
+  // final _locationController = TextEditingController();
+  City _mainCity = City.values.first;
+  // final _mainAddress = TextEditingController();
+  // final Set<City> _operatingAreasSet = {};
+  WorkingMode _workingMode = WorkingMode.values.first;
+  ProfileType _profileType = ProfileType.values.first;
   String _description = "";
   final _descriptionController = TextEditingController();
 
   DateTime? _deadline;
   final _deadlineController = TextEditingController();
 
-  final TextEditingController _requiredSkillsController =
-      TextEditingController();
-  List<String> _requiredSkillsList = [];
+  // final TextEditingController _requiredSkillsController =
+  //     TextEditingController();
+  final Set<Domain> _requiredSkillsList = {};
 
-  double _budget = 1;
+  // List<String> _requiredSkillsList = [];
+
+  // double _budget = 1;
   final _budgetController = TextEditingController(text: "1");
 
   ///
@@ -67,34 +79,39 @@ class _PostScreenState extends ConsumerState<PostScreen> {
 
   Future<void> _submit() async {
     final newPostModel = PostModel(
-      // authorId: _postingNotifier.authorId,
-      authorId: "vanhID",
+      authorId: _authService.currentUserId ?? 'unknown',
+      // authorId: "vanhID",
       title: _jobTitleController.text,
-      location: _locationController.text,
+      location: _mainCity,
       description: _descriptionController.text,
-      budget: _budget,
+      budget:
+          _budgetController.text.isEmpty
+              ? 0
+              : double.tryParse(_budgetController.text) ?? 0,
       deadline: _deadline ?? DateTime.now(),
-      requiredSkills: _requiredSkillsList,
+      requiredSkills: _requiredSkillsList.toList(),
       jobPostingType: _jobPostingType,
+      workingMode: _workingMode,
+      profileType: _profileType,
     );
-    print(newPostModel);
+    debugPrint(newPostModel.toString());
 
-    // try {
-    //   await _postingNotifier.createNewPost(newPostModel);
-    //   print(newPostModel);
-    //   if (mounted) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(content: Text('Post created successfully')),
-    //     );
-    //   }
-    // } catch (e) {
-    //   print("Error: $e");
-    //   if (mounted) {
-    //     ScaffoldMessenger.of(
-    //       context,
-    //     ).showSnackBar(SnackBar(content: Text('Failed to create post: $e')));
-    //   }
-    // }
+    try {
+      await _postingNotifier.createNewPost(newPostModel);
+      debugPrint(newPostModel.toString());
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post created successfully')),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to create post: $e')));
+      }
+    }
   }
 
   @override
@@ -122,7 +139,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create a Post')),
+      appBar: AppBar(title: const Text('Create a post')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -132,11 +149,24 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               // heightWidget(widget: headerText(text: "Create a job posting")),
               heightWidget(
                 widget: buildDrowndownButtonFormField(
+                  gap: 4,
                   selectedValue: _jobPostingType,
                   values: JobPostingType.values,
                   onChanged: (v) {
                     setState(() {
                       _jobPostingType = v!;
+                    });
+                  },
+                ),
+              ),
+              heightWidget(
+                widget: buildDrowndownButtonFormField(
+                  gap: 4,
+                  selectedValue: _profileType,
+                  values: ProfileType.values,
+                  onChanged: (v) {
+                    setState(() {
+                      _profileType = v!;
                     });
                   },
                 ),
@@ -150,13 +180,28 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                   hintText: 'Enter the title of the job posting',
                 ),
               ),
+              // heightWidget(
+              //   widget: buildTextFormField(
+              //     controller: _locationController,
+              //     labelText: 'Job Location',
+              //     maxLines: 1,
+              //     hintText: 'Enter the Location of the job ',
+              //   ),
+              // ),
               heightWidget(
-                widget: buildTextFormField(
-                  controller: _locationController,
-                  labelText: 'Job Location',
-                  maxLines: 1,
-                  hintText: 'Enter the Location of the job ',
+                widget: buildDrowndownButtonFormField(
+                  gap: 4,
+                  title: 'City',
+                  // boldTitle: true,
+                  selectedValue: _mainCity,
+                  values: City.values,
+                  onChanged: (v) {
+                    setState(() {
+                      _mainCity = v!;
+                    });
+                  },
                 ),
+                height: 8,
               ),
               heightWidget(
                 widget: buildTextFormField(
@@ -166,26 +211,43 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                   hintText: 'Enter the Description of the job posting',
                 ),
               ),
+
+              // heightWidget(
+              //   widget: buildSlider(
+              //     controller: _budgetController,
+              //     labelText: 'Job Budget',
+              //     value: 1000,
+              //     min: 1000,
+              //     max: 10000000000,
+              //     unit: "VND",
+              //     onChanged: (val) {
+              //       setState(() {
+              //         _budget = val.round();
+              //       });
+              //     },
+              //   ),
+              // ),
               heightWidget(
-                widget: buildSlider(
+                widget: buildTextFormField(
                   controller: _budgetController,
                   labelText: 'Job Budget',
-                  value: 1000,
-                  min: 1000,
-                  max: 10000000000,
-                  unit: "VND",
-                  onChanged: (val) {
-                    setState(() {
-                      _budget = val.roundToDouble();
-                    });
-                  },
+                  maxLines: 1,
+                  hintText: 'Enter the budget of the job posting',
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
                 ),
               ),
               heightWidget(
                 widget: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Job Deadline'),
+                    const Text(
+                      'Job Deadline',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    // const Text('Job Deadline'),
                     const SizedBox(height: 8),
                     InkWell(
                       onTap: () async {
@@ -226,21 +288,53 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               //     hintText: 'Enter the Job skill of the job posting',
               //   ),
               // ),
+              // heightWidget(
+              //   widget: SkillInputField(
+              //     title: 'Required Skills (Optional)',
+              //     buttonColor: AppColors.primary,
+              //     chipTextColor: AppColors.grey,
+              //     chipBackgroundColor: const Color.fromARGB(
+              //       255,
+              //       247,
+              //       251,
+              //       241,
+              //     ).withAlpha((0.6 * 255).round()),
+              //     onSkillListChanged: (skills) {
+              //       setState(() {
+              //         _requiredSkillsList = skills;
+              //       });
+              //       debugPrint('Danh sách kỹ năng: $_requiredSkillsList');
+              //     },
+              //   ),
+              // ),
               heightWidget(
-                widget: SkillInputField(
-                  title: 'Required Skills (Optional)',
-                  buttonColor: Colors.greenAccent,
-                  chipTextColor: Colors.white,
-                  chipBackgroundColor: const Color.fromARGB(
-                    255,
-                    8,
-                    218,
-                    92,
-                  ).withAlpha((0.6 * 255).round()),
-                  onSkillListChanged: (_requiredSkillsList) {
-                    print('Danh sách kỹ năng: $_requiredSkillsList');
+                widget: buildFilterChip(
+                  values: Domain.values,
+                  selectedValues: _requiredSkillsList,
+                  onSelected: (v, selected) {
+                    setState(() {
+                      if (selected) {
+                        _requiredSkillsList.add(v);
+                      } else {
+                        _requiredSkillsList.remove(v);
+                      }
+                    });
                   },
                 ),
+              ),
+              heightWidget(
+                widget: buildDrowndownButtonFormField(
+                  gap: 4,
+                  title: 'Working Mode',
+                  selectedValue: _workingMode,
+                  values: WorkingMode.values,
+                  onChanged: (v) {
+                    setState(() {
+                      _workingMode = v!;
+                    });
+                  },
+                ),
+                height: 8,
               ),
             ],
           ),
