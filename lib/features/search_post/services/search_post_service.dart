@@ -62,6 +62,22 @@ class SearchPostService {
               .where((post) => model.location.contains(post.location))
               .toList();
     }
+    // 3. Lọc theo Profile Type
+    if (model.profileType.isNotEmpty) {
+      final profileTypeNames =
+          model.profileType.map((type) => type.name).toList();
+
+      if (profileTypeNames.isNotEmpty) {
+        result =
+            result
+                .where(
+                  (post) =>
+                      (post.profileType != null &&
+                          profileTypeNames.contains(post.profileType!.name)),
+                )
+                .toList();
+      }
+    }
 
     if (model.jobType.isNotEmpty) {
       final jobPostingTypeNames =
@@ -78,6 +94,22 @@ class SearchPostService {
       }
     }
 
+    if (model.domain.isNotEmpty) {
+      final domainNames = model.domain.map((type) => type.name).toList();
+
+      if (domainNames.isNotEmpty) {
+        result =
+            result
+                .where(
+                  (post) =>
+                      (post.requiredSkills != null &&
+                          post.requiredSkills!.any(
+                            (skill) => domainNames.contains(skill.name),
+                          )),
+                )
+                .toList();
+      }
+    }
     return result;
   }
 }

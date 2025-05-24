@@ -15,6 +15,8 @@ class SearchPostModelMapper extends ClassMapperBase<SearchPostModel> {
       MapperContainer.globals.use(_instance = SearchPostModelMapper._());
       CityMapper.ensureInitialized();
       JobPostingTypeMapper.ensureInitialized();
+      ProfileTypeMapper.ensureInitialized();
+      DomainMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -31,21 +33,29 @@ class SearchPostModelMapper extends ClassMapperBase<SearchPostModel> {
   static List<JobPostingType> _$jobType(SearchPostModel v) => v.jobType;
   static const Field<SearchPostModel, List<JobPostingType>> _f$jobType =
       Field('jobType', _$jobType, opt: true, def: const []);
+  static List<ProfileType> _$profileType(SearchPostModel v) => v.profileType;
+  static const Field<SearchPostModel, List<ProfileType>> _f$profileType =
+      Field('profileType', _$profileType, opt: true, def: const []);
+  static List<Domain> _$domain(SearchPostModel v) => v.domain;
+  static const Field<SearchPostModel, List<Domain>> _f$domain =
+      Field('domain', _$domain, opt: true, def: const []);
   static int? _$budget(SearchPostModel v) => v.budget;
   static const Field<SearchPostModel, int> _f$budget =
       Field('budget', _$budget, opt: true);
-  static DateTime _$startDate(SearchPostModel v) => v.startDate;
+  static DateTime? _$startDate(SearchPostModel v) => v.startDate;
   static const Field<SearchPostModel, DateTime> _f$startDate =
-      Field('startDate', _$startDate);
-  static DateTime _$endDate(SearchPostModel v) => v.endDate;
+      Field('startDate', _$startDate, opt: true);
+  static DateTime? _$endDate(SearchPostModel v) => v.endDate;
   static const Field<SearchPostModel, DateTime> _f$endDate =
-      Field('endDate', _$endDate);
+      Field('endDate', _$endDate, opt: true);
 
   @override
   final MappableFields<SearchPostModel> fields = const {
     #query: _f$query,
     #location: _f$location,
     #jobType: _f$jobType,
+    #profileType: _f$profileType,
+    #domain: _f$domain,
     #budget: _f$budget,
     #startDate: _f$startDate,
     #endDate: _f$endDate,
@@ -56,6 +66,8 @@ class SearchPostModelMapper extends ClassMapperBase<SearchPostModel> {
         query: data.dec(_f$query),
         location: data.dec(_f$location),
         jobType: data.dec(_f$jobType),
+        profileType: data.dec(_f$profileType),
+        domain: data.dec(_f$domain),
         budget: data.dec(_f$budget),
         startDate: data.dec(_f$startDate),
         endDate: data.dec(_f$endDate));
@@ -118,10 +130,15 @@ abstract class SearchPostModelCopyWith<$R, $In extends SearchPostModel, $Out>
   ListCopyWith<$R, City, ObjectCopyWith<$R, City, City>> get location;
   ListCopyWith<$R, JobPostingType,
       ObjectCopyWith<$R, JobPostingType, JobPostingType>> get jobType;
+  ListCopyWith<$R, ProfileType, ObjectCopyWith<$R, ProfileType, ProfileType>>
+      get profileType;
+  ListCopyWith<$R, Domain, ObjectCopyWith<$R, Domain, Domain>> get domain;
   $R call(
       {String? query,
       List<City>? location,
       List<JobPostingType>? jobType,
+      List<ProfileType>? profileType,
+      List<Domain>? domain,
       int? budget,
       DateTime? startDate,
       DateTime? endDate});
@@ -147,26 +164,42 @@ class _SearchPostModelCopyWithImpl<$R, $Out>
       get jobType => ListCopyWith($value.jobType,
           (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(jobType: v));
   @override
+  ListCopyWith<$R, ProfileType, ObjectCopyWith<$R, ProfileType, ProfileType>>
+      get profileType => ListCopyWith(
+          $value.profileType,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(profileType: v));
+  @override
+  ListCopyWith<$R, Domain, ObjectCopyWith<$R, Domain, Domain>> get domain =>
+      ListCopyWith($value.domain, (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(domain: v));
+  @override
   $R call(
           {String? query,
           List<City>? location,
           List<JobPostingType>? jobType,
+          List<ProfileType>? profileType,
+          List<Domain>? domain,
           Object? budget = $none,
-          DateTime? startDate,
-          DateTime? endDate}) =>
+          Object? startDate = $none,
+          Object? endDate = $none}) =>
       $apply(FieldCopyWithData({
         if (query != null) #query: query,
         if (location != null) #location: location,
         if (jobType != null) #jobType: jobType,
+        if (profileType != null) #profileType: profileType,
+        if (domain != null) #domain: domain,
         if (budget != $none) #budget: budget,
-        if (startDate != null) #startDate: startDate,
-        if (endDate != null) #endDate: endDate
+        if (startDate != $none) #startDate: startDate,
+        if (endDate != $none) #endDate: endDate
       }));
   @override
   SearchPostModel $make(CopyWithData data) => SearchPostModel(
       query: data.get(#query, or: $value.query),
       location: data.get(#location, or: $value.location),
       jobType: data.get(#jobType, or: $value.jobType),
+      profileType: data.get(#profileType, or: $value.profileType),
+      domain: data.get(#domain, or: $value.domain),
       budget: data.get(#budget, or: $value.budget),
       startDate: data.get(#startDate, or: $value.startDate),
       endDate: data.get(#endDate, or: $value.endDate));

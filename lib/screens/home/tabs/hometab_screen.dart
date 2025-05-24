@@ -99,7 +99,7 @@ class HomeTabScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: AppColors.notification,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           constraints: const BoxConstraints(
@@ -453,27 +453,33 @@ class HomeTabScreen extends ConsumerWidget {
               children: [
                 // 1) Title và “x ngày trước”
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Cột icon + title
                     Expanded(
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.people),
-                          SizedBox(width: 5),
-                          Text(
-                            post.title,
-                            style: textTheme.titleMedium?.copyWith(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          const Icon(Icons.people, size: 20),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            // Thêm Expanded ở đây để giới hạn title trong phần còn lại
+                            child: Text(
+                              post.title,
+                              style: textTheme.titleMedium?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 8),
+                    // Ngày tạo
                     Text(
-                      // tính số ngày
                       post.createdAt != null
                           ? timeAgo(post.createdAt!)
                           : 'Không rõ',
@@ -511,7 +517,7 @@ class HomeTabScreen extends ConsumerWidget {
                 Text(
                   post.description,
                   style: textTheme.bodySmall?.copyWith(fontSize: 13),
-                  maxLines: 3,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const Spacer(), // <<<< THÊM SPACER Ở ĐÂY
@@ -553,7 +559,7 @@ class HomeTabScreen extends ConsumerWidget {
                               children:
                                   post.requiredSkills!
                                       .take(
-                                        3,
+                                        2,
                                       ) // Giới hạn số lượng skill hiển thị
                                       .map(
                                         (skill) => Chip(
@@ -658,15 +664,9 @@ class HomeTabScreen extends ConsumerWidget {
               CircleAvatar(
                 radius: 16,
                 backgroundColor: AppTheme.lightTheme.primaryColor,
-                child: Text(
-                  profile.displayName.isNotEmpty
-                      ? profile.displayName[0].toUpperCase()
-                      : '?',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Icon(
+                  profile.profileType.icon,
+                  color: AppColors.background,
                 ),
               ),
 
@@ -724,7 +724,7 @@ class HomeTabScreen extends ConsumerWidget {
                           'Kinh nghiệm: ${profile.yearsOfExperience} năm',
                           style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: AppColors.grey,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -733,56 +733,6 @@ class HomeTabScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-
-              // Nút hành động: đặt trong Wrap để khi hẹp nó xuống dòng
-              // Wrap(
-              //   spacing: 8,
-              //   runSpacing: 4,
-              //   alignment: WrapAlignment.center,
-              //   children: [
-              //     IconButton(
-              //       icon: const Icon(Icons.arrow_forward_ios, size: 16),
-              //       onPressed: () {
-              //         context.push('/profile/view/${profile.userId}');
-              //       },
-              //     ),
-              //     IconButton(
-              //       icon: const Icon(Icons.message, size: 16),
-              //       onPressed: () {
-              //         if (isLoggedIn) {
-              //           context.push('/message/detail_view/${profile.userId}');
-              //         } else {
-              //           showDialog(
-              //             context: context,
-              //             builder: (context) {
-              //               return AlertDialog(
-              //                 title: const Text('Thông báo'),
-              //                 content: const Text(
-              //                   'Bạn cần đăng nhập để gửi tin nhắn.',
-              //                 ),
-              //                 actions: [
-              //                   TextButton(
-              //                     onPressed: () {
-              //                       context.pop();
-              //                     },
-              //                     child: const Text('Đóng'),
-              //                   ),
-              //                   TextButton(
-              //                     onPressed: () {
-              //                       context.pop();
-              //                       context.push('/login');
-              //                     },
-              //                     child: const Text('Đăng nhập'),
-              //                   ),
-              //                 ],
-              //               );
-              //             },
-              //           );
-              //         }
-              //       },
-              //     ),
-              //   ],
-              // ),
             ],
           ),
         ),

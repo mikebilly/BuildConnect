@@ -10,6 +10,7 @@ class AppColors {
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Colors.white;
   static const Color error = Color(0xFFD32F2F);
+  static const Color delete = Color(0xFFD32F2F);
   static const Color text = Color(0xFF212121);
   static const Color textLight = Color(0xFF757575);
   static const Color divider = Color(0xFFEEEEEE);
@@ -44,6 +45,10 @@ class AppColors {
   static const Color clearButtonBackground = Color(
     0xFFEF5350,
   ); // Colors.red[400] or [500]
+  static const Color boxBackground = Color(0xFFE0E0E0);
+  static const Color boxShadow = Colors.black12;
+
+  static const notification = Color(0xFFD32F2F);
 }
 
 class ChatTheme {
@@ -98,6 +103,27 @@ class AppTextStyles {
   );
 
   static TextStyle small = const TextStyle(fontSize: 12, height: 1.4);
+  static TextStyle labelTabScreen = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
+}
+
+class CardSearchStyle {
+  static TextStyle avatar = const TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    height: 1.4,
+    color: Colors.white,
+  );
+  static TextStyle title = const TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+  );
+  static TextStyle body = const TextStyle(
+    fontSize: 14,
+    fontStyle: FontStyle.italic,
+  );
 }
 
 class InputDecorationConstants {

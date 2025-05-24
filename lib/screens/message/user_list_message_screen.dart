@@ -51,20 +51,13 @@ class UserListMessagesScreen extends ConsumerWidget {
                                 ? conversation.partnerDisplayName[0]
                                     .toUpperCase()
                                 : '?',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                            style: AppTextStyles.caption,
                           )
                           : null,
                 ),
                 title: Text(
                   conversation.partnerDisplayName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: AppTextStyles.subheading,
                 ),
                 subtitle: Text(
                   conversation.lastMessage.content,
@@ -78,10 +71,7 @@ class UserListMessagesScreen extends ConsumerWidget {
                   children: [
                     Text(
                       _formatDateTime(conversation.lastMessage.createAt),
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
+                      style: TextStyle(fontSize: 11, color: AppColors.grey),
                     ),
                     const SizedBox(height: 19), // Để giữ chiều cao tương đối
                   ],

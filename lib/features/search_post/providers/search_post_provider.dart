@@ -1,4 +1,5 @@
 import 'package:buildconnect/features/search_post/providers/search_post_service_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../models/post/post_model.dart';
 import '../../../models/search_post/search_post_model.dart';
@@ -6,141 +7,110 @@ import '../../../models/enums/enums.dart';
 
 part 'search_post_provider.g.dart';
 
-class SearchPostStateInternal {
-  final SearchPostModel currentSearchModel;
-  final AsyncValue<List<PostModel>> searchResults;
-  SearchPostModel get _currentSearchModel => currentSearchModel;
-  SearchPostStateInternal({
-    required this.currentSearchModel,
-    required this.searchResults,
-  });
-
-  SearchPostStateInternal copyWith({
-    SearchPostModel? currentSearchModel,
-    AsyncValue<List<PostModel>>? searchResults,
-  }) {
-    return SearchPostStateInternal(
-      currentSearchModel: currentSearchModel ?? this.currentSearchModel,
-      searchResults: searchResults ?? this.searchResults,
-    );
-  }
-}
-
 @Riverpod(keepAlive: true)
 class SearchPostNotifier extends _$SearchPostNotifier {
   @override
-  Future<SearchPostStateInternal> build() async {
-    final initialSearchModel = SearchPostModel(
-      budget: 0,
-      startDate: DateTime.now().subtract(const Duration(days: 30)),
-      endDate: DateTime.now(),
-    );
-
-    return SearchPostStateInternal(
-      currentSearchModel: initialSearchModel,
-      searchResults: const AsyncValue.data([]),
-    );
+  SearchPostModel build() {
+    return SearchPostModel();
   }
 
   void updateQuery(String newQuery) {
-    final currentState = state.value;
-    if (currentState == null) return;
-
-    state = AsyncData(
-      currentState.copyWith(
-        currentSearchModel: currentState.currentSearchModel.copyWith(
-          query: newQuery,
-        ),
-      ),
-    );
+    state = state.copyWith(query: newQuery);
   }
 
-  void updateLocation(City newLocation) {
-    final currentState = state.value;
-    if (currentState == null) return;
+  void updateLocation(City newLocation) {}
 
-    // state = AsyncData(
-    //   currentState.copyWith(
-    //     currentSearchModel: currentState.currentSearchModel.copyWith(
-    //       location: newLocation,
-    //     ),
-    //   ),
-    // );
+  void toggleJobType(JobPostingType type) {}
+
+  Future<List<PostModel>?> searchPost() async {
+    debugPrint('---------------------------');
+    debugPrint(state.toString());
+    debugPrint('---------------------------');
+    final model = state;
+    if (model.isEmptyModel()) {
+      debugPrint('Search model is empty');
+      return null;
+    }
+    final service = ref.read(searchPostServiceProvider);
+    final result = await service.searchPost(model);
+    return result;
   }
 
-  void toggleJobType(JobPostingType type) {
-    final currentState = state.value;
-    if (currentState == null) return;
-
-    final currentJobTypes = List<JobPostingType>.from(
-      currentState.currentSearchModel.jobType,
-    );
-    if (currentJobTypes.contains(type)) {
-      currentJobTypes.remove(type);
+  void toggleLocation(City city) {
+    var current = state.location ?? [];
+    var updatedList = List<City>.from(current);
+    if (current.contains(city)) {
+      updatedList.remove(city);
     } else {
-      currentJobTypes.add(type);
+      updatedList.add(city);
     }
-    state = AsyncData(
-      currentState.copyWith(
-        currentSearchModel: currentState.currentSearchModel.copyWith(
-          jobType: currentJobTypes,
-        ),
-      ),
+    state = state.copyWith(location: updatedList);
+  }
+
+  Set<ProfileType> getProfileTypeChoosing() {
+    return Set<ProfileType>.from(state.profileType);
+  }
+
+  void toggleProfileType(ProfileType type) {
+    final current = state.profileType;
+    final updatedList = List<ProfileType>.from(
+      current,
+    ); // bản sao có thể thay đổi
+
+    if (updatedList.contains(type)) {
+      updatedList.remove(type);
+    } else {
+      updatedList.add(type);
+    }
+
+    state = state.copyWith(profileType: updatedList);
+  }
+
+  void setLocation(List<City> current_location_list) {
+    state = state.copyWith(location: current_location_list);
+  }
+
+  Set<JobPostingType> getJobPostingTypeChoosing() {
+    return Set<JobPostingType>.from(state.jobType);
+  }
+
+  void toggleJobPostingType(JobPostingType v) {
+    final current = state.jobType;
+    final updatedList = List<JobPostingType>.from(current);
+
+    if (updatedList.contains(v)) {
+      updatedList.remove(v);
+    } else {
+      updatedList.add(v);
+    }
+
+    state = state.copyWith(jobType: updatedList);
+  }
+
+  void clearAllFilters() {
+    state = state.copyWith(
+      query: '',
+      location: [],
+      jobType: [],
+      profileType: [],
+      domain: [],
     );
   }
 
-  Future<void> performSearch() async {
-    final currentState = state.value;
-    if (currentState == null) {
-      return;
-    }
-
-    final searchModelToUse = currentState.currentSearchModel;
-
-    if (searchModelToUse.isEmptyModel()) {
-      state = AsyncData(
-        currentState.copyWith(searchResults: const AsyncValue.data([])),
-      );
-      return;
-    }
-
-    state = AsyncData(
-      currentState.copyWith(searchResults: const AsyncValue.loading()),
-    );
-
-    try {
-      // final service = ref.read(searchPostServiceProvider);
-      final results = await ref
-          .read(searchPostServiceProvider)
-          .searchPost(searchModelToUse);
-      state = AsyncData(
-        currentState.copyWith(searchResults: AsyncValue.data(results)),
-      );
-    } catch (e, st) {
-      state = AsyncData(
-        currentState.copyWith(searchResults: AsyncValue.error(e, st)),
-      );
-    }
+  Set<Domain> getDomainChoosing() {
+    return Set<Domain>.from(state.domain);
   }
 
-  SearchPostModel get currentSearchModel =>
-      state.value?.currentSearchModel ??
-      SearchPostModel(
-        budget: 0,
-        startDate: DateTime.now(),
-        endDate: DateTime.now(),
-      );
+  void toggleDomain(Domain v) {
+    final current = state.domain;
+    final updatedList = List<Domain>.from(current);
 
-  AsyncValue<List<PostModel>> get searchResultsState =>
-      state.value?.searchResults ?? const AsyncValue.data([]);
-  List<PostModel> get searchResultsList => searchResultsState.value ?? [];
-  bool get isSearchResultsLoading => searchResultsState.isLoading;
-  bool get hasSearchResultsError => searchResultsState.hasError;
+    if (updatedList.contains(v)) {
+      updatedList.remove(v);
+    } else {
+      updatedList.add(v);
+    }
 
-  bool get showRecentOrPopular =>
-      currentSearchModel.query.trim().isEmpty &&
-      currentSearchModel.location.isEmpty &&
-      currentSearchModel.jobType.isEmpty &&
-      !isSearchResultsLoading &&
-      searchResultsList.isEmpty;
+    state = state.copyWith(domain: updatedList);
+  }
 }

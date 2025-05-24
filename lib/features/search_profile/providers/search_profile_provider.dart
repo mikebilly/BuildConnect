@@ -29,6 +29,32 @@ class SearchProfileNotifier extends _$SearchProfileNotifier {
     return SearchProfileModel(); // đảm bảo model có default constructor
   }
 
+  Set<ProfileType> getProfileTypeChoosing() {
+    return Set<ProfileType>.from(state.profileType);
+  }
+
+  Set<DesignStyle> getDesignStyleChoosing() {
+    return Set<DesignStyle>.from(state.architectFilterModel?.designStyle ?? []);
+  }
+
+  Set<ServiceType> getServiceTypeContractorChoosing() {
+    return Set<ServiceType>.from(
+      state.contractorFilterModel?.serviceType ?? [],
+    );
+  }
+
+  Set<ServiceType> getServiceTypeConstructionTeamChoosing() {
+    return Set<ServiceType>.from(
+      state.constructionTeamFilterModel?.serviceType ?? [],
+    );
+  }
+
+  Set<MaterialCategory> getMaterialCategoryChoosing() {
+    return Set<MaterialCategory>.from(
+      state.supplierFilterModel?.materialCategory ?? [],
+    );
+  }
+
   void updateQuery(String query) {
     state = state.copyWith(query: query);
     debugPrint(state.query);

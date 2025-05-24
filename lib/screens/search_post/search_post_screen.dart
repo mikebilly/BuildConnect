@@ -2,6 +2,7 @@ import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/features/search_post/providers/search_post_provider.dart';
 import 'package:buildconnect/models/enums/enums.dart'; // Import Enums (cần JobPostingType)
 import 'package:buildconnect/models/post/post_model.dart'; // Import PostModel
+import 'package:buildconnect/shared/widgets/search_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,15 +17,21 @@ class SearchPostScreen extends ConsumerStatefulWidget {
 }
 
 class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
+  late final SearchPostNotifier searchPostNotifier;
   final TextEditingController _queryController = TextEditingController();
   final TextEditingController _locationController =
       TextEditingController(); // Cho filter location
   final FocusNode _searchFocusNode = FocusNode();
-
+  Future<List<PostModel>?>? _searchPost;
   // State cục bộ cho filter UI
   bool _showFilterPanel = false;
   bool _locationFilterExpanded = false;
+  bool _profileTypeFilterExpanded = false;
   bool _jobTypeFilterExpanded = false;
+  bool _domainFilterExpanded = false;
+  List<City>? _selectedLocationList = [];
+  City? _selectedCity;
+  List<ProfileType>? _selectedProfileTypeList = [];
 
   // State cục bộ lưu trữ giá trị filter được chọn (sẽ được đồng bộ với Notifier)
   // List<City>? _selectedLocationList = []; // Nếu location là list City
@@ -35,20 +42,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
     super.initState();
 
     // Đồng bộ TextField với keyword từ provider khi màn hình load
-    final initialSearchModel =
-        ref.read(searchPostNotifierProvider).value?.currentSearchModel;
-    if (initialSearchModel != null) {
-      _queryController.text = initialSearchModel.query;
-      // _locationController.text =
-      //     initialSearchModel.location; // Đồng bộ location
-      _selectedJobTypeList = List.from(
-        initialSearchModel.jobType,
-      ); // Đồng bộ jobType
-    }
-
-    // Lắng nghe thay đổi text và cập nhật query vào provider
-    _queryController.addListener(_onQueryChanged);
-
+    searchPostNotifier = ref.read(searchPostNotifierProvider.notifier);
     // Tự động focus
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
@@ -57,34 +51,26 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
 
   @override
   void dispose() {
-    _queryController.removeListener(_onQueryChanged);
     _queryController.dispose();
     _locationController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
   }
 
-  void _onQueryChanged() {
-    // Cập nhật query vào provider
-    ref
-        .read(searchPostNotifierProvider.notifier)
-        .updateQuery(_queryController.text);
-    // TODO: Debounce và tự động search nếu cần
-  }
-
-  // Hàm thực hiện tìm kiếm (gọi Notifier)
   void _triggerSearch() {
-    // Lấy notifier
-    final notifier = ref.read(searchPostNotifierProvider.notifier);
-
-    // Cập nhật các filter vào Notifier trước khi search
-    // notifier.updateLocation(_locationController.text.trim());
-    // Notifier đã quản lý _selectedJobTypeList thông qua toggleJobType
-
-    // Gọi phương thức thực hiện search trên Notifier
-    notifier.performSearch();
-
-    // Đóng bàn phím và filter panel (tùy chọn)
+    final query = _queryController.text.trim();
+    searchPostNotifier.updateQuery(query);
+    // final profileType = _selectedProfileTypeList;
+    setState(() {
+      _showFilterPanel = false;
+      _searchPost = searchPostNotifier.searchPost();
+      if (query.isNotEmpty || _selectedLocationList!.isNotEmpty) {
+        _searchPost = searchPostNotifier.searchPost();
+      } else {
+        // Nếu không có query hoặc filter, đặt future về null hoặc Future trả về list rỗng
+        _searchPost = Future.value([]);
+      }
+    });
     _searchFocusNode.unfocus();
     setState(() {
       _showFilterPanel = false;
@@ -94,81 +80,28 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
   @override
   Widget build(BuildContext context) {
     final panelWidth = MediaQuery.of(context).size.width * 0.9;
-
-    // Watch các phần state cần thiết từ searchPostNotifierProvider
-    final searchStateAsync = ref.watch(searchPostNotifierProvider);
-    final currentSearchModel = searchStateAsync.value?.currentSearchModel;
-    final selectedJobTypes =
-        currentSearchModel?.jobType ??
-        []; // Lấy từ SearchPostModel của Notifier
-
-    final AsyncValue<List<PostModel>> searchResultsAsync =
-        searchStateAsync.value?.searchResults ?? const AsyncValue.data([]);
-    final bool isSearching =
-        searchStateAsync.isLoading && searchStateAsync.value == null;
-    final bool isPerformingSearch = searchResultsAsync.isLoading;
-
+    List<JobPostingType> selectedJobPostingType =
+        ref.read(searchPostNotifierProvider).jobType;
+    final current_location_list = ref.read(searchPostNotifierProvider).location;
+    List<ProfileType> profileTypeChoosingList =
+        ref.watch(searchPostNotifierProvider).profileType;
     return Scaffold(
       // appBar: AppBar(title: const Text('Search Posts')),
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
           children: [
-            // --- Search Row ---
-            SizedBox(
-              height: 40,
-              child: Row(
-                children: [
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: _queryController,
-                      focusNode: _searchFocusNode,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (_) => _triggerSearch(),
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.search),
-                        hintText: 'Search posts...',
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 0,
-                          horizontal: 12,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              tooltip: 'Toggle Filters',
-                              icon: Icon(
-                                Icons.filter_list,
-                                color:
-                                    _showFilterPanel
-                                        ? Theme.of(context).primaryColor
-                                        : null,
-                              ),
-                              onPressed:
-                                  () => setState(
-                                    () => _showFilterPanel = !_showFilterPanel,
-                                  ),
-                            ),
-                            IconButton(
-                              tooltip: 'Perform Search',
-                              icon: const Icon(Icons.search),
-                              onPressed: _triggerSearch,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            buildSearchBar(
+              controller: _queryController,
+              focusNode: _searchFocusNode,
+              onQueryChanged: searchPostNotifier.updateQuery,
+              onSearchPressed: _triggerSearch,
+              onToggleFilter:
+                  () => setState(() => _showFilterPanel = !_showFilterPanel),
+              showFilterHighlight: _showFilterPanel,
+              hintText: 'Search profiles…',
             ),
             const SizedBox(height: 12),
-
-            // --- Filter Panel ---
             AnimatedSize(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
@@ -179,128 +112,239 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                     width: panelWidth,
                     margin: const EdgeInsets.only(bottom: 12.0),
                     constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.4,
-                    ), // Giảm chiều cao panel
+                      maxHeight: MediaQuery.of(context).size.height * 0.5,
+                    ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey.shade300),
+                      color: AppColors.background,
+                      border: Border.all(color: AppColors.boxBackground),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black12,
+                          color: AppColors.boxShadow,
                           blurRadius: 6,
                           offset: Offset(0, 2),
                         ),
                       ],
                     ),
-                    child: ListView(
-                      padding: const EdgeInsets.all(16),
-                      shrinkWrap: true,
+                    child: Column(
                       children: [
-                        // --- Location Filter ---
-                        _buildExpandable(
-                          labelLevel: 1,
-                          label: 'Location',
-                          expanded: _locationFilterExpanded,
-                          onTap:
-                              () => setState(
-                                () =>
-                                    _locationFilterExpanded =
-                                        !_locationFilterExpanded,
-                              ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: TextField(
-                              // Đơn giản hóa thành TextField cho location
-                              controller: _locationController,
-                              decoration: InputDecoration(
-                                hintText: 'Enter location (e.g., Hà Nội)...',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
-                                ),
-                              ),
-                              // onChanged: (value) {
-                              //   ref.read(searchPostNotifierProvider.notifier).updateLocation(value);
-                              // }, // Cập nhật trực tiếp vào provider nếu muốn
-                            ),
-                          ),
-                        ),
-                        const Divider(height: 24),
-
-                        // --- Job Posting Type Filter ---
-                        _buildExpandable(
-                          labelLevel: 1,
-                          label: 'Job Posting Type',
-                          expanded: _jobTypeFilterExpanded,
-                          onTap:
-                              () => setState(
-                                () =>
-                                    _jobTypeFilterExpanded =
-                                        !_jobTypeFilterExpanded,
-                              ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children:
-                                  JobPostingType.values.map((type) {
-                                    // Sử dụng JobPostingType enum
-                                    final isSelected = selectedJobTypes
-                                        .contains(type);
-                                    return ChoiceChip(
-                                      label: Text(
-                                        type.label,
-                                      ), // Sử dụng .label từ enum nếu có
-                                      selected: isSelected,
-                                      onSelected: (selected) {
-                                        ref
-                                            .read(
-                                              searchPostNotifierProvider
-                                                  .notifier,
-                                            )
-                                            .toggleJobType(type);
-                                        // setState không cần thiết ở đây vì UI sẽ rebuild khi provider thay đổi
-                                      },
-                                      selectedColor: Theme.of(
-                                        context,
-                                      ).primaryColor.withOpacity(0.1),
-                                      checkmarkColor:
-                                          Theme.of(context).primaryColor,
-                                      labelStyle: TextStyle(
-                                        color:
-                                            isSelected
-                                                ? Theme.of(context).primaryColor
-                                                : Colors.black87,
-                                      ),
-                                      backgroundColor: Colors.grey.shade100,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        side: BorderSide(
-                                          color:
-                                              isSelected
-                                                  ? Theme.of(
-                                                    context,
-                                                  ).primaryColor
-                                                  : Colors.grey.shade300,
+                        // Scrollable filter content
+                        Expanded(
+                          child: ListView(
+                            padding: const EdgeInsets.all(16),
+                            children: [
+                              // --- Location Filter ---
+                              buildExpandable(
+                                labelLevel: 1,
+                                label: 'Location',
+                                expanded: _locationFilterExpanded,
+                                onTap:
+                                    () => setState(
+                                      () =>
+                                          _locationFilterExpanded =
+                                              !_locationFilterExpanded,
+                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    0,
+                                    8,
+                                    0,
+                                    0,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      if (current_location_list!.isNotEmpty)
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 5,
+                                          children:
+                                              current_location_list.map((city) {
+                                                return Chip(
+                                                  label: Text(city.label),
+                                                  deleteIconColor:
+                                                      AppColors.delete,
+                                                  onDeleted: () {
+                                                    setState(() {
+                                                      current_location_list
+                                                          .remove(city);
+                                                      searchPostNotifier
+                                                          .setLocation(
+                                                            current_location_list,
+                                                          );
+                                                    });
+                                                  },
+                                                );
+                                              }).toList(),
                                         ),
+
+                                      const SizedBox(height: 8),
+
+                                      Row(
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed:
+                                                () => setState(() {
+                                                  searchPostNotifier
+                                                      .toggleLocation(
+                                                        _selectedCity!,
+                                                      );
+                                                  _selectedCity = null;
+                                                }),
+                                            child: const Icon(Icons.add),
+                                            style: ElevatedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              minimumSize: const Size(40, 40),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child:
+                                                buildDrowndownButtonFormFieldSearch(
+                                                  values: City.values,
+                                                  onChanged: (v) {
+                                                    setState(() {
+                                                      _selectedCity = v;
+                                                    });
+                                                  },
+                                                ),
+                                          ),
+                                        ],
                                       ),
-                                    );
-                                  }).toList(),
-                            ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              const Divider(height: 24),
+
+                              // --- Profile Type Filter ---
+                              buildExpandable(
+                                labelLevel: 1,
+                                label: 'Profile Type',
+                                expanded: _profileTypeFilterExpanded,
+                                onTap:
+                                    () => setState(
+                                      () =>
+                                          _profileTypeFilterExpanded =
+                                              !_profileTypeFilterExpanded,
+                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: buildFilterSearchChip(
+                                    // title: '',
+                                    values: ProfileType.values,
+                                    selectedValues:
+                                        searchPostNotifier
+                                            .getProfileTypeChoosing(),
+                                    onSelected: (v, selected) {
+                                      setState(() {
+                                        searchPostNotifier.toggleProfileType(v);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+
+                              const Divider(height: 24),
+                              buildExpandable(
+                                labelLevel: 1,
+                                label: 'Job Posting Type',
+                                expanded: _jobTypeFilterExpanded,
+                                onTap:
+                                    () => setState(
+                                      () =>
+                                          _jobTypeFilterExpanded =
+                                              !_jobTypeFilterExpanded,
+                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: buildFilterSearchChip(
+                                    // title: '',
+                                    values: JobPostingType.values,
+                                    selectedValues:
+                                        searchPostNotifier
+                                            .getJobPostingTypeChoosing(),
+                                    onSelected: (v, selected) {
+                                      setState(() {
+                                        searchPostNotifier.toggleJobPostingType(
+                                          v,
+                                        );
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                              const Divider(height: 24),
+                              buildExpandable(
+                                labelLevel: 1,
+                                label: 'Domain',
+                                expanded: _domainFilterExpanded,
+                                onTap:
+                                    () => setState(
+                                      () =>
+                                          _domainFilterExpanded =
+                                              !_domainFilterExpanded,
+                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: buildFilterSearchChip(
+                                    // title: '',
+                                    values: Domain.values,
+                                    selectedValues:
+                                        searchPostNotifier.getDomainChoosing(),
+                                    onSelected: (v, selected) {
+                                      setState(() {
+                                        searchPostNotifier.toggleDomain(v);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const Divider(height: 24),
-                        ElevatedButton(
-                          onPressed:
-                              _triggerSearch, // Áp dụng filters và tìm kiếm
-                          child: const Text('Apply Filters & Search'),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 40),
+
+                        // Fixed bottom buttons
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      ref
+                                          .read(
+                                            searchPostNotifierProvider.notifier,
+                                          )
+                                          .clearAllFilters();
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.delete,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                  ),
+                                  child: const Text('Clear All'),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: _triggerSearch,
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                  ),
+                                  child: const Text('Apply & Search'),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -309,58 +353,30 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                 ),
               ),
             ),
+            // --- Filter Panel ---
 
             // --- Search Results ---
             Expanded(
-              child:
-                  (isSearching ||
-                          isPerformingSearch) // Hiển thị loading nếu đang search hoặc provider đang load ban đầu
-                      ? const Center(child: CircularProgressIndicator())
-                      : searchResultsAsync.when(
-                        loading:
-                            () =>
-                                const SizedBox.shrink(), // Đã xử lý bằng isPerformingSearch
-                        error:
-                            (error, st) => Center(
-                              child: Text('Error: ${error.toString()}'),
-                            ),
-                        data: (posts) {
-                          if (posts.isEmpty &&
-                              _queryController.text.isNotEmpty) {
-                            return const Center(
-                              child: Text(
-                                'No posts found matching your criteria.',
-                              ),
-                            );
-                          }
-                          if (posts.isEmpty &&
-                              _queryController.text.isEmpty &&
-                              (currentSearchModel?.location.isNotEmpty ==
-                                      true ||
-                                  currentSearchModel?.jobType.isNotEmpty ==
-                                      true)) {
-                            return const Center(
-                              child: Text(
-                                'No posts found with the selected filters.',
-                              ),
-                            );
-                          }
-                          if (posts.isEmpty &&
-                              _queryController.text.isEmpty &&
-                              currentSearchModel?.location.isEmpty == true &&
-                              currentSearchModel?.jobType.isEmpty == true) {
-                            // Trạng thái ban đầu hoặc khi xóa hết query và filter
-                            // TODO: Hiển thị Lịch sử tìm kiếm post hoặc Tìm kiếm phổ biến post
-                            return const Center(
-                              child: Text(
-                                'Enter keyword or filters to search posts.',
-                              ),
-                            );
-                          }
-                          // Hiển thị danh sách kết quả
-                          return _buildPostListResult(posts, context);
-                        },
-                      ),
+              child: FutureBuilder<List<PostModel>?>(
+                future: _searchPost,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData && _searchPost == null) {
+                    return const Center(
+                      child: Text('Enter keyword or filters to search.'),
+                    );
+                  } else if (snapshot.hasData) {
+                    return _buildPostListResult(snapshot.data!, context);
+                  } else {
+                    return const Center(
+                      child: Text('Enter keyword or filters to search.'),
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),
@@ -369,57 +385,11 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
   }
 
   // Widget helper cho phần filter có thể mở rộng
-  Widget _buildExpandable({
-    required String label,
-    required int labelLevel, // Giữ lại nếu bạn dùng
-    required bool expanded,
-    required VoidCallback onTap,
-    required Widget child,
-  }) {
-    // ... (Giữ nguyên code _buildExpandable của bạn) ...
-    TextStyle getLabelStyle(int labelLevel) {
-      switch (labelLevel) {
-        case 1:
-          return const TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
-        case 2:
-          return const TextStyle(fontSize: 14, fontWeight: FontWeight.w700);
-        default:
-          return const TextStyle(fontSize: 12, fontWeight: FontWeight.normal);
-      }
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(label, style: getLabelStyle(labelLevel)),
-                Icon(
-                  expanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  color: Colors.grey.shade600,
-                ),
-              ],
-            ),
-          ),
-        ),
-        AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.fastOutSlowIn,
-          child: Visibility(visible: expanded, child: child),
-        ),
-      ],
-    );
-  }
-
   // Tách widget hiển thị danh sách kết quả Post
   Widget _buildPostListResult(List<PostModel> posts, BuildContext context) {
+    if (posts.isEmpty) {
+      return const Center(child: Text('Không có kết quả nào.'));
+    }
     return ListView.builder(
       padding: const EdgeInsets.only(top: 8),
       itemCount: posts.length,
@@ -508,52 +478,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    // Posted by & location
-                    // Row(
-                    //   children: [
-                    //     // const Icon(
-                    //     //   Icons.person,
-                    //     //   size: 16,
-                    //     //   color: Colors.grey,
-                    //     // ),
-                    //     // const SizedBox(width: 4),
-                    //     // Text(
-                    //     //   'Posted by ${post.authorId}', // Replace with actual author info
-                    //     //   style: TextStyle(color: Colors.grey),
-                    //     // ),
-                    //     // const SizedBox(width: 16),
-                    //     const Icon(
-                    //       Icons.location_on,
-                    //       size: 16,
-                    //       color: Colors.grey,
-                    //     ),
-                    //     const SizedBox(width: 4),
-                    //     Expanded(
-                    //       child: Text(
-                    //         post.location.label, // Display job location
-                    //         style: TextStyle(color: Colors.grey),
-                    //         maxLines: 1,
-                    //         overflow: TextOverflow.ellipsis,
-                    //       ),
-                    //     ),
-                    //     const SizedBox(width: 8),
 
-                    //     // Working mode bên phải
-                    //     if (post.workingMode != null) ...[
-                    //       const Icon(
-                    //         Icons.work_outline,
-                    //         size: 16,
-                    //         color: Colors.grey,
-                    //       ),
-                    //       const SizedBox(width: 4),
-                    //       Text(
-                    //         post.workingMode!.label,
-                    //         style: TextStyle(color: Colors.grey),
-                    //         overflow: TextOverflow.ellipsis,
-                    //       ),
-                    //     ],
-                    //   ],
-                    // ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Row(

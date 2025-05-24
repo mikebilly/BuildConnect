@@ -7,12 +7,12 @@ part of 'search_post_provider.dart';
 // **************************************************************************
 
 String _$searchPostNotifierHash() =>
-    r'8aae4ac15ecf0f2331fa7ba8b3e6ea4b1c549a58';
+    r'8268b62416f75445a0a4343839eb6addb46a1e64';
 
 /// See also [SearchPostNotifier].
 @ProviderFor(SearchPostNotifier)
 final searchPostNotifierProvider =
-    AsyncNotifierProvider<SearchPostNotifier, SearchPostStateInternal>.internal(
+    NotifierProvider<SearchPostNotifier, SearchPostModel>.internal(
       SearchPostNotifier.new,
       name: r'searchPostNotifierProvider',
       debugGetCreateSourceHash:
@@ -23,6 +23,6 @@ final searchPostNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$SearchPostNotifier = AsyncNotifier<SearchPostStateInternal>;
+typedef _$SearchPostNotifier = Notifier<SearchPostModel>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

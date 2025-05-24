@@ -94,9 +94,9 @@ class BasicInfoTabScreenState extends ConsumerState<BasicInfoTabScreen> {
       businessEntityType: _businessEntityType,
       contacts: [],
 
-      mainCity: _mainCity, 
+      mainCity: _mainCity,
       mainAddress: _mainAddress.text,
-      operatingAreas: _operatingAreasSet.toList(), 
+      operatingAreas: _operatingAreasSet.toList(),
     );
     debugPrint('Right before dumping at basic info: $newProfile');
     await Future.microtask(() async {

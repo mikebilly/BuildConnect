@@ -12,21 +12,18 @@ class SearchScreen extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Tìm kiếm',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          title: const Text('Tìm kiếm'),
           backgroundColor: AppTheme.lightTheme.primaryColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
           ),
-          bottom: const TabBar(
-            labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            indicatorColor: Colors.amber,
+          bottom: TabBar(
+            labelStyle: AppTextStyles.labelTabScreen,
+            labelColor: AppColors.background,
+            unselectedLabelColor: AppColors.textLight,
+            indicatorColor: AppColors.background,
             indicatorWeight: 3,
-            tabs: [Tab(text: 'Bài đăng'), Tab(text: 'Hồ sơ')],
+            tabs: const [Tab(text: 'Bài đăng'), Tab(text: 'Hồ sơ')],
           ),
         ),
         body: const TabBarView(

@@ -9,18 +9,25 @@ class SearchPostModel with SearchPostModelMappable {
   List<City> location;
   List<JobPostingType> jobType;
   final int? budget;
-
-  final DateTime startDate;
-  final DateTime endDate;
+  List<ProfileType> profileType;
+  List<Domain> domain;
+  DateTime? startDate;
+  DateTime? endDate;
   SearchPostModel({
     this.query = '',
     this.location = const [],
     this.jobType = const [],
+    this.profileType = const [],
+    this.domain = const [],
     this.budget,
-    required this.startDate,
-    required this.endDate,
+    this.startDate,
+    this.endDate,
   });
   bool isEmptyModel() {
-    return query.isEmpty && location.isEmpty && jobType.isEmpty;
+    return query.isEmpty &&
+        location.isEmpty &&
+        jobType.isEmpty &&
+        profileType.isEmpty &&
+        domain.isEmpty;
   }
 }
