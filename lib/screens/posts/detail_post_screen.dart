@@ -14,6 +14,7 @@ import 'package:buildconnect/models/post/post_model.dart';
 import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/shared/common_widgets.dart';
 import 'package:buildconnect/shared/widgets/map_widgets.dart';
+import 'package:buildconnect/shared/widgets/edit_post_widget.dart';
 import 'package:buildconnect/features/auth/providers/auth_provider.dart';
 
 import 'package:go_router/go_router.dart';
@@ -75,9 +76,13 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
     );
 
     final userProvider = ref.watch(authProvider);
-    final isOwnJobPosting =
-        userProvider.hasValue && userProvider.hasValue! == jobPosting.authorId;
+    final isOwnJobPosting = userProvider.value?.id == jobPosting.authorId;
+    final jobProvider = ref.watch(postingServiceProvider);
+
     // final ownerPost = _profileDataService.fetchProfile(jobPosting.authorId);
+    debugPrint(
+      'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx - Profile: ${isOwnJobPosting}',
+    );
     debugPrint(profileDataByUserId.toString());
     // debugPrint(
     //   'vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvOwner Post: ${profileDataByUserId.profile.displayName}',
@@ -515,34 +520,52 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
               children: [
                 Expanded(
                   child: CustomButton(
-                    // text: jobPosting.isActive ? 'Mark as Filled' : 'Reactivate',
-                    text: 'Mark as Filled',
-                    onPressed:
-                        // () => _handleToggleJobPostingActive(
-                        //   context,
-                        //   jobProvider,
-                        //   jobPosting.id,
-                        //   jobPosting.isActive,
-                        // ),
-                        () => {print("Mark as Filled")},
+                    text: 'Edit',
+                    onPressed: () async {
+                      final result = await showDialog<bool>(
+                        context: context,
+                        builder:
+                            (context) => EditPostDialog(
+                              post: jobPosting,
+                              onSave: (updatedPost) async {
+                                debugPrint('Updated post: ${updatedPost}');
+                                await jobProvider.updatePost(updatedPost);
+                                // invalidate data riêng trong onSave để cập nhật provider bên dưới
+                                ref.invalidate(
+                                  postByIdProvider(updatedPost.id!),
+                                );
+                              },
+                            ),
+                      );
+
+                      if (result == true) {
+                        // Nếu edit thành công (dialog trả về true),
+                        // invalidate thêm toàn bộ danh sách hoặc dữ liệu cần thiết ở màn hình cha
+                        ref.invalidate(
+                          allPostsProvider,
+                        ); // hoặc provider bạn dùng để lấy list post
+
+                        // Nếu bạn cần rebuild UI ở đây:
+                        setState(() {});
+                      }
+                    },
                     isPrimary: false,
-                    icon: Icons.check_circle,
-                    // jobPosting.isActive
-                    //     ? Icons.check_circle
-                    //     : Icons.refresh,
+                    icon: Icons.edit,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: CustomButton(
                     text: 'Delete',
-                    onPressed:
-                        // () => _handleDeleteJobPosting(
-                        //   context,
-                        //   jobProvider,
-                        //   jobPosting.id,
-                        // ),
-                        () => {print("Mark as Filled")},
+                    onPressed: () {
+                      // final jobProvider = Ref.watch<PostingService>();
+                      _handleDeleteJobPosting(
+                        context,
+                        jobProvider,
+                        jobPosting.id!,
+                      );
+                    },
+                    // () => {print("Delete")},
                     isPrimary: false,
                     icon: Icons.delete,
                   ),
@@ -663,31 +686,38 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
     PostingService jobProvider,
     String jobPostingId,
   ) async {
-    // First, show confirmation dialog
+    // Hiển thị hộp thoại xác nhận
     final bool shouldDelete = await _showDeleteConfirmationDialog(context);
 
-    // If dialog was dismissed or canceled, exit early
     if (!shouldDelete) return;
-
-    // Continue only if still mounted
     if (!mounted) return;
 
-    // At this point, we can safely capture context references because we've checked mounted
-    final scaffoldMessengerState = ScaffoldMessenger.of(context);
-    final navigatorState = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
 
-    // Show loading indicator
     setState(() {
       _isLoading = true;
     });
 
-    // Now proceed with the actual deletion
-    await _performJobDeletion(
-      jobPostingId,
-      jobProvider,
-      scaffoldMessengerState,
-      navigatorState,
-    );
+    try {
+      // debugPrint('Deleting job posting with ID: $jobPostingId');
+      await _performJobDeletion(
+        jobPostingId,
+        jobProvider,
+        scaffoldMessenger,
+        navigator,
+      );
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Failed to delete post: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   // Helper method to handle the actual deletion operation
@@ -698,35 +728,29 @@ class _JobPostingViewScreenState extends ConsumerState<JobPostingViewScreen> {
     NavigatorState navigator,
   ) async {
     try {
-      // Perform the deletion
+      // debugPrint('Deleting job posting with ID: $jobPostingId');
       await jobProvider.deleteJobPosting(jobPostingId);
 
-      // Check if widget is still mounted before updating state
       if (!mounted) return;
 
-      // Hide loading indicator
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Show success message using captured scaffold messenger
-      scaffoldMessenger.showSnackBar(
-        const SnackBar(content: Text('Job posting deleted')),
-      );
-
-      // Navigate back using captured navigator
-      navigator.pop();
+      // scaffoldMessenger.showSnackBar(
+      //   const SnackBar(content: Text('Job posting deleted')),
+      // );
+      ref.invalidate(allPostsProvider);
+      navigator.pop(true);
+      // context.push('/feed'); // Navigate back to posts list
     } catch (e) {
-      // Check if widget is still mounted before updating state
       if (!mounted) return;
 
-      // Hide loading indicator
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Show error message using captured scaffold messenger
-      scaffoldMessenger.showSnackBar(SnackBar(content: Text('Error: $e')));
+      // scaffoldMessenger.showSnackBar(
+      //   SnackBar(content: Text('Error deleting job: $e')),
+      // );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

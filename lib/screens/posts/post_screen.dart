@@ -51,7 +51,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
   // List<String> _requiredSkillsList = [];
 
   // double _budget = 1;
-  final _budgetController = TextEditingController(text: "1");
+  final _budgetController = TextEditingController(text: "1000");
 
   ///
 
@@ -103,6 +103,8 @@ class _PostScreenState extends ConsumerState<PostScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Post created successfully')),
         );
+        ref.invalidate(allPostsProvider);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       debugPrint("Error: $e");
@@ -230,7 +232,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               heightWidget(
                 widget: buildTextFormField(
                   controller: _budgetController,
-                  labelText: 'Job Budget',
+                  labelText: 'Job Budget (VNĐ)',
                   maxLines: 1,
                   hintText: 'Enter the budget of the job posting',
                   inputFormatters: [
