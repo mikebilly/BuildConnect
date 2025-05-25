@@ -537,3 +537,34 @@ enum ContactType {
     ),
   };
 }
+
+@MappableEnum()
+enum NotificationType {
+  unknown,
+  newPostMatch,
+  newMessage,
+  applicationUpdate,
+  profileUpdate,
+  newComment,
+  system;
+
+  String get title => 'Notification Type';
+  String get label => switch (this) {
+    NotificationType.unknown => 'Unknown',
+    NotificationType.newPostMatch => 'New Post Match',
+    NotificationType.newMessage => 'New Message',
+    NotificationType.applicationUpdate => 'Application Update',
+    NotificationType.profileUpdate => 'Profile Update',
+    NotificationType.newComment => 'New Comment',
+    NotificationType.system => 'System Notification',
+  };
+}
+
+@MappableEnum()
+enum RelatedEntityType {
+  unknown,
+  post,
+  profile,
+  messageThread, // Hoặc 'user' nếu liên quan đến user (người gửi tin nhắn)
+  application,
+}

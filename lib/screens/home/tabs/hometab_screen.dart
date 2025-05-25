@@ -3,7 +3,10 @@ import 'package:buildconnect/core/theme/theme.dart'; // Import theme của bạn
 import 'package:buildconnect/features/auth/providers/auth_provider.dart';
 import 'package:buildconnect/features/auth/providers/auth_service_provider.dart'; // Giữ lại nếu vẫn dùng
 import 'package:buildconnect/features/auth/services/auth_service.dart';
+import 'package:buildconnect/features/conversation/providers/conversation_provider.dart';
 import 'package:buildconnect/features/home/providers/home_provider.dart';
+import 'package:buildconnect/features/message/providers/message_provider.dart';
+import 'package:buildconnect/features/notification/providers/notification_provider.dart';
 import 'package:buildconnect/models/article/article_model.dart';
 import 'package:buildconnect/models/post/post_model.dart';
 import 'package:buildconnect/models/profile/profile_model.dart';
@@ -23,6 +26,8 @@ class HomeTabScreen extends ConsumerWidget {
     String? currentUserId = _authService.currentUserId;
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    int unreadNotifications = ref.watch(unreadNotificationCountProvider);
+    final totalUnreadAsync = ref.watch(totalUnreadMessagesCountProvider);
 
     return Scaffold(
       appBar: PreferredSize(
@@ -72,14 +77,43 @@ class HomeTabScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(
-                    Icons.message_outlined,
-                    color: theme.iconTheme.color,
+                  icon: Stack(
+                    children: [
+                      Icon(
+                        Icons.message_outlined,
+                        color: theme.iconTheme.color,
+                      ),
+                      if (totalUnreadAsync.value != null &&
+                          totalUnreadAsync.value! > 0)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: AppColors.notification,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 12,
+                              minHeight: 12,
+                            ),
+                            child: Text(
+                              totalUnreadAsync.value.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   tooltip: 'Tin nhắn',
                   onPressed: () {
                     if (isLoggedIn) {
-                      context.push('/message/user_list_view/$currentUserId');
+                      context.push('/message/user_list_view');
                     } else {
                       _showLoginRequiredDialog(context);
                     }
@@ -93,26 +127,30 @@ class HomeTabScreen extends ConsumerWidget {
                         Icons.notifications_outlined,
                         color: theme.iconTheme.color,
                       ),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: AppColors.notification,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 12,
-                            minHeight: 12,
-                          ),
-                          child: const Text(
-                            '1',
-                            style: TextStyle(color: Colors.white, fontSize: 8),
-                            textAlign: TextAlign.center,
+                      if (unreadNotifications > 0)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: AppColors.notification,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 12,
+                              minHeight: 12,
+                            ),
+                            child: Text(
+                              unreadNotifications.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   tooltip: 'Thông báo',

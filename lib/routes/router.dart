@@ -106,11 +106,10 @@ GoRouter router(Ref ref) {
         },
       ),
       GoRoute(
-        path: '/message/user_list_view/:userId',
+        path: '/message/user_list_view',
         name: 'message_user_list',
         builder: (context, state) {
-          final userId = state.pathParameters['userId'];
-          return UserListMessagesScreen(userId: userId!);
+          return UserListMessagesScreen();
         },
       ),
       GoRoute(

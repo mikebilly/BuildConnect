@@ -75,6 +75,36 @@ class ChatTheme {
   );
 }
 
+class ChatTextStyles {
+  static const TextStyle nameSender = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: AppColors.text,
+  );
+  static const TextStyle myMessageText = TextStyle(
+    fontSize: 16,
+    color: AppColors.myMessageText,
+  );
+
+  static const TextStyle otherMessageText = TextStyle(
+    fontSize: 16,
+    color: AppColors.otherMessageText,
+  );
+
+  static const TextStyle messageTime = TextStyle(
+    fontSize: 12,
+    color: AppColors.timestampColor,
+  );
+  static const TextStyle unreadMessage = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+  );
+  static const TextStyle readMessage = TextStyle(
+    fontSize: 14,
+    color: AppColors.textLight,
+  );
+}
+
 class AppTextStyles {
   static TextStyle title = const TextStyle(
     fontSize: 30,
@@ -124,6 +154,18 @@ class CardSearchStyle {
     fontSize: 14,
     fontStyle: FontStyle.italic,
   );
+}
+
+class NotificationTextStyle {
+  static TextStyle title = const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  );
+  static TextStyle body = const TextStyle(
+    fontSize: 14,
+    fontStyle: FontStyle.italic,
+  );
+  static TextStyle time = const TextStyle(fontSize: 12, color: Colors.grey);
 }
 
 class InputDecorationConstants {

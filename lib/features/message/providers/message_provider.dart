@@ -60,8 +60,8 @@ class MessageNotifier extends _$MessageNotifier {
 
     // Load initial messages
     return await _messageService.fetchMessages(
-      userId1: currentUserId,
-      userId2: conversationPartnerId,
+      userReceive: currentUserId,
+      userSend: conversationPartnerId,
     );
   }
 
@@ -87,8 +87,8 @@ class MessageNotifier extends _$MessageNotifier {
 
     try {
       await _messageService.markMessagesAsRead(
-        userToId: currentUserId,
-        userFromId: _currentConversationPartnerId!,
+        userReceive: currentUserId,
+        userSend: _currentConversationPartnerId!,
       );
     } catch (e) {
       debugPrint('Error marking messages as read: $e');
@@ -102,6 +102,18 @@ class MessageNotifier extends _$MessageNotifier {
   String currentUserId() {
     return ref.read(authProvider).value?.id ?? '';
   }
-
-  // TODO: Implement loadMoreMessages with pagination if needed
 }
+
+final unreadMessageCountProvider = Provider.family<int, String>((
+  ref,
+  conversationPartnerId,
+) {
+  final messagesAsync = ref.watch(
+    messageNotifierProvider(conversationPartnerId),
+  );
+  return messagesAsync.when(
+    data: (messages) => messages.where((n) => !n.markAsRead).length,
+    loading: () => 0,
+    error: (_, __) => 0,
+  );
+});

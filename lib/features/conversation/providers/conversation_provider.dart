@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:buildconnect/features/auth/providers/auth_provider.dart';
+import 'package:buildconnect/features/auth/providers/auth_service_provider.dart';
+import 'package:buildconnect/features/auth/services/auth_service.dart';
 import 'package:buildconnect/features/conversation/providers/conversation_service_provider.dart';
 import 'package:buildconnect/features/conversation/services/conversation_service.dart';
+import 'package:buildconnect/features/message/providers/message_provider.dart';
 import 'package:buildconnect/features/message/providers/message_service_provider.dart';
 import 'package:buildconnect/features/message/services/message_service.dart';
 import 'package:buildconnect/models/conversation/conversation_model.dart';
@@ -15,19 +18,23 @@ part 'conversation_provider.g.dart';
 
 @Riverpod()
 class ConversationNotifier extends _$ConversationNotifier {
+  MessageService get _messageService => ref.read(messageServiceProvider);
   ConversationService get _conversationService =>
       ref.read(conversationServiceProvider);
-  StreamSubscription<Message>? _messageSubscription;
-  String? _currentConversationPartnerId;
+  StreamSubscription<void>? _messageSubscription;
+  AuthService get _authService => ref.watch(authServiceProvider);
+  String? get _userId => _authService.currentUserId;
 
   @override
-  Future<List<ConversationModel>> build(String conversationPartnerId) async {
-    _currentConversationPartnerId = conversationPartnerId;
+  Future<List<ConversationModel>> build() async {
     final currentUserId = ref.read(authProvider).value?.id;
 
     if (currentUserId == null) {
       throw Exception('User not logged in.');
     }
+    _messageSubscription = _messageService.onMessagesChanged().listen(
+      (_) => refreshConversations(),
+    );
     List<ConversationModel> result = [];
     final dataFetched = _conversationService.fetchConversations();
     if (dataFetched != null) {
@@ -46,4 +53,27 @@ class ConversationNotifier extends _$ConversationNotifier {
       state = AsyncError(error, stack);
     }
   }
+
+  Future<void> markAsRead(String partnerId) async {
+    try {
+      await _messageService.markMessagesAsRead(
+        userReceive: _userId!,
+        userSend: partnerId,
+      );
+    } catch (e) {
+      debugPrint('Error marking messages as read: $e');
+    }
+  }
+}
+
+@Riverpod()
+Future<int> totalUnreadMessagesCount(TotalUnreadMessagesCountRef ref) async {
+  final authState = ref.watch(authProvider);
+  if (authState.valueOrNull == null) {
+    return 0; // Trả về 0 nếu chưa đăng nhập
+  }
+
+  final conversationService = ref.watch(conversationServiceProvider);
+
+  return conversationService.countAllUnreadMessages();
 }

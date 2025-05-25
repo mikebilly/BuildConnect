@@ -27,4 +27,5 @@ class SupabaseConstants {
   static const String supplierMaterialCategoriesTable =
       'supplier_material_categories';
   static const String messagesTable = 'messages';
+  static const String notificationsTable = 'notifications';
 }

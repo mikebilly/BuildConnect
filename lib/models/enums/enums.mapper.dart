@@ -1235,3 +1235,127 @@ extension ContactTypeMapperExtension on ContactType {
     return MapperContainer.globals.toValue<ContactType>(this) as String;
   }
 }
+
+class NotificationTypeMapper extends EnumMapper<NotificationType> {
+  NotificationTypeMapper._();
+
+  static NotificationTypeMapper? _instance;
+  static NotificationTypeMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = NotificationTypeMapper._());
+    }
+    return _instance!;
+  }
+
+  static NotificationType fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  NotificationType decode(dynamic value) {
+    switch (value) {
+      case r'unknown':
+        return NotificationType.unknown;
+      case r'newPostMatch':
+        return NotificationType.newPostMatch;
+      case r'newMessage':
+        return NotificationType.newMessage;
+      case r'applicationUpdate':
+        return NotificationType.applicationUpdate;
+      case r'profileUpdate':
+        return NotificationType.profileUpdate;
+      case r'newComment':
+        return NotificationType.newComment;
+      case r'system':
+        return NotificationType.system;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(NotificationType self) {
+    switch (self) {
+      case NotificationType.unknown:
+        return r'unknown';
+      case NotificationType.newPostMatch:
+        return r'newPostMatch';
+      case NotificationType.newMessage:
+        return r'newMessage';
+      case NotificationType.applicationUpdate:
+        return r'applicationUpdate';
+      case NotificationType.profileUpdate:
+        return r'profileUpdate';
+      case NotificationType.newComment:
+        return r'newComment';
+      case NotificationType.system:
+        return r'system';
+    }
+  }
+}
+
+extension NotificationTypeMapperExtension on NotificationType {
+  String toValue() {
+    NotificationTypeMapper.ensureInitialized();
+    return MapperContainer.globals.toValue<NotificationType>(this) as String;
+  }
+}
+
+class RelatedEntityTypeMapper extends EnumMapper<RelatedEntityType> {
+  RelatedEntityTypeMapper._();
+
+  static RelatedEntityTypeMapper? _instance;
+  static RelatedEntityTypeMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = RelatedEntityTypeMapper._());
+    }
+    return _instance!;
+  }
+
+  static RelatedEntityType fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  RelatedEntityType decode(dynamic value) {
+    switch (value) {
+      case r'unknown':
+        return RelatedEntityType.unknown;
+      case r'post':
+        return RelatedEntityType.post;
+      case r'profile':
+        return RelatedEntityType.profile;
+      case r'messageThread':
+        return RelatedEntityType.messageThread;
+      case r'application':
+        return RelatedEntityType.application;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(RelatedEntityType self) {
+    switch (self) {
+      case RelatedEntityType.unknown:
+        return r'unknown';
+      case RelatedEntityType.post:
+        return r'post';
+      case RelatedEntityType.profile:
+        return r'profile';
+      case RelatedEntityType.messageThread:
+        return r'messageThread';
+      case RelatedEntityType.application:
+        return r'application';
+    }
+  }
+}
+
+extension RelatedEntityTypeMapperExtension on RelatedEntityType {
+  String toValue() {
+    RelatedEntityTypeMapper.ensureInitialized();
+    return MapperContainer.globals.toValue<RelatedEntityType>(this) as String;
+  }
+}

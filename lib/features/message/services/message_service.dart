@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:buildconnect/features/conversation/providers/conversation_service_provider.dart';
 import 'package:buildconnect/models/conversation/conversation_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -55,8 +56,8 @@ class MessageService {
 
   Future<List<Message>> fetchMessages({
     // ... (giữ nguyên) ...
-    required String userId1,
-    required String userId2,
+    required String userReceive,
+    required String userSend,
     int limit = 100,
   }) async {
     try {
@@ -69,12 +70,12 @@ class MessageService {
           .from(SupabaseConstants.messagesTable)
           .select()
           .or(
-            'and(user_from.eq.$userId1,user_to.eq.$userId2),' +
-                'and(user_from.eq.$userId2,user_to.eq.$userId1)',
+            'and(user_from.eq.$userReceive,user_to.eq.$userSend),' +
+                'and(user_from.eq.$userSend,user_to.eq.$userReceive)',
           )
           .order('created_at', ascending: true)
           .limit(limit);
-      markMessagesAsRead(userToId: userId2, userFromId: userId1);
+      markMessagesAsRead(userReceive: userReceive, userSend: userSend);
       return (response as List)
           .map(
             (item) => Message(
@@ -99,18 +100,16 @@ class MessageService {
 
   Future<void> markMessagesAsRead({
     // ... (giữ nguyên) ...
-    required String userToId,
-    required String userFromId,
+    required String userReceive,
+    required String userSend,
   }) async {
     try {
       await _supabaseClient
           .from(SupabaseConstants.messagesTable)
           .update({'mark_as_read': true})
-          .eq('user_to', userToId)
-          .eq('user_from', userFromId)
+          .eq('user_to', userReceive)
+          .eq('user_from', userSend)
           .eq('mark_as_read', false);
-
-      debugPrint('Marked messages as read from $userFromId to $userToId');
     } catch (e) {
       debugPrint('Error marking messages as read: $e');
       throw Exception('Failed to mark messages as read.');
@@ -175,6 +174,8 @@ class MessageService {
 
     return controller.stream;
   }
+
+  // subcribe to userlist message tương tự như subcribe to
 
   // Phương thức mới để lấy danh sách các cuộc hội thoại
   Future<List<ConversationModel>> fetchConversations() async {
@@ -302,5 +303,31 @@ class MessageService {
       debugPrint('Unexpected error: $e');
       return 'Unknown User';
     }
+  }
+
+  Stream<void> onMessagesChanged() {
+    final controller = StreamController<void>();
+
+    final channel =
+        Supabase.instance.client
+            .channel('public:messages')
+            .onPostgresChanges(
+              event: PostgresChangeEvent.insert,
+              schema: 'public',
+              table: 'messages',
+              callback: (_) {
+                if (!controller.isClosed) {
+                  controller.add(null);
+                }
+              },
+            )
+            .subscribe();
+
+    controller.onCancel = () {
+      Supabase.instance.client.removeChannel(channel);
+      controller.close();
+    };
+
+    return controller.stream;
   }
 }
