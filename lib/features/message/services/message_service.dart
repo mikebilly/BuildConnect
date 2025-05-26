@@ -1,108 +1,188 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:buildconnect/models/enums/enums.dart';
+import 'package:path/path.dart' as p; // Để lấy extension file
+import 'package:mime/mime.dart'; // Để lấy MIME type (cần thêm package: mime)
 import 'package:buildconnect/features/conversation/providers/conversation_service_provider.dart';
 import 'package:buildconnect/models/conversation/conversation_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/supabase_constants.dart';
 import '../../../models/message/message_model.dart';
-import '../../../models/profile/profile_model.dart'; // Giả định có Profile model để lấy tên/avatar
+import '../../../models/profile/profile_model.dart';
 
 class MessageService {
   final SupabaseClient _supabaseClient;
 
   MessageService(this._supabaseClient);
-
-  // --- Các hàm sendMessage, fetchMessages, markMessagesAsRead, subscribeToNewMessages giữ nguyên như bạn đã code ---
-  // ... (code các hàm đó ở đây) ...
+  final String _attachmentBucket = 'message.attachments';
 
   Future<Message> sendMessage({
     // ... (giữ nguyên) ...
-    required String content,
     required String userFromId,
     required String userToId,
+    String? content,
+    File? attachmentFile,
   }) async {
+    debugPrint(
+      'sending message with content is: ${content} and file attachment is: ${attachmentFile.toString()}',
+    );
+    // try {
+    //   final response =
+    //       await _supabaseClient
+    //           .from(SupabaseConstants.messagesTable)
+    //           .insert({
+    //             'content': content,
+    //             'user_from': userFromId,
+    //             'user_to': userToId,
+    //           })
+    //           .select()
+    //           .single();
+
+    //   final currentUser = _supabaseClient.auth.currentUser;
+    //   final bool isMine = currentUser?.id == userFromId;
+
+    //   return Message(
+    //     id: response['id'] as String,
+    //     content: response['content'] as String,
+    //     markAsRead: response['mark_as_read'] as bool,
+    //     userFrom_id: response['user_from'] as String,
+    //     userTo_id: response['user_to'] as String,
+    //     createAt: DateTime.parse(response['created_at'] as String),
+    //   );
+    // } on PostgrestException catch (error) {
+    //   debugPrint('Supabase Error (sendMessage): ${error.message}');
+    //   throw Exception('Failed to send message: ${error.message}');
+    // } catch (e) {
+    //   debugPrint('Unexpected error (sendMessage): $e');
+    //   throw Exception('Unexpected error: ${e.toString()}');
+    // }
+    String? uploadedAttachmentUrl;
+    String? attachmentName;
+    int? attachmentSize;
+    String? attachmentMimeType;
+    AttachmentType attachmentType = AttachmentType.none;
+
     try {
+      // 1. Tải file lên Supabase Storage nếu có
+      if (attachmentFile != null) {
+        final fileName =
+            '${userFromId}/${DateTime.now().millisecondsSinceEpoch}_${p.basename(attachmentFile.path)}';
+        attachmentName = p.basename(attachmentFile.path);
+        attachmentSize = await attachmentFile.length();
+        attachmentMimeType = lookupMimeType(
+          attachmentFile.path,
+        ); // Lấy MIME type
+
+        debugPrint(
+          'Uploading attachment: $fileName to bucket: $_attachmentBucket',
+        );
+
+        // Xác định AttachmentType dựa trên MIME type
+        if (attachmentMimeType?.startsWith('image/') == true) {
+          attachmentType = AttachmentType.image;
+        } else if (attachmentMimeType?.startsWith('video/') == true) {
+          attachmentType = AttachmentType.video;
+        } else {
+          attachmentType = AttachmentType.file;
+        }
+
+        // Tải file lên
+        await _supabaseClient.storage
+            .from(_attachmentBucket)
+            .upload(
+              fileName,
+              attachmentFile,
+              fileOptions: FileOptions(
+                // contentType: attachmentMimeType // Tùy chọn: chỉ định content type
+              ),
+            );
+
+        // Lấy URL công khai của file đã tải lên
+        uploadedAttachmentUrl = _supabaseClient.storage
+            .from(_attachmentBucket)
+            .getPublicUrl(fileName);
+        debugPrint('Attachment uploaded. URL: $uploadedAttachmentUrl');
+      }
+
+      // 2. Chèn tin nhắn vào database
+      final Map<String, dynamic> messageData = {
+        'content': content, // Có thể null
+        'user_from': userFromId,
+        'user_to': userToId,
+        'attachment_type': attachmentType.name, // Lưu tên enum
+        'attachment_url': uploadedAttachmentUrl,
+        'attachment_name': attachmentName,
+        'attachment_size': attachmentSize,
+        'attachment_mime_type': attachmentMimeType,
+        // 'mark_as_read' và 'created_at' sẽ có giá trị mặc định từ database
+      };
+
       final response =
           await _supabaseClient
               .from(SupabaseConstants.messagesTable)
-              .insert({
-                'content': content,
-                'user_from': userFromId,
-                'user_to': userToId,
-              })
-              .select()
+              .insert(messageData)
+              .select() // Yêu cầu trả về hàng vừa được chèn
               .single();
+
+      debugPrint('Message sent successfully to DB: ${response['id']}');
 
       final currentUser = _supabaseClient.auth.currentUser;
       final bool isMine = currentUser?.id == userFromId;
 
+      // Sử dụng MessageMapper.fromMap nếu đã cấu hình đúng cho các trường mới
+      // hoặc tạo thủ công
       return Message(
         id: response['id'] as String,
-        content: response['content'] as String,
+        content: (response['content'] as String?) ?? '',
         markAsRead: response['mark_as_read'] as bool,
         userFrom_id: response['user_from'] as String,
         userTo_id: response['user_to'] as String,
         createAt: DateTime.parse(response['created_at'] as String),
-        isMine: isMine,
+        attachmentType: AttachmentTypeMapper.fromValue(
+          response['attachment_type'] ?? AttachmentType.none.name,
+        ),
+        attachmentUrl: response['attachment_url'] as String?,
+        attachmentName: response['attachment_name'] as String?,
+        attachmentSize: response['attachment_size'] as int?,
+        attachmentMimeType: response['attachment_mime_type'] as String?,
       );
+      // Hoặc: return MessageMapper.fromMap(response as Map<String, dynamic>).copyWith(isMine: isMine);
+      // (Đảm bảo fromMap của MessageMapper xử lý đúng các trường attachment)
+    } on StorageException catch (e) {
+      debugPrint('Supabase Storage Error (sendMessage): ${e.message}');
+      throw Exception('Failed to upload attachment: ${e.message}');
     } on PostgrestException catch (error) {
-      debugPrint('Supabase Error (sendMessage): ${error.message}');
-      throw Exception('Failed to send message: ${error.message}');
+      debugPrint('Supabase Postgrest Error (sendMessage): ${error.message}');
+      throw Exception('Failed to send message to DB: ${error.message}');
     } catch (e) {
       debugPrint('Unexpected error (sendMessage): $e');
-      throw Exception('Unexpected error: ${e.toString()}');
+      throw Exception('Unexpected error sending message: ${e.toString()}');
     }
   }
 
   Future<List<Message>> fetchMessages({
-    // ... (giữ nguyên) ...
     required String userReceive,
     required String userSend,
     int limit = 100,
   }) async {
-    try {
-      final currentUser = _supabaseClient.auth.currentUser;
-      if (currentUser == null) {
-        throw Exception("User not logged in");
-      }
+    final response = await Supabase.instance.client.rpc(
+      'fetch_and_mark_messages',
+      params: {'p_user_from': userSend, 'p_user_to': userReceive},
+    );
 
-      final response = await _supabaseClient
-          .from(SupabaseConstants.messagesTable)
-          .select()
-          .or(
-            'and(user_from.eq.$userReceive,user_to.eq.$userSend),' +
-                'and(user_from.eq.$userSend,user_to.eq.$userReceive)',
-          )
-          .order('created_at', ascending: true)
-          .limit(limit);
-      markMessagesAsRead(userReceive: userReceive, userSend: userSend);
-      return (response as List)
-          .map(
-            (item) => Message(
-              id: item['id'],
-              content: item['content'],
-              markAsRead: item['mark_as_read'],
-              userFrom_id: item['user_from'],
-              userTo_id: item['user_to'],
-              createAt: DateTime.parse(item['created_at']),
-              isMine: item['user_from'] == currentUser.id,
-            ),
-          )
-          .toList();
-    } on PostgrestException catch (error) {
-      debugPrint('Supabase Error (fetchMessages): ${error.message}');
-      throw Exception('Failed to fetch messages: ${error.message}');
-    } catch (e) {
-      debugPrint('Unexpected error (fetchMessages): $e');
-      throw Exception('Unexpected error: ${e.toString()}');
-    }
+    final messages =
+        (response as List)
+            .map((e) => MessageMapper.fromMap(e as Map<String, dynamic>))
+            .toList();
+    return messages;
   }
 
   Future<void> markMessagesAsRead({
-    // ... (giữ nguyên) ...
     required String userReceive,
     required String userSend,
   }) async {
+    debugPrint('mark as read for msg from ${userSend} to ${userReceive}');
     try {
       await _supabaseClient
           .from(SupabaseConstants.messagesTable)
@@ -117,7 +197,6 @@ class MessageService {
   }
 
   Stream<Message> subscribeToNewMessages({
-    // ... (giữ nguyên) ...
     required String userId1,
     required String userId2,
   }) {
@@ -137,26 +216,35 @@ class MessageService {
               event: PostgresChangeEvent.insert,
               schema: 'public',
               table: SupabaseConstants.messagesTable,
-              callback: (payload) {
+              callback: (payload) async {
                 final newMessageMap = payload.newRecord;
 
                 if (newMessageMap != null) {
-                  // Lọc thêm một lần nữa ở client để chắc chắn tin nhắn thuộc về cuộc hội thoại này
                   final msgUserFrom = newMessageMap['user_from'] as String;
                   final msgUserTo = newMessageMap['user_to'] as String;
                   if ((msgUserFrom == userId1 && msgUserTo == userId2) ||
                       (msgUserFrom == userId2 && msgUserTo == userId1)) {
                     final message = Message(
                       id: newMessageMap['id'] as String,
-                      content: newMessageMap['content'] as String,
+                      content: (newMessageMap['content'] as String?) ?? '',
                       markAsRead: newMessageMap['mark_as_read'] as bool,
                       userFrom_id: msgUserFrom,
                       userTo_id: msgUserTo,
                       createAt: DateTime.parse(
                         newMessageMap['created_at'] as String,
                       ),
-                      isMine: msgUserFrom == currentUser.id,
+                      attachmentType: AttachmentTypeMapper.fromValue(
+                        newMessageMap['attachment_type'] ??
+                            AttachmentType.none.name,
+                      ),
+                      attachmentUrl: newMessageMap['attachment_url'] as String?,
+                      attachmentName:
+                          newMessageMap['attachment_name'] as String?,
+                      attachmentSize: newMessageMap['attachment_size'] as int?,
+                      attachmentMimeType:
+                          newMessageMap['attachment_mime_type'] as String?,
                     );
+
                     if (!controller.isClosed) {
                       controller.add(message);
                     }
@@ -167,6 +255,7 @@ class MessageService {
             .subscribe();
 
     controller.onCancel = () {
+      // markMessagesAsRead(userReceive: userId1, userSend: userId2);
       debugPrint('Cancelling message subscription for channel: $channelName');
       _supabaseClient.removeChannel(channel);
       controller.close();
@@ -176,113 +265,6 @@ class MessageService {
   }
 
   // subcribe to userlist message tương tự như subcribe to
-
-  // Phương thức mới để lấy danh sách các cuộc hội thoại
-  Future<List<ConversationModel>> fetchConversations() async {
-    final currentUser = _supabaseClient.auth.currentUser;
-    if (currentUser == null) {
-      throw Exception("User not logged in");
-    }
-    final currentUserId = currentUser.id;
-    debugPrint('userID is scanning for message list: ${currentUserId}');
-    try {
-      final sentMessagesPartners = await _supabaseClient
-          .from(SupabaseConstants.messagesTable)
-          .select('user_to')
-          .eq('user_from', currentUserId);
-
-      final receivedMessagesPartners = await _supabaseClient
-          .from(SupabaseConstants.messagesTable)
-          .select('user_from')
-          .eq('user_to', currentUserId);
-
-      final Set<String> partnerIds = {};
-      (sentMessagesPartners as List).forEach(
-        (row) => partnerIds.add(row['user_to'] as String),
-      );
-      (receivedMessagesPartners as List).forEach(
-        (row) => partnerIds.add(row['user_from'] as String),
-      );
-
-      // Bước 2: Với mỗi partnerId, lấy tin nhắn cuối cùng, thông tin user và số tin nhắn chưa đọc
-      List<ConversationModel> conversations = [];
-      for (String partnerId in partnerIds) {
-        if (partnerId == currentUserId) continue; // Bỏ qua chat với chính mình
-
-        // Lấy tin nhắn cuối cùng
-        final lastMessageResponse =
-            await _supabaseClient
-                .from(SupabaseConstants.messagesTable)
-                .select()
-                .or(
-                  'and(user_from.eq.$currentUserId,user_to.eq.$partnerId),and(user_from.eq.$partnerId,user_to.eq.$currentUserId)',
-                )
-                .order('created_at', ascending: false)
-                .limit(1)
-                .maybeSingle(); // Dùng maybeSingle để tránh lỗi nếu không có tin nhắn
-
-        if (lastMessageResponse == null)
-          continue; // Bỏ qua nếu không có tin nhắn
-
-        final lastMessageData = lastMessageResponse as Map<String, dynamic>;
-        final lastMessage = Message(
-          id: lastMessageData['id'],
-          content: lastMessageData['content'],
-          markAsRead: lastMessageData['mark_as_read'],
-          userFrom_id: lastMessageData['user_from'],
-          userTo_id: lastMessageData['user_to'],
-          createAt: DateTime.parse(lastMessageData['created_at']),
-          isMine: lastMessageData['user_from'] == currentUserId,
-        );
-
-        // Lấy thông tin profile của partner
-        // Giả định bạn có hàm getUserName hoặc hàm fetchProfile trong ProfileService
-        // Hoặc query trực tiếp bảng profiles
-        final partnerProfileResponse =
-            await _supabaseClient
-                .from(
-                  SupabaseConstants.profilesTable,
-                ) // profilesTable = 'profiles'
-                .select('display_name')
-                .eq('user_id', partnerId)
-                .maybeSingle();
-
-        final partnerDisplayName =
-            partnerProfileResponse?['display_name'] as String? ??
-            'Unknown User';
-        debugPrint('--------------------$partnerDisplayName---------------');
-        // Đếm số tin nhắn chưa đọc từ partner này
-        final unreadCountResponse = await _supabaseClient
-            .from(SupabaseConstants.messagesTable)
-            .select('id')
-            .eq('user_to', currentUserId)
-            .eq('user_from', partnerId)
-            .eq('mark_as_read', false);
-
-        var unreadCount = unreadCountResponse.length;
-        conversations.add(
-          ConversationModel(
-            partnerId: partnerId,
-            partnerDisplayName: partnerDisplayName,
-            partnerAvatarUrl: null,
-            lastMessage: lastMessage,
-            unreadCount: unreadCount,
-          ),
-        );
-      }
-
-      // Sắp xếp các cuộc hội thoại theo thời gian tin nhắn cuối cùng
-      conversations.sort(
-        (a, b) => b.lastMessage.createAt.compareTo(a.lastMessage.createAt),
-      );
-
-      debugPrint('Fetched ${conversations.length} conversations.');
-      return conversations;
-    } catch (e) {
-      debugPrint('Error fetching conversations: $e');
-      rethrow;
-    }
-  }
 
   Future<String> getUserName(String id) async {
     // Giữ nguyên hàm này nếu cần
@@ -308,20 +290,38 @@ class MessageService {
   Stream<void> onMessagesChanged() {
     final controller = StreamController<void>();
 
-    final channel =
-        Supabase.instance.client
-            .channel('public:messages')
-            .onPostgresChanges(
-              event: PostgresChangeEvent.insert,
-              schema: 'public',
-              table: 'messages',
-              callback: (_) {
-                if (!controller.isClosed) {
-                  controller.add(null);
-                }
-              },
-            )
-            .subscribe();
+    final channel = Supabase.instance.client.channel('public:messages');
+
+    channel.onPostgresChanges(
+      event: PostgresChangeEvent.update,
+      schema: 'public',
+      table: 'messages',
+      callback: (payload) {
+        final oldRow = payload.oldRecord;
+        final newRow = payload.newRecord;
+
+        if (oldRow['mark_as_read'] == false && newRow['mark_as_read'] == true) {
+          if (!controller.isClosed) {
+            controller.add(null);
+          }
+        }
+      },
+    );
+    // Lắng nghe sự kiện INSERT
+    channel.onPostgresChanges(
+      event: PostgresChangeEvent.insert,
+      schema: 'public',
+      table: 'messages',
+      callback: (_) {
+        if (!controller.isClosed) {
+          controller.add(null);
+        }
+      },
+    );
+
+    // Lắng nghe sự kiện UPDATE mark_as_read = true
+
+    channel.subscribe();
 
     controller.onCancel = () {
       Supabase.instance.client.removeChannel(channel);

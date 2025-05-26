@@ -6,28 +6,27 @@ part of 'conversation_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$totalUnreadMessagesCountHash() =>
-    r'2593d79c86c9874adb4eb821f963d7171585f280';
+String _$totalUnreadMessagesCountStreamHash() =>
+    r'81fc5587c633ba0189b2b8ccc2f8327759b463f8';
 
-/// See also [totalUnreadMessagesCount].
-@ProviderFor(totalUnreadMessagesCount)
-final totalUnreadMessagesCountProvider =
-    AutoDisposeFutureProvider<int>.internal(
-      totalUnreadMessagesCount,
-      name: r'totalUnreadMessagesCountProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$totalUnreadMessagesCountHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+/// See also [totalUnreadMessagesCountStream].
+@ProviderFor(totalUnreadMessagesCountStream)
+final totalUnreadMessagesCountStreamProvider = StreamProvider<int>.internal(
+  totalUnreadMessagesCountStream,
+  name: r'totalUnreadMessagesCountStreamProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$totalUnreadMessagesCountStreamHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef TotalUnreadMessagesCountRef = AutoDisposeFutureProviderRef<int>;
+typedef TotalUnreadMessagesCountStreamRef = StreamProviderRef<int>;
 String _$conversationNotifierHash() =>
-    r'88ccfd01618402d2e84649ec7c73e24ad804a3f3';
+    r'379961ccacea88972fbd26adf975b0e959873c2f';
 
 /// See also [ConversationNotifier].
 @ProviderFor(ConversationNotifier)

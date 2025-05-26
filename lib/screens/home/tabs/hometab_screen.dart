@@ -1,7 +1,6 @@
-// features/home/screens/home_tab_screen.dart (Hoặc tên file mới là home_screen.dart)
-import 'package:buildconnect/core/theme/theme.dart'; // Import theme của bạn
+import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/features/auth/providers/auth_provider.dart';
-import 'package:buildconnect/features/auth/providers/auth_service_provider.dart'; // Giữ lại nếu vẫn dùng
+import 'package:buildconnect/features/auth/providers/auth_service_provider.dart';
 import 'package:buildconnect/features/auth/services/auth_service.dart';
 import 'package:buildconnect/features/conversation/providers/conversation_provider.dart';
 import 'package:buildconnect/features/home/providers/home_provider.dart';
@@ -14,38 +13,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart'; // Để format ngày tháng
+import 'package:url_launcher/url_launcher.dart';
 
-class HomeTabScreen extends ConsumerWidget {
+class HomeTabScreen extends ConsumerStatefulWidget {
   const HomeTabScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    AuthService _authService = ref.watch(authServiceProvider);
-    bool isLoggedIn = _authService.isLoggedIn;
-    String? currentUserId = _authService.currentUserId;
+  ConsumerState<HomeTabScreen> createState() => _HomeTabScreenState();
+}
+
+class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // You can initialize any necessary data here if needed
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    AuthService authService = ref.watch(authServiceProvider);
+    bool isLoggedIn = authService.isLoggedIn;
+    String? currentUserId = authService.currentUserId;
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     int unreadNotifications = ref.watch(unreadNotificationCountProvider);
-    final totalUnreadAsync = ref.watch(totalUnreadMessagesCountProvider);
+    // final totalUnreadAsync = ref.watch(totalUnreadMessagesCountProvider);
+    final totalUnreadAsync = ref.watch(totalUnreadMessagesCountStreamProvider);
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(
-          kToolbarHeight + 10,
-        ), // Thêm padding nếu cần
+        preferredSize: const Size.fromHeight(kToolbarHeight + 10),
         child: SafeArea(
-          // Đảm bảo nội dung không bị che bởi notch
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             child: Row(
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap:
-                        () => context.pushNamed(
-                          'search',
-                        ), // Điều hướng đến trang search
+                    onTap: () => context.pushNamed('search'),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -58,7 +63,6 @@ class HomeTabScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(
                           InputDecorationConstants.borderRadiusCircular,
                         ),
-                        // border: Border.all(color: theme.inputDecorationTheme.enabledBorder?.borderSide.color ?? AppColors.chipBorder)
                       ),
                       child: Row(
                         children: [
@@ -100,7 +104,7 @@ class HomeTabScreen extends ConsumerWidget {
                             ),
                             child: Text(
                               totalUnreadAsync.value.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 8,
                               ),
@@ -121,7 +125,6 @@ class HomeTabScreen extends ConsumerWidget {
                 ),
                 IconButton(
                   icon: Stack(
-                    // Để hiển thị badge thông báo (ví dụ)
                     children: [
                       Icon(
                         Icons.notifications_outlined,
@@ -143,7 +146,7 @@ class HomeTabScreen extends ConsumerWidget {
                             ),
                             child: Text(
                               unreadNotifications.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 8,
                               ),
@@ -155,8 +158,7 @@ class HomeTabScreen extends ConsumerWidget {
                   ),
                   tooltip: 'Thông báo',
                   onPressed: () {
-                    // TODO: Navigate to notifications screen
-                    context.push('/notification'); // Ví dụ
+                    context.push('/notification');
                   },
                 ),
               ],
@@ -165,48 +167,36 @@ class HomeTabScreen extends ConsumerWidget {
         ),
       ),
       body: RefreshIndicator(
-        // Cho phép kéo để làm mới
         onRefresh: () async {
           ref.invalidate(constructionNewsProvider);
           ref.invalidate(recentPostsProvider);
           ref.invalidate(suggestedConnectionsProvider);
-          // Chờ một chút để đảm bảo các provider được refresh trước khi FutureBuilder rebuild
           await Future.delayed(const Duration(milliseconds: 500));
         },
         child: ListView(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           children: [
-            // Phần "Đề nghị đăng nhập" có thể hiển thị ở đây nếu muốn
-            // if (!isLoggedIn) _buildLoginPrompt(context, theme),
-            _buildSectionTitle(context, 'Tin tức Xây dựng mới nhất', () {
-              // TODO: Navigate to full news list screen
-            }),
+            _buildSectionTitle(context, 'Tin tức Xây dựng mới nhất', () {}),
             _buildHorizontalList<ArticleModel>(
               context: context,
               asyncValue: ref.watch(constructionNewsProvider),
               itemBuilder: (article) => _buildArticleCard(context, article),
               placeholderMessage: "Đang tải tin tức...",
               emptyMessage: "Không có tin tức nào.",
-              height: 260, // Điều chỉnh chiều cao cho phù hợp
+              height: 260,
             ),
-            const SizedBox(height: 16), // Sử dụng padding từ theme
-
-            _buildSectionTitle(context, 'Bài viết gần đây', () {
-              // TODO: Navigate to full posts list screen
-            }),
+            const SizedBox(height: 16),
+            _buildSectionTitle(context, 'Bài viết gần đây', () {}),
             _buildHorizontalList<PostModel>(
               context: context,
               asyncValue: ref.watch(recentPostsProvider),
               itemBuilder: (post) => _buildPostCard(context, post),
               placeholderMessage: "Đang tải bài viết...",
               emptyMessage: "Chưa có bài viết nào.",
-              height: 180, // Điều chỉnh chiều cao
+              height: 180,
             ),
             const SizedBox(height: 16),
-
-            _buildSectionTitle(context, 'Bạn có thể biết', () {
-              // TODO: Navigate to full connections list screen
-            }),
+            _buildSectionTitle(context, 'Bạn có thể biết', () {}),
             _buildHorizontalList<Profile>(
               context: context,
               asyncValue: ref.watch(suggestedConnectionsProvider),
@@ -214,7 +204,7 @@ class HomeTabScreen extends ConsumerWidget {
                   (user) => _buildConnectionCard(context, user, isLoggedIn),
               placeholderMessage: "Đang tìm gợi ý...",
               emptyMessage: "Không tìm thấy gợi ý kết nối.",
-              height: 150, // Điều chỉnh chiều cao
+              height: 150,
             ),
             const SizedBox(height: 16),
           ],
@@ -262,10 +252,6 @@ class HomeTabScreen extends ConsumerWidget {
             title,
             style: theme.textTheme.headlineSmall?.copyWith(fontSize: 18),
           ),
-          // TextButton(
-          //   onPressed: onViewMore,
-          //   child: Text('Xem thêm', style: TextStyle(color: theme.colorScheme.primary)),
-          // ),
         ],
       ),
     );
@@ -284,7 +270,7 @@ class HomeTabScreen extends ConsumerWidget {
       data: (items) {
         if (items.isEmpty) {
           return SizedBox(
-            height: height / 2, // Chiều cao nhỏ hơn cho thông báo
+            height: height / 2,
             child: Center(
               child: Text(emptyMessage, style: theme.textTheme.bodyMedium),
             ),
@@ -300,7 +286,7 @@ class HomeTabScreen extends ConsumerWidget {
                 padding: EdgeInsets.only(
                   left: index == 0 ? 8 : 0,
                   right: 8 / 2,
-                ), // Thêm padding cho item đầu và giữa các item
+                ),
                 child: itemBuilder(items[index]),
               );
             },
@@ -353,7 +339,6 @@ class HomeTabScreen extends ConsumerWidget {
 
       if (await canLaunchUrl(uriToLaunch)) {
         try {
-          // Mở URL
           await launchUrl(uriToLaunch, mode: LaunchMode.externalApplication);
         } catch (e) {
           if (context.mounted) {
@@ -377,10 +362,9 @@ class HomeTabScreen extends ConsumerWidget {
         _launchArticleUrl();
       },
       child: Card(
-        elevation: 2, // Card theme sẽ quản lý
-        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(InputDecorationConstants.profileCardBorderRadius)),
+        elevation: 2,
         child: SizedBox(
-          width: 200, // Chiều rộng card
+          width: 200,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -409,7 +393,7 @@ class HomeTabScreen extends ConsumerWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -471,8 +455,7 @@ class HomeTabScreen extends ConsumerWidget {
     final textTheme = theme.textTheme;
     return InkWell(
       onTap: () {
-        // TODO: Navigate to post detail screen
-        context.push('/job-posting/view/${post.id}'); // Ví dụ
+        context.push('/job-posting/view/${post.id}');
       },
       child: Card(
         elevation: 2,
@@ -489,11 +472,9 @@ class HomeTabScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1) Title và “x ngày trước”
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Cột icon + title
                     Expanded(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,7 +482,6 @@ class HomeTabScreen extends ConsumerWidget {
                           const Icon(Icons.people, size: 20),
                           const SizedBox(width: 5),
                           Expanded(
-                            // Thêm Expanded ở đây để giới hạn title trong phần còn lại
                             child: Text(
                               post.title,
                               style: textTheme.titleMedium?.copyWith(
@@ -516,7 +496,6 @@ class HomeTabScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    // Ngày tạo
                     Text(
                       post.createdAt != null
                           ? timeAgo(post.createdAt!)
@@ -528,14 +507,11 @@ class HomeTabScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 8),
-
-                // 2) Deadline
                 Row(
                   children: [
-                    Icon(Icons.watch_later_outlined),
-                    SizedBox(width: 5),
+                    const Icon(Icons.watch_later_outlined),
+                    const SizedBox(width: 5),
                     Text(
                       post.deadline != null
                           ? 'Deadline: ${DateFormat.yMMMd().format(post.deadline!)}'
@@ -548,32 +524,24 @@ class HomeTabScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 8),
-
-                // 3) Mô tả ngắn
                 Text(
                   post.description,
                   style: textTheme.bodySmall?.copyWith(fontSize: 13),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const Spacer(), // <<<< THÊM SPACER Ở ĐÂY
-                // --- Footer: Skills và Job Type ---
+                const Spacer(),
                 Row(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.end, // Căn các item trong Row theo đáy
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    // Phần Yêu cầu kỹ năng (bên trái)
                     Expanded(
-                      // Để skills chiếm không gian còn lại và wrap nếu cần
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize:
-                            MainAxisSize.min, // Để Column chỉ cao bằng nội dung
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Domain:', // Rút gọn label
+                            'Domain:',
                             style: textTheme.labelMedium?.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -596,16 +564,14 @@ class HomeTabScreen extends ConsumerWidget {
                               runSpacing: 4.0,
                               children:
                                   post.requiredSkills!
-                                      .take(
-                                        2,
-                                      ) // Giới hạn số lượng skill hiển thị
+                                      .take(2)
                                       .map(
                                         (skill) => Chip(
                                           label: Text(skill.label),
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 6,
                                             vertical: 2,
-                                          ), // Điều chỉnh padding chip
+                                          ),
                                           labelStyle: textTheme.bodySmall
                                               ?.copyWith(
                                                 fontSize: 10,
@@ -613,14 +579,11 @@ class HomeTabScreen extends ConsumerWidget {
                                                     AppTheme
                                                         .lightTheme
                                                         .primaryColor,
-                                                // Màu chữ từ theme
                                               ),
                                           backgroundColor: AppTheme
                                               .lightTheme
                                               .primaryColor
-                                              .withOpacity(
-                                                0.1,
-                                              ), // Màu nền từ theme
+                                              .withOpacity(0.1),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
                                               6,
@@ -636,11 +599,7 @@ class HomeTabScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
-
-                    const SizedBox(
-                      width: 8,
-                    ), // Khoảng cách giữa skills và job type
-                    // Phần Loại hình công việc (bên phải)
+                    const SizedBox(width: 8),
                     if (post.jobPostingType != null)
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -650,20 +609,15 @@ class HomeTabScreen extends ConsumerWidget {
                         decoration: BoxDecoration(
                           color: AppTheme.lightTheme.primaryColor.withOpacity(
                             0.15,
-                          ), // Sử dụng secondary color từ theme
+                          ),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          post
-                              .jobPostingType!
-                              .label, // Giả sử jobPostingType có thuộc tính label
+                          post.jobPostingType!.label,
                           style: textTheme.bodySmall?.copyWith(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
-                            color:
-                                AppTheme
-                                    .lightTheme
-                                    .primaryColor, // Màu chữ từ theme
+                            color: AppTheme.lightTheme.primaryColor,
                           ),
                         ),
                       ),
@@ -686,8 +640,7 @@ class HomeTabScreen extends ConsumerWidget {
     final textTheme = theme.textTheme;
     return InkWell(
       onTap: () {
-        // TODO: Navigate to user profile screen
-        context.push('/profile/view/${profile.userId}'); // Ví dụ
+        context.push('/profile/view/${profile.userId}');
       },
       child: Card(
         elevation: 2,
@@ -698,7 +651,6 @@ class HomeTabScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Avatar
               CircleAvatar(
                 radius: 16,
                 backgroundColor: AppTheme.lightTheme.primaryColor,
@@ -707,9 +659,7 @@ class HomeTabScreen extends ConsumerWidget {
                   color: AppColors.background,
                 ),
               ),
-
-              const SizedBox(height: 8), // khoảng cách dọc
-              // Thông tin text, co dãn nếu cần
+              const SizedBox(height: 8),
               Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -724,10 +674,9 @@ class HomeTabScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Row(
-                      // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.badge_outlined),
-                        SizedBox(width: 5),
+                        const Icon(Icons.badge_outlined),
+                        const SizedBox(width: 5),
                         Text(
                           'Loại: ${profile.profileType.name}',
                           style: const TextStyle(
@@ -739,10 +688,9 @@ class HomeTabScreen extends ConsumerWidget {
                       ],
                     ),
                     Row(
-                      // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.location_city_outlined),
-                        SizedBox(width: 5),
+                        const Icon(Icons.location_city_outlined),
+                        const SizedBox(width: 5),
                         Text(
                           'TP: ${profile.mainCity.label}',
                           style: const TextStyle(
@@ -754,10 +702,9 @@ class HomeTabScreen extends ConsumerWidget {
                       ],
                     ),
                     Row(
-                      // mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(Icons.star_border_outlined),
-                        SizedBox(width: 5),
+                        const Icon(Icons.star_border_outlined),
+                        const SizedBox(width: 5),
                         Text(
                           'Kinh nghiệm: ${profile.yearsOfExperience} năm',
                           style: const TextStyle(

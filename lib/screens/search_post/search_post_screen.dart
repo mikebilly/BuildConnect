@@ -112,7 +112,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                     width: panelWidth,
                     margin: const EdgeInsets.only(bottom: 12.0),
                     constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.5,
+                      maxHeight: MediaQuery.of(context).size.height * 0.35,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.background,

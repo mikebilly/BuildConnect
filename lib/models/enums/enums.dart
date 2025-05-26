@@ -568,3 +568,20 @@ enum RelatedEntityType {
   messageThread, // Hoặc 'user' nếu liên quan đến user (người gửi tin nhắn)
   application,
 }
+
+@MappableEnum()
+enum AttachmentType {
+  none,
+  image,
+  video,
+  file;
+
+  String get title => 'Attachment Type';
+
+  String get label => switch (this) {
+    AttachmentType.none => 'None',
+    AttachmentType.image => 'Image',
+    AttachmentType.video => 'Video',
+    AttachmentType.file => 'File',
+  };
+}

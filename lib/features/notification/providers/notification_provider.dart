@@ -82,14 +82,6 @@ class Notification extends _$Notification {
 
   // Phương thức đánh dấu thông báo đã đọc
   Future<void> markAsRead(String notificationId) async {
-    // Optional: Cập nhật UI tức thì (optimistic update)
-    // final currentNotifications = state.valueOrNull;
-    // if (currentNotifications != null) {
-    //    state = AsyncData(currentNotifications.map((n) {
-    //       return n.id == notificationId ? n.copyWith(isRead: true) : n; // Cần copyWith trong model
-    //    }).toList());
-    // }
-
     try {
       await _notificationService.markNotificationAsRead(notificationId);
       // Sau khi service thành công, có thể invalidate để fetch lại hoặc cập nhật state như trên
@@ -137,15 +129,11 @@ class Notification extends _$Notification {
     }
   }
 
-  // Getter cho số lượng thông báo chưa đọc (tính toán từ state)
   int get unreadNotificationCount {
     return state.valueOrNull?.where((n) => !n.isRead).length ?? 0;
   }
-
-  // TODO: Thêm phương thức loadMoreNotifications cho pagination
 }
 
-// Provider cho số lượng thông báo chưa đọc (để dễ dàng watch ở những nơi khác như badge)
 @Riverpod(keepAlive: true)
 int unreadNotificationCount(UnreadNotificationCountRef ref) {
   // Watch NotificationNotifier provider và lấy count từ nó
@@ -154,5 +142,4 @@ int unreadNotificationCount(UnreadNotificationCountRef ref) {
       (state) => state.valueOrNull?.where((n) => !n.isRead).length ?? 0,
     ),
   );
-  // Hoặc: return ref.watch(notificationProvider.notifier).unreadNotificationCount;
 }

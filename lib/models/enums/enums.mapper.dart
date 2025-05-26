@@ -1359,3 +1359,57 @@ extension RelatedEntityTypeMapperExtension on RelatedEntityType {
     return MapperContainer.globals.toValue<RelatedEntityType>(this) as String;
   }
 }
+
+class AttachmentTypeMapper extends EnumMapper<AttachmentType> {
+  AttachmentTypeMapper._();
+
+  static AttachmentTypeMapper? _instance;
+  static AttachmentTypeMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = AttachmentTypeMapper._());
+    }
+    return _instance!;
+  }
+
+  static AttachmentType fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  AttachmentType decode(dynamic value) {
+    switch (value) {
+      case r'none':
+        return AttachmentType.none;
+      case r'image':
+        return AttachmentType.image;
+      case r'video':
+        return AttachmentType.video;
+      case r'file':
+        return AttachmentType.file;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(AttachmentType self) {
+    switch (self) {
+      case AttachmentType.none:
+        return r'none';
+      case AttachmentType.image:
+        return r'image';
+      case AttachmentType.video:
+        return r'video';
+      case AttachmentType.file:
+        return r'file';
+    }
+  }
+}
+
+extension AttachmentTypeMapperExtension on AttachmentType {
+  String toValue() {
+    AttachmentTypeMapper.ensureInitialized();
+    return MapperContainer.globals.toValue<AttachmentType>(this) as String;
+  }
+}

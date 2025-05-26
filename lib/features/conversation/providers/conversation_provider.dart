@@ -32,9 +32,9 @@ class ConversationNotifier extends _$ConversationNotifier {
     if (currentUserId == null) {
       throw Exception('User not logged in.');
     }
-    _messageSubscription = _messageService.onMessagesChanged().listen(
-      (_) => refreshConversations(),
-    );
+    _messageSubscription = _messageService.onMessagesChanged().listen((_) {
+      refreshConversations();
+    });
     List<ConversationModel> result = [];
     final dataFetched = _conversationService.fetchConversations();
     if (dataFetched != null) {
@@ -66,14 +66,20 @@ class ConversationNotifier extends _$ConversationNotifier {
   }
 }
 
-@Riverpod()
-Future<int> totalUnreadMessagesCount(TotalUnreadMessagesCountRef ref) async {
+@Riverpod(keepAlive: true)
+Stream<int> totalUnreadMessagesCountStream(
+  TotalUnreadMessagesCountStreamRef ref,
+) {
   final authState = ref.watch(authProvider);
-  if (authState.valueOrNull == null) {
-    return 0; // Trả về 0 nếu chưa đăng nhập
+  final currentUserId = authState.valueOrNull?.id;
+
+  if (currentUserId == null) {
+    return Stream.value(0);
   }
 
   final conversationService = ref.watch(conversationServiceProvider);
-
-  return conversationService.countAllUnreadMessages();
+  debugPrint(
+    "TotalUnreadMessagesCountStream: Subscribing to unread count for user $currentUserId",
+  );
+  return conversationService.streamTotalUnreadMessagesCount();
 }

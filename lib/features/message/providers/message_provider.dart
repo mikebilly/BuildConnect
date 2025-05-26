@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:buildconnect/features/auth/providers/auth_provider.dart';
 import 'package:buildconnect/features/conversation/providers/conversation_provider.dart';
@@ -65,15 +66,16 @@ class MessageNotifier extends _$MessageNotifier {
     );
   }
 
-  Future<void> sendMessage(String content) async {
+  Future<void> sendMessage(String? content, {File? attachmentFile}) async {
     final currentUserId = ref.read(authProvider).value?.id;
     if (currentUserId == null || _currentConversationPartnerId == null) return;
 
     try {
       await _messageService.sendMessage(
-        content: content,
+        content: content?.trim(),
         userFromId: currentUserId,
         userToId: _currentConversationPartnerId!,
+        attachmentFile: attachmentFile,
       );
     } catch (e) {
       debugPrint('Error sending message: $e');

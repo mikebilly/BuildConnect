@@ -39,7 +39,7 @@ class NotificationScreen extends ConsumerWidget {
           context.push('/job-posting/view/${notification.relatedEntityId}');
           break;
         case RelatedEntityType.profile:
-          context.push('/profile/view/${notification.relatedEntityId}');
+          context.push('/profile/view/${notification.actorId}');
           break;
         case RelatedEntityType.messageThread:
           print(

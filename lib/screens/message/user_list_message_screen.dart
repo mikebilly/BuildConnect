@@ -134,11 +134,13 @@ class _UserListMessagesScreenState
   @override
   void initState() {
     super.initState();
+    debugPrint('InitState .....................');
   }
 
   @override
   Widget build(BuildContext context) {
-    final conversationsAsync = ref.watch(conversationNotifierProvider);
+    ref.invalidate(conversationNotifierProvider);
+    var conversationsAsync = ref.watch(conversationNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -198,6 +200,7 @@ class _UserListMessagesScreenState
                     height: 1,
                     indent: 80,
                     endIndent: 16,
+                    color: AppColors.primary,
                   ), // Tăng indent
               itemBuilder: (context, index) {
                 final conversation = conversations[index];
@@ -241,7 +244,7 @@ class _UserListMessagesScreenState
                     style: ChatTextStyles.nameSender,
                   ),
                   subtitle: Text(
-                    conversation.lastMessage.content,
+                    conversation.lastMessage.content!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style:
