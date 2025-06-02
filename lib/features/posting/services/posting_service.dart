@@ -52,6 +52,30 @@ class PostingService {
     }
   }
 
+  Future<void> updatePost(PostModel postModel) async {
+    final data = {
+      'title': postModel.title,
+      'job_posting_type': postModel.jobPostingType.name,
+      'location': postModel.location.normalize_label,
+      'description': postModel.description,
+      'budget': postModel.budget?.toDouble(),
+      'deadline': postModel.deadline?.toIso8601String().split('T').first,
+      'required_skills': postModel.requiredSkills?.map((e) => e.name).toList(),
+      // 'author_id': postModel.authorId,
+      'working_mode': postModel.workingMode?.name,
+      'profile_type': postModel.profileType?.name,
+    };
+
+    final response = await _client
+        .from(SupabaseConstants.postsTable)
+        .update(data)
+        .eq('id', postModel.id!);
+
+    if (response.error != null) {
+      throw Exception('Update failed: ${response.error!.message}');
+    }
+  }
+
   Future<List<PostModel>> fetchAllPosts() async {
     try {
       final response = await _client
@@ -78,7 +102,18 @@ class PostingService {
   }
 
   Future<void> deleteJobPosting(String postId) async {
-    await _client.from(SupabaseConstants.postsTable).delete().eq('id', postId);
+    debugPrint('Deleting post with ID: $postId');
+    try {
+      final response = await _client
+          .from(SupabaseConstants.postsTable)
+          .delete()
+          .eq('id', postId);
+
+      // Kiểm tra response hoặc in log response để debug
+      debugPrint('Delete response: $response');
+    } catch (e) {
+      throw Exception('Delete failed: $e');
+    }
   }
 
   Future<void> toggleJobPostingActive(String jobPostingId) async {

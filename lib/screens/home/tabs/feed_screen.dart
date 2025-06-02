@@ -59,6 +59,11 @@ class FeedScreen extends ConsumerWidget {
             itemCount: posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];
+              final duration = DateTime.now().difference(post.createdAt!);
+              final timeAgo =
+                  duration.inHours >= 24
+                      ? '${duration.inDays} days ago'
+                      : '${duration.inHours} hours ago';
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 shape: RoundedRectangleBorder(
@@ -98,7 +103,7 @@ class FeedScreen extends ConsumerWidget {
                           ),
                           const Spacer(),
                           Text(
-                            'Posted ${-post.createdAt!.difference(DateTime.now()).inHours} hours ago',
+                            'Posted $timeAgo',
                             style: TextStyle(
                               color: AppColors.grey,
                               fontSize: 12,
@@ -227,7 +232,9 @@ class FeedScreen extends ConsumerWidget {
                                         post
                                             .workingMode!
                                             .label, // Optional: viết hoa chữ cái đầu
-                                        style: TextStyle(color: AppColors.grey),
+                                        style: TextStyle(
+                                          color: AppColors.black,
+                                        ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ],
@@ -243,6 +250,7 @@ class FeedScreen extends ConsumerWidget {
                             style: TextStyle(color: AppColors.text),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                            softWrap: true,
                           ),
                         ],
                       ),
