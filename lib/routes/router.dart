@@ -1,4 +1,8 @@
-import 'package:buildconnect/screens/search_job/search_job_screen.dart';
+import 'package:buildconnect/screens/message/detail_message_screen.dart';
+import 'package:buildconnect/screens/message/user_list_message_screen.dart';
+import 'package:buildconnect/screens/notification/notification_screen.dart';
+import 'package:buildconnect/screens/search/search_screen.dart';
+import 'package:buildconnect/screens/search_post/search_post_screen.dart';
 import 'package:buildconnect/screens/search_profile/search_profile_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -79,14 +83,38 @@ GoRouter router(Ref ref) {
         },
       ),
       GoRoute(
+        path: '/search',
+        name: 'search',
+        builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
         path: '/search_profile',
         name: 'search_profile',
         builder: (context, state) => const SearchProfileScreen(),
       ),
       GoRoute(
-        path: '/search_job',
-        name: 'search_job',
-        builder: (context, state) => const SearchJobScreen(),
+        path: '/search_post',
+        name: 'search_post',
+        builder: (context, state) => const SearchPostScreen(),
+      ),
+      GoRoute(
+        path: '/message/detail_view/:userId',
+        name: 'message_detail',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId'];
+          return DetailMessageScreen(conversationPartnerId: userId!);
+        },
+      ),
+      GoRoute(
+        path: '/message/user_list_view',
+        name: 'message_user_list',
+        builder: (context, state) {
+          return UserListMessagesScreen();
+        },
+      ),
+      GoRoute(
+        path: '/notification',
+        builder: (context, state) => NotificationScreen(),
       ),
       // GoRoute(
       //   path: '/location',

@@ -1,4 +1,4 @@
-// lib/models/post/post_model.dart
+//
 import 'package:buildconnect/models/enums/enums.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:postgrest/src/types.dart';
@@ -24,8 +24,11 @@ class PostModel with PostModelMappable {
     @MappableField(key: 'profile_type') this.profileType,
   });
 
-  String? id; // We will use uuid
+  String? id;
+
   final String title;
+
+  @MappableField(key: 'job_posting_type')
   final JobPostingType jobPostingType;
   final City location;
   final String description;

@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 part 'search_profile_service_provider.g.dart';
 
 @Riverpod(keepAlive: true)
-SearchProfileService searchProfileService(Ref ref) {
+SearchPostService searchProfileService(Ref ref) {
   final SupabaseClient _supabase = Supabase.instance.client;
-  return SearchProfileService(_supabase);
+  return SearchPostService(_supabase);
 }

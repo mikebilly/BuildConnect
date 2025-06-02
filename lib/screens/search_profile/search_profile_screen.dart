@@ -4,6 +4,8 @@ import 'package:buildconnect/models/enums/enums.dart'; // Import Enums
 import 'package:buildconnect/models/search_profile/search_profile_model.dart'; // Import Search Model
 import 'package:buildconnect/models/profile/profile_model.dart'; // Import Profile Model
 import 'package:buildconnect/features/search_profile/services/search_profile_service.dart'; // Import Service
+import 'package:buildconnect/shared/widgets/form_widgets.dart';
+import 'package:buildconnect/shared/widgets/search_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,12 +31,11 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
   bool _locationFilterExpanded = false;
   bool _profileTypeFilterExpanded = false;
   bool _professionalFilterWithEachProfileTypeExpanded = false;
-  bool _addLocation = false;
   List<City>? _selectedLocationList = [];
   List<ProfileType>? _selectedProfileTypeList = [];
   City? _selectedCity;
   Future<List<Profile>?>? _searchFuture;
-  late final SearchProfileService _searchProfileService;
+  late final SearchPostService _searchProfileService;
   Map<ProfileType, bool> openFilterByProfileType = {
     ProfileType.architect: false,
     ProfileType.constructionTeam: false,
@@ -102,6 +103,8 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
     final panelWidth = MediaQuery.of(context).size.width * 0.9;
     final current_location_list =
         ref.read(searchProfileNotifierProvider).cityList;
+    bool isLoggedIn =
+        ref.read(searchProfileNotifierProvider.notifier).isLoggedIn();
     String profileTypeName =
         ref.read(searchProfileNotifierProvider.notifier).profileTypeName();
     List<ProfileType> profileTypeChoosingList =
@@ -119,66 +122,20 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
             .watch(searchProfileNotifierProvider.notifier)
             .isSelectedProfileType();
     return Scaffold(
-      appBar: AppBar(title: const Text('Search Profiles')),
+      // appBar: AppBar(title: const Text('Search Profiles')),
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
           children: [
-            // --- Search Row ---
-            SizedBox(
-              height: 40,
-              child: Row(
-                children: [
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      onChanged: searchProfileNotifier.updateQuery,
-                      controller: _queryController,
-                      focusNode: _searchFocusNode,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted:
-                          (_) =>
-                              _triggerSearch(), // Gọi triggerSearch khi nhấn Enter
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.search),
-                        hintText: 'Search profiles...',
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 0,
-                          horizontal: 12,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              tooltip: 'Toggle Filters',
-                              icon: Icon(
-                                Icons.filter_list,
-                                color:
-                                    _showFilterPanel
-                                        ? Theme.of(context).primaryColor
-                                        : null,
-                              ),
-                              onPressed:
-                                  () => setState(
-                                    () => _showFilterPanel = !_showFilterPanel,
-                                  ),
-                            ),
-                            IconButton(
-                              tooltip: 'Perform Search',
-                              icon: const Icon(Icons.search),
-                              onPressed:
-                                  _triggerSearch, // Gọi triggerSearch khi nhấn icon Search
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            buildSearchBar(
+              controller: _queryController,
+              focusNode: _searchFocusNode,
+              onQueryChanged: searchProfileNotifier.updateQuery,
+              onSearchPressed: _triggerSearch,
+              onToggleFilter:
+                  () => setState(() => _showFilterPanel = !_showFilterPanel),
+              showFilterHighlight: _showFilterPanel,
+              hintText: 'Search profiles…',
             ),
             const SizedBox(height: 12),
 
@@ -193,15 +150,15 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                     width: panelWidth,
                     margin: const EdgeInsets.only(bottom: 12.0),
                     constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.5,
+                      maxHeight: MediaQuery.of(context).size.height * 0.35,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey.shade300),
+                      color: AppColors.background,
+                      border: Border.all(color: AppColors.boxBackground),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black12,
+                          color: AppColors.boxShadow,
                           blurRadius: 6,
                           offset: Offset(0, 2),
                         ),
@@ -215,7 +172,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                             padding: const EdgeInsets.all(16),
                             children: [
                               // --- Location Filter ---
-                              _buildExpandable(
+                              buildExpandable(
                                 labelLevel: 1,
                                 label: 'Location',
                                 expanded: _locationFilterExpanded,
@@ -242,6 +199,8 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                                               current_location_list.map((city) {
                                                 return Chip(
                                                   label: Text(city.label),
+                                                  deleteIconColor:
+                                                      AppColors.delete,
                                                   onDeleted: () {
                                                     setState(() {
                                                       current_location_list
@@ -263,7 +222,6 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                                           ElevatedButton(
                                             onPressed:
                                                 () => setState(() {
-                                                  _addLocation = !_addLocation;
                                                   searchProfileNotifier
                                                       .toggleLocation(
                                                         _selectedCity!,
@@ -281,42 +239,15 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                                           ),
                                           const SizedBox(width: 10),
                                           Expanded(
-                                            child: DropdownButtonFormField<
-                                              City
-                                            >(
-                                              value: _selectedCity,
-                                              isExpanded: true,
-                                              decoration: InputDecoration(
-                                                hintText: 'Select city…',
-                                                contentPadding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 10,
-                                                    ),
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
+                                            child:
+                                                buildDrowndownButtonFormFieldSearch(
+                                                  values: City.values,
+                                                  onChanged: (v) {
+                                                    setState(() {
+                                                      _selectedCity = v;
+                                                    });
+                                                  },
                                                 ),
-                                              ),
-                                              items:
-                                                  City.values.map((city) {
-                                                    return DropdownMenuItem(
-                                                      value: city,
-                                                      child: Text(
-                                                        city.label,
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                              onChanged: (city) {
-                                                setState(() {
-                                                  _selectedCity = city;
-                                                  _addLocation = true;
-                                                });
-                                              },
-                                            ),
                                           ),
                                         ],
                                       ),
@@ -328,7 +259,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                               const Divider(height: 24),
 
                               // --- Profile Type Filter ---
-                              _buildExpandable(
+                              buildExpandable(
                                 labelLevel: 1,
                                 label: 'Profile Type',
                                 expanded: _profileTypeFilterExpanded,
@@ -340,54 +271,19 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                                     ),
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 8),
-                                  child: Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children:
-                                        ProfileType.values.map((type) {
-                                          return ChoiceChip(
-                                            label: Text(type.label),
-                                            selected:
-                                                isSelectedProfileType[type]!,
-                                            onSelected: (selected) {
-                                              searchProfileNotifier
-                                                  .toggleProfileType(type);
-                                              setState(() {});
-                                            },
-                                            selectedColor: const Color.fromARGB(
-                                              255,
-                                              207,
-                                              235,
-                                              210,
-                                            ),
-                                            checkmarkColor:
-                                                AppTheme
-                                                    .lightTheme
-                                                    .primaryColor,
-                                            labelStyle: TextStyle(
-                                              color:
-                                                  isSelectedProfileType[type]!
-                                                      ? Theme.of(
-                                                        context,
-                                                      ).primaryColor
-                                                      : Colors.black87,
-                                            ),
-                                            backgroundColor:
-                                                Colors.grey.shade100,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              side: BorderSide(
-                                                color:
-                                                    isSelectedProfileType[type]!
-                                                        ? Theme.of(
-                                                          context,
-                                                        ).primaryColor
-                                                        : Colors.grey.shade300,
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
+                                  child: buildFilterSearchChip(
+                                    // title: '',
+                                    values: ProfileType.values,
+                                    selectedValues:
+                                        searchProfileNotifier
+                                            .getProfileTypeChoosing(),
+                                    onSelected: (v, selected) {
+                                      setState(() {
+                                        searchProfileNotifier.toggleProfileType(
+                                          v,
+                                        );
+                                      });
+                                    },
                                   ),
                                 ),
                               ),
@@ -397,7 +293,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                               // --- Filters by selected profile types ---
                               if (profileTypeChoosingList.isNotEmpty)
                                 ...profileTypeChoosingList.map((element) {
-                                  return _buildExpandable(
+                                  return buildExpandable(
                                     labelLevel: 1,
                                     label: element.label,
                                     expanded: openFilterByProfileType[element]!,
@@ -438,7 +334,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
                                     });
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red[500],
+                                    backgroundColor: AppColors.delete,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 14,
                                     ),
@@ -471,39 +367,23 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
             // --- Search Results (Using FutureBuilder) ---
             Expanded(
               child: FutureBuilder<List<Profile>?>(
-                future: _searchFuture, // FutureBuilder sẽ lắng nghe Future này
+                future: _searchFuture,
                 builder: (context, snapshot) {
-                  // 1. Xử lý trạng thái ConnectionState.waiting (đang load)
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
-                  }
-                  // 2. Xử lý trạng thái lỗi
-                  else if (snapshot.hasError) {
+                  } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
-                  }
-                  // 3. Xử lý khi chưa có Future được trigger (trạng thái ban đầu)
-                  else if (!snapshot.hasData && _searchFuture == null) {
-                    // Hiển thị Lịch sử tìm kiếm hoặc Tìm kiếm phổ biến ở đây
-                    // Vì bạn chưa có logic cho lịch sử tìm kiếm ở đây, hiển thị text
+                  } else if (!snapshot.hasData && _searchFuture == null) {
                     return const Center(
                       child: Text('Enter keyword or filters to search.'),
                     );
-                  }
-                  // 4. Xử lý khi có dữ liệu (Future hoàn thành và có data)
-                  else if (snapshot.hasData) {
-                    final profiles =
-                        snapshot.data!; // ! an toàn vì đã check hasData
-
-                    if (profiles.isEmpty) {
-                      // Không tìm thấy kết quả
-                      return const Center(child: Text('No profiles found.'));
-                    }
-
-                    // Hiển thị danh sách kết quả
-                    return showProfileListResult(profiles, context);
-                  }
-                  // 5. Trạng thái không xác định (hiếm gặp)
-                  else {
+                  } else if (snapshot.hasData) {
+                    return buildProfileListResult(
+                      profiles: snapshot.data!,
+                      context: context,
+                      isLoggedIn: isLoggedIn,
+                    );
+                  } else {
                     return const Center(
                       child: Text('Enter keyword or filters to search.'),
                     );
@@ -517,77 +397,6 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
     );
   }
 
-  // Widget helper cho phần filter có thể mở rộng (giữ nguyên)
-  Widget _buildExpandable({
-    required String label,
-    required bool expanded,
-    required VoidCallback onTap,
-    required Widget child,
-    required int labelLevel,
-  }) {
-    TextStyle getLabelStyle(int labelLevel) {
-      switch (labelLevel) {
-        case 1:
-          return const TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
-        case 2:
-          return const TextStyle(fontSize: 14, fontWeight: FontWeight.w700);
-        default:
-          return const TextStyle(fontSize: 12, fontWeight: FontWeight.normal);
-      }
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(label, style: getLabelStyle(labelLevel)),
-                Icon(
-                  expanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  color: Colors.grey.shade600,
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // Animated expansion
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeIn,
-          switchOutCurve: Curves.easeOut,
-          child:
-              expanded
-                  ? ClipRect(
-                    child: SizeTransition(
-                      sizeFactor: const AlwaysStoppedAnimation(1.0),
-                      axis: Axis.vertical,
-                      child: child,
-                    ),
-                  )
-                  : const SizedBox.shrink(),
-        ),
-      ],
-    );
-  }
-
-  addCity(String city) {
-    city = city.nomalize();
-    for (final c in City.values) {
-      if (c.normalize_label == city) {
-        searchProfileNotifier.toggleLocation(c);
-        break;
-      }
-    }
-  }
-
   Widget buildFilterByProfileType(
     ProfileType element,
     ArchitectFilterModel? currentArchitectFilter,
@@ -599,7 +408,7 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
 
     switch (element) {
       case ProfileType.architect:
-        filterWidget = _buildExpandable(
+        filterWidget = buildExpandable(
           labelLevel: 2,
           label: '  Design Style',
           expanded: openDesignStyleFilter,
@@ -610,53 +419,21 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
           },
           child: Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  DesignStyle.values.map((type) {
-                    final isSelected = searchProfileNotifier
-                        .isSelectedDesignStyle(type);
-                    return ChoiceChip(
-                      label: Text(type.label, style: TextStyle(fontSize: 13)),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        Icon(
-                          Icons.check,
-                          size: 16,
-                          color: AppTheme.lightTheme.primaryColor,
-                        );
-                        searchProfileNotifier.toggleDesignStyle(type);
-                        setState(() {});
-                      },
-                      selectedColor: Color.fromARGB(255, 207, 235, 210),
-
-                      checkmarkColor: AppTheme.lightTheme.primaryColor,
-                      labelStyle: TextStyle(
-                        color:
-                            isSelected
-                                ? Theme.of(context).primaryColor
-                                : Colors.black87,
-                      ),
-                      backgroundColor: Colors.grey.shade100,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(
-                          color:
-                              isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey.shade300,
-                        ),
-                      ),
-                    );
-                  }).toList(),
+            child: buildFilterSearchChip(
+              values: DesignStyle.values,
+              selectedValues: searchProfileNotifier.getDesignStyleChoosing(),
+              onSelected: (v, selected) {
+                setState(() {
+                  searchProfileNotifier.toggleDesignStyle(v);
+                });
+              },
             ),
           ),
         );
 
         break;
       case ProfileType.constructionTeam:
-        filterWidget = _buildExpandable(
+        filterWidget = buildExpandable(
           labelLevel: 2,
           label: '  Service Type',
           expanded: openServiceTypeFilterOfConstructionTeam,
@@ -668,53 +445,22 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
           },
           child: Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  ServiceType.values.map((type) {
-                    final isSelected = searchProfileNotifier
-                        .isSelectedServiceTypeOfConstructionTeam(type);
-                    return ChoiceChip(
-                      label: Text(type.label, style: TextStyle(fontSize: 13)),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        Icon(
-                          Icons.check,
-                          size: 16,
-                          color: AppTheme.lightTheme.primaryColor,
-                        );
-                        searchProfileNotifier
-                            .toggleServiceTypeOfConstructionTeam(type);
-                        setState(() {});
-                      },
-                      selectedColor: Color.fromARGB(255, 207, 235, 210),
-
-                      checkmarkColor: AppTheme.lightTheme.primaryColor,
-                      labelStyle: TextStyle(
-                        color:
-                            isSelected
-                                ? Theme.of(context).primaryColor
-                                : Colors.black87,
-                      ),
-                      backgroundColor: Colors.grey.shade100,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(
-                          color:
-                              isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey.shade300,
-                        ),
-                      ),
-                    );
-                  }).toList(),
+            child: buildFilterSearchChip(
+              values: ServiceType.values,
+              selectedValues:
+                  searchProfileNotifier
+                      .getServiceTypeConstructionTeamChoosing(),
+              onSelected: (v, selected) {
+                setState(() {
+                  searchProfileNotifier.toggleServiceTypeOfConstructionTeam(v);
+                });
+              },
             ),
           ),
         );
         break;
       case ProfileType.contractor:
-        filterWidget = _buildExpandable(
+        filterWidget = buildExpandable(
           labelLevel: 2,
           label: '  Service Type',
           expanded: openServiceTypeFilterOfContractor,
@@ -726,54 +472,21 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
           },
           child: Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  ServiceType.values.map((type) {
-                    final isSelected = searchProfileNotifier
-                        .isSelectedServiceTypeOfContractor(type);
-                    return ChoiceChip(
-                      label: Text(type.label, style: TextStyle(fontSize: 13)),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        Icon(
-                          Icons.check,
-                          size: 16,
-                          color: AppTheme.lightTheme.primaryColor,
-                        );
-                        searchProfileNotifier.toggleServiceTypeOfContractor(
-                          type,
-                        );
-                        setState(() {});
-                      },
-                      selectedColor: Color.fromARGB(255, 207, 235, 210),
-
-                      checkmarkColor: AppTheme.lightTheme.primaryColor,
-                      labelStyle: TextStyle(
-                        color:
-                            isSelected
-                                ? Theme.of(context).primaryColor
-                                : Colors.black87,
-                      ),
-                      backgroundColor: Colors.grey.shade100,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(
-                          color:
-                              isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey.shade300,
-                        ),
-                      ),
-                    );
-                  }).toList(),
+            child: buildFilterSearchChip(
+              values: ServiceType.values,
+              selectedValues:
+                  searchProfileNotifier.getServiceTypeContractorChoosing(),
+              onSelected: (v, selected) {
+                setState(() {
+                  searchProfileNotifier.toggleServiceTypeOfContractor(v);
+                });
+              },
             ),
           ),
         );
         break;
       case ProfileType.supplier:
-        filterWidget = _buildExpandable(
+        filterWidget = buildExpandable(
           labelLevel: 2,
           label: '  Material Category',
           expanded: openMaterialCategoryFilter!,
@@ -784,46 +497,15 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
           },
           child: Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  MaterialCategory.values.map((type) {
-                    final isSelected = searchProfileNotifier
-                        .isSelectedMaterialCategory(type);
-                    return ChoiceChip(
-                      label: Text(type.label, style: TextStyle(fontSize: 13)),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        Icon(
-                          Icons.check,
-                          size: 16,
-                          color: AppTheme.lightTheme.primaryColor,
-                        );
-                        searchProfileNotifier.toggleMaterialCategory(type);
-                        setState(() {});
-                      },
-                      selectedColor: Color.fromARGB(255, 207, 235, 210),
-
-                      checkmarkColor: AppTheme.lightTheme.primaryColor,
-                      labelStyle: TextStyle(
-                        color:
-                            isSelected
-                                ? Theme.of(context).primaryColor
-                                : Colors.black87,
-                      ),
-                      backgroundColor: Colors.grey.shade100,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(
-                          color:
-                              isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey.shade300,
-                        ),
-                      ),
-                    );
-                  }).toList(),
+            child: buildFilterSearchChip(
+              values: MaterialCategory.values,
+              selectedValues:
+                  searchProfileNotifier.getMaterialCategoryChoosing(),
+              onSelected: (v, selected) {
+                setState(() {
+                  searchProfileNotifier.toggleMaterialCategory(v);
+                });
+              },
             ),
           ),
         );
@@ -836,98 +518,3 @@ class _SearchProfileScreenState extends ConsumerState<SearchProfileScreen> {
     );
   }
 }
-
-extension on String {
-  nomalize() {
-    return this.toLowerCase().replaceAll(RegExp(r'\s+'), '');
-  }
-}
-
-Widget showProfileListResult(List<Profile> profiles, BuildContext context) {
-  if (profiles.isEmpty) {
-    return const Center(child: Text('Không có kết quả nào.'));
-  }
-
-  return ListView.builder(
-    padding: const EdgeInsets.all(16),
-    itemCount: profiles.length,
-    itemBuilder: (context, index) {
-      final profile = profiles[index];
-
-      return Card(
-        elevation: 4,
-        margin: const EdgeInsets.only(bottom: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Avatar/Icon
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: Colors.blueAccent,
-                child: Text(
-                  profile.displayName.isNotEmpty
-                      ? profile.displayName[0].toUpperCase()
-                      : '?',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Thông tin chi tiết
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      profile.displayName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Loại hồ sơ: ${profile.profileType.name}',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    Text(
-                      'Thành phố chính: ${profile.mainCity.label}',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    Text(
-                      'Kinh nghiệm: ${profile.yearsOfExperience} năm',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-              // Nút hoặc icon hành động
-              IconButton(
-                icon: const Icon(Icons.arrow_forward_ios),
-                onPressed: () {
-                  // TODO: Navigate to Profile detail page
-                  context.push('/profile/view/${profile.userId}');
-                },
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
-// Xóa extension String.nomalize() nếu không còn dùng ở màn hình này
-/*
-extension on String {
-  nomalize() {
-    return this.toLowerCase().replaceAll(RegExp(r'\s+'), '');
-  }
-}
-*/
