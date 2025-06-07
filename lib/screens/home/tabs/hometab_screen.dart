@@ -57,9 +57,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color:
-                            theme.inputDecorationTheme.fillColor ??
-                            AppColors.greyBackground,
+                        color: theme.inputDecorationTheme.fillColor,
                         borderRadius: BorderRadius.circular(
                           InputDecorationConstants.borderRadiusCircular,
                         ),
@@ -69,7 +67,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                           Icon(Icons.search, color: theme.iconTheme.color),
                           const SizedBox(width: 8),
                           Text(
-                            'Tìm kiếm hồ sơ, bài viết...',
+                            'Search now...',
                             style: textTheme.bodyMedium?.copyWith(
                               color: AppColors.textLight,
                             ),
@@ -176,7 +174,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
         child: ListView(
           padding: const EdgeInsets.all(8),
           children: [
-            _buildSectionTitle(context, 'Tin tức Xây dựng mới nhất', () {}),
+            _buildSectionTitle(context, 'Latest Construction News', () {}),
             _buildHorizontalList<ArticleModel>(
               context: context,
               asyncValue: ref.watch(constructionNewsProvider),
@@ -186,7 +184,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
               height: 260,
             ),
             const SizedBox(height: 16),
-            _buildSectionTitle(context, 'Bài viết gần đây', () {}),
+            _buildSectionTitle(context, 'Recent Posts', () {}),
             _buildHorizontalList<PostModel>(
               context: context,
               asyncValue: ref.watch(recentPostsProvider),
@@ -196,7 +194,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
               height: 180,
             ),
             const SizedBox(height: 16),
-            _buildSectionTitle(context, 'Bạn có thể biết', () {}),
+            _buildSectionTitle(context, 'Similar Profiles', () {}),
             _buildHorizontalList<Profile>(
               context: context,
               asyncValue: ref.watch(suggestedConnectionsProvider),
@@ -337,21 +335,22 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
 
       final Uri uriToLaunch = Uri.parse(article.url!);
 
-      if (await canLaunchUrl(uriToLaunch)) {
-        try {
-          await launchUrl(uriToLaunch, mode: LaunchMode.externalApplication);
-        } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Không thể mở đường dẫn: $e')),
-            );
-          }
-        }
-      } else {
-        if (context.mounted) {
+      try {
+        final launched = await launchUrl(
+          uriToLaunch,
+          mode: LaunchMode.externalApplication,
+        );
+
+        if (!launched && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Không thể mở đường dẫn: ${article.url}')),
           );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Lỗi khi mở đường dẫn: $e')));
         }
       }
     }
@@ -678,7 +677,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                         const Icon(Icons.badge_outlined),
                         const SizedBox(width: 5),
                         Text(
-                          'Loại: ${profile.profileType.name}',
+                          'Type: ${profile.profileType.name}',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.grey,
@@ -692,7 +691,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                         const Icon(Icons.location_city_outlined),
                         const SizedBox(width: 5),
                         Text(
-                          'TP: ${profile.mainCity.label}',
+                          'City: ${profile.mainCity.label}',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.grey,
@@ -706,7 +705,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                         const Icon(Icons.star_border_outlined),
                         const SizedBox(width: 5),
                         Text(
-                          'Kinh nghiệm: ${profile.yearsOfExperience} năm',
+                          'YoE: ${profile.yearsOfExperience} Years',
                           style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.grey,
@@ -728,5 +727,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
 
 String timeAgo(DateTime dt) {
   final days = DateTime.now().difference(dt).inDays;
-  return days == 0 ? 'Hôm nay' : '$days ngày trước';
+  if (days == 0) return 'Today';
+  if (days == 1) return 'Yesterday';
+  return '$days days ago';
 }

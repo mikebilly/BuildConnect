@@ -1,6 +1,8 @@
 // lib/screens/chat/chat_detail_screen.dart
 import 'dart:io';
-
+import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/features/conversation/providers/conversation_provider.dart';
 import 'package:buildconnect/features/message/providers/message_service_provider.dart';
@@ -9,9 +11,11 @@ import 'package:buildconnect/models/message/message_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../features/message/providers/message_provider.dart';
 
@@ -34,6 +38,9 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
   late final ScrollController scrollController;
   late final _partnerNameFuture;
   File? _selectedAttachment;
+  String? _pickedFileType; // Lưu loại file đã chọn (image/video/file)
+  bool _isVideoPlaying =
+      false; // State cục bộ để quản lý trạng thái play/pause của UI icon
   @override
   void initState() {
     super.initState();
@@ -134,6 +141,7 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
                   vertical: 10,
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.attach_file),
@@ -165,10 +173,117 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
                         });
                       },
                     ),
+
+                    // Attachment preview + TextField container
+                    if (_selectedAttachment != null)
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          // color: Colors.grey.shade200,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 4,
+                              offset: Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child:
+                                  _pickedFileType == 'image'
+                                      ? Image.file(
+                                        _selectedAttachment!,
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      )
+                                      : _pickedFileType == 'video'
+                                      ? Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Container(
+                                            width: 60,
+                                            height: 60,
+                                            color: Colors.black12,
+                                            child: const Icon(
+                                              Icons.videocam,
+                                              size: 30,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.play_circle_fill,
+                                            size: 24,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      )
+                                      : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.insert_drive_file,
+                                            size: 30,
+                                            color: Colors.black54,
+                                          ),
+                                          Text(
+                                            _selectedAttachment!.path
+                                                .split('/')
+                                                .last,
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.black54,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedAttachment = null;
+                                    _pickedFileType = null;
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // TextField takes remaining space
                     Expanded(
                       child: TextField(
                         controller: messageController,
                         decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                            left: 6,
+                            top: 0,
+                            bottom: 0,
+                          ),
                           hintText: 'Type your message...',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -176,44 +291,20 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
                         ),
                       ),
                     ),
+
                     IconButton(
                       icon: const Icon(Icons.send),
                       onPressed: () {
                         _sendMessageWithOptionalAttachment();
+                        // Optionally clear attachment here if you want
+                        setState(() {
+                          _selectedAttachment = null;
+                          _pickedFileType = null;
+                        });
                       },
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext bc) {
-        return SafeArea(
-          child: Wrap(
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('Photo or Video'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _pickImageOrVideo();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.insert_drive_file),
-                title: const Text('Document/File'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _pickFile();
-                },
               ),
             ],
           ),
@@ -232,12 +323,11 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
     if (pickedFile != null) {
       setState(() {
         _selectedAttachment = File(pickedFile.path);
+        _pickedFileType = getTypeFile(
+          _selectedAttachment?.path,
+        ); // Lấy loại file
+        debugPrint('---------------$_pickedFileType');
       });
-      // TODO: Hiển thị preview file đã chọn gần ô nhập liệu
-      // Có thể hiển thị tên file hoặc thumbnail
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Selected: ${p.basename(pickedFile.path)}')),
-      );
     }
   }
 
@@ -248,6 +338,7 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
     if (result != null) {
       setState(() {
         _selectedAttachment = File(result.files.single.path!);
+        _pickedFileType = result.files.single.extension; // Lấy đuôi file
       });
       // TODO: Hiển thị preview file đã chọn
       ScaffoldMessenger.of(context).showSnackBar(
@@ -364,7 +455,15 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
           children: [
             GestureDetector(
               onTap: () {
-                /* TODO: Mở ảnh full screen */
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => FullScreenImageViewer(
+                          imageUrl: message.attachmentUrl!,
+                        ),
+                  ),
+                );
               },
               child: Container(
                 constraints: BoxConstraints(
@@ -415,94 +514,10 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
           ],
         );
       case AttachmentType.video:
-        // Hiển thị thumbnail với nút Play ở giữa, khi ấn thì mở video bằng url_launcher
         return Column(
           children: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.4,
-              padding: const EdgeInsets.all(8),
-              margin: EdgeInsets.only(
-                bottom:
-                    message.content != null && message.content!.isNotEmpty
-                        ? 4.0
-                        : 0,
-              ),
-              decoration: BoxDecoration(
-                color: bubbleColor,
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Thumbnail (có thể dùng ảnh đại diện hoặc icon video)
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      color: Colors.black12,
-                      child: Icon(Icons.videocam, color: textColor, size: 60),
-                    ),
-                  ),
-                  // Nút Play ở giữa
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(30),
-                      onTap: () async {
-                        final url = message.attachmentUrl;
-                        if (url != null) {
-                          if (await canLaunchUrl(Uri.parse(url))) {
-                            await launchUrl(
-                              Uri.parse(url),
-                              mode: LaunchMode.externalApplication,
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Could not open video'),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(12),
-                        child: const Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 36,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Tên video ở dưới
-                  Positioned(
-                    left: 8,
-                    right: 8,
-                    bottom: 8,
-                    child: Container(
-                      color: Colors.black45,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      child: Text(
-                        message.attachmentName ?? 'Video',
-                        style: TextStyle(color: Colors.white, fontSize: 13),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 6),
+            VideoMessagePlayer(videoUrl: message.attachmentUrl!),
+            const SizedBox(height: 6),
           ],
         );
       case AttachmentType.file:
@@ -534,26 +549,61 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
                   ),
                   IconButton(
                     icon: Icon(Icons.download, color: textColor),
-                    tooltip: 'Download/Open',
+                    tooltip: 'Tải về',
                     onPressed: () async {
-                      // Mở file bằng url (trình duyệt hoặc app tương ứng)
                       final url = message.attachmentUrl;
-                      if (url != null) {
-                        // Sử dụng url_launcher để mở file
-                        // Cần thêm package url_launcher vào pubspec.yaml
-                        // import 'package:url_launcher/url_launcher.dart';
-                        if (await canLaunchUrl(Uri.parse(url))) {
-                          await launchUrl(
-                            Uri.parse(url),
-                            mode: LaunchMode.externalApplication,
-                          );
-                        } else {
+                      if (url == null || url.isEmpty) return;
+
+                      // Yêu cầu quyền (chỉ Android)
+                      if (Platform.isAndroid) {
+                        // Với Android 11 trở lên, dùng manageExternalStorage
+                        if (await Permission.manageExternalStorage.isGranted ==
+                            false) {
+                          final status =
+                              await Permission.manageExternalStorage.request();
+                        }
+                      }
+
+                      try {
+                        final response = await http.get(Uri.parse(url));
+                        if (response.statusCode == 200) {
+                          final bytes = response.bodyBytes;
+
+                          // Lấy tên file từ url
+                          final fileName = url.split('/').last;
+
+                          // Tìm thư mục Downloads
+                          final directory =
+                              Platform.isAndroid
+                                  ? Directory(
+                                    '/storage/emulated/0/Download',
+                                  ) // Android Downloads
+                                  : await getApplicationDocumentsDirectory(); // iOS fallback
+
+                          final filePath = '${directory.path}/$fileName';
+                          final file = File(filePath);
+
+                          await file.writeAsBytes(bytes);
+
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not open file'),
+                            SnackBar(
+                              content: Text(
+                                'Đã tải: ${message.attachmentName}',
+                              ),
                             ),
                           );
+
+                          // Tùy chọn: Mở file sau khi tải
+                          // await OpenFile.open(filePath);
+                        } else {
+                          throw Exception(
+                            'Lỗi tải file: ${response.statusCode}',
+                          );
                         }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Không thể tải file: $e')),
+                        );
                       }
                     },
                   ),
@@ -567,6 +617,19 @@ class _DetailMessageScreenState extends ConsumerState<DetailMessageScreen> {
       default:
         return const SizedBox.shrink(); // Không hiển thị gì
     }
+  }
+
+  String? getTypeFile(String? path) {
+    if (path == null) return null;
+    final extension = p.extension(path).toLowerCase();
+    if (['.jpg', '.jpeg', '.png', '.gif'].contains(extension)) {
+      return 'image';
+    } else if (['.mp4', '.mov', '.avi'].contains(extension)) {
+      return 'video';
+    } else if (['.pdf', '.docx', '.xlsx', '.pptx'].contains(extension)) {
+      return 'file';
+    }
+    return null; // Không phải loại file được hỗ trợ
   }
 }
 
@@ -608,4 +671,391 @@ Widget _buildMessageBubble({
       ),
     ),
   );
+}
+
+class VideoMessagePlayer extends StatefulWidget {
+  final String videoUrl;
+
+  const VideoMessagePlayer({Key? key, required this.videoUrl})
+    : super(key: key);
+
+  @override
+  State<VideoMessagePlayer> createState() => _VideoMessagePlayerState();
+}
+
+class _VideoMessagePlayerState extends State<VideoMessagePlayer> {
+  late VideoPlayerController _controller;
+  late Future<void> _initializeVideoPlayerFuture;
+  bool _isPlaying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
+      setState(() {}); // Cập nhật lại UI sau khi load xong
+    });
+    _controller.addListener(() {
+      if (mounted) {
+        setState(() {
+          _isPlaying = _controller.value.isPlaying;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _initializeVideoPlayerFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => FullscreenVideoPlayer(
+                            controller: _controller,
+                            url: widget.videoUrl,
+                          ),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: VideoPlayer(_controller),
+                      ),
+                      Positioned(
+                        bottom: 8.0,
+                        right: 8.0,
+                        child: IconButton(
+                          icon: Icon(
+                            _isPlaying
+                                ? Icons.pause_circle_filled
+                                : Icons.play_circle_filled,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              if (_controller.value.isPlaying) {
+                                _controller.pause();
+                              } else {
+                                _controller.play();
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+}
+
+class FullscreenVideoPlayer extends StatefulWidget {
+  final VideoPlayerController controller;
+  final String url;
+  const FullscreenVideoPlayer({
+    Key? key,
+    required this.controller,
+    required this.url,
+  }) : super(key: key);
+
+  @override
+  _FullscreenVideoPlayerState createState() => _FullscreenVideoPlayerState();
+}
+
+class _FullscreenVideoPlayerState extends State<FullscreenVideoPlayer> {
+  double _currentVolume = 1.0;
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.controller.value.isInitialized) {
+      widget.controller.initialize().then((_) {
+        setState(() {}); // Refresh UI after initialization
+        widget.controller.play();
+      });
+    } else {
+      widget.controller.play();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.controller.pause();
+    super.dispose();
+  }
+
+  void _togglePlayPause() {
+    setState(() {
+      if (widget.controller.value.isPlaying) {
+        widget.controller.pause();
+      } else {
+        widget.controller.play();
+      }
+    });
+  }
+
+  void _onVolumeChanged(double value) {
+    setState(() {
+      _currentVolume = value;
+      widget.controller.setVolume(_currentVolume);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.controller.value.isInitialized) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text('Video Player'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.download, color: AppColors.chatBackground),
+            tooltip: 'Tải về',
+            onPressed: () async {
+              if (widget.url == null || widget.url.isEmpty) return;
+
+              // Yêu cầu quyền (chỉ Android)
+              if (Platform.isAndroid) {
+                // Với Android 11 trở lên, dùng manageExternalStorage
+                if (await Permission.manageExternalStorage.isGranted == false) {
+                  final status =
+                      await Permission.manageExternalStorage.request();
+                }
+              }
+
+              try {
+                final response = await http.get(Uri.parse(widget.url));
+                if (response.statusCode == 200) {
+                  final bytes = response.bodyBytes;
+
+                  // Lấy tên file từ url
+                  final fileName = widget.url.split('/').last;
+
+                  // Tìm thư mục Downloads
+                  final directory =
+                      Platform.isAndroid
+                          ? Directory(
+                            '/storage/emulated/0/Download',
+                          ) // Android Downloads
+                          : await getApplicationDocumentsDirectory(); // iOS fallback
+
+                  final filePath = '${directory.path}/$fileName';
+                  final file = File(filePath);
+
+                  await file.writeAsBytes(bytes);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Video is downloaded successfully')),
+                  );
+
+                  // Tùy chọn: Mở file sau khi tải
+                  // await OpenFile.open(filePath);
+                } else {
+                  throw Exception('Error: ${response.statusCode}');
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Cannot download file: $e')),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+      body:
+          widget.controller.value.isInitialized
+              ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Hiển thị video đúng tỷ lệ gốc
+                  AspectRatio(
+                    aspectRatio: widget.controller.value.aspectRatio,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: VideoPlayer(widget.controller),
+                      ),
+                    ),
+                  ),
+
+                  // Thanh tiến trình
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: VideoProgressIndicator(
+                      widget.controller,
+                      allowScrubbing: true,
+                      colors: VideoProgressColors(
+                        playedColor: Colors.red,
+                        backgroundColor: Colors.grey.shade700,
+                        bufferedColor: Colors.white38,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Điều khiển phát/dừng và âm lượng
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            widget.controller.value.isPlaying
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            color: Colors.white,
+                            size: 36,
+                          ),
+                          onPressed: _togglePlayPause,
+                        ),
+                        const SizedBox(width: 16),
+                        Icon(Icons.volume_up, color: Colors.white),
+                        Expanded(
+                          child: Slider(
+                            value: _currentVolume,
+                            min: 0,
+                            max: 1,
+                            divisions: 10,
+                            activeColor: Colors.white,
+                            inactiveColor: Colors.grey,
+                            onChanged: _onVolumeChanged,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                ],
+              )
+              : const Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+class FullScreenImageViewer extends StatelessWidget {
+  final String imageUrl;
+
+  const FullScreenImageViewer({Key? key, required this.imageUrl})
+    : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text('Image'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.download, color: AppColors.chatBackground),
+            tooltip: 'Tải về',
+            onPressed: () async {
+              final url = imageUrl;
+              if (url == null || url.isEmpty) return;
+
+              // Yêu cầu quyền (chỉ Android)
+              if (Platform.isAndroid) {
+                // Với Android 11 trở lên, dùng manageExternalStorage
+                if (await Permission.manageExternalStorage.isGranted == false) {
+                  final status =
+                      await Permission.manageExternalStorage.request();
+                }
+              }
+
+              try {
+                final response = await http.get(Uri.parse(url));
+                if (response.statusCode == 200) {
+                  final bytes = response.bodyBytes;
+
+                  // Lấy tên file từ url
+                  final fileName = url.split('/').last;
+
+                  // Tìm thư mục Downloads
+                  final directory =
+                      Platform.isAndroid
+                          ? Directory(
+                            '/storage/emulated/0/Download',
+                          ) // Android Downloads
+                          : await getApplicationDocumentsDirectory(); // iOS fallback
+
+                  final filePath = '${directory.path}/$fileName';
+                  final file = File(filePath);
+
+                  await file.writeAsBytes(bytes);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Image is downloaded successfully')),
+                  );
+
+                  // Tùy chọn: Mở file sau khi tải
+                  // await OpenFile.open(filePath);
+                } else {
+                  throw Exception('Error: ${response.statusCode}');
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Cannot download file: $e')),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: PhotoView(
+          imageProvider: NetworkImage(imageUrl),
+          loadingBuilder:
+              (context, event) =>
+                  const Center(child: CircularProgressIndicator()),
+          errorBuilder:
+              (context, error, stackTrace) => const Center(
+                child: Icon(Icons.broken_image, size: 100, color: Colors.grey),
+              ),
+          backgroundDecoration: const BoxDecoration(color: Colors.black),
+        ),
+      ),
+    );
+  }
 }

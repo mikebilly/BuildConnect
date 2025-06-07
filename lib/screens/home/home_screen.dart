@@ -45,9 +45,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   void _navigateToPosts() {
-    Future.microtask(() {
-      if (mounted) context.push('/post');
-    });
+    final auth = ref.watch(authProvider);
+    auth.when(
+      loading: () => null,
+      error: (e, _) => null,
+      data: (user) {
+        if (user != null) {
+          context.push('/post');
+        } else {
+          context.push('/login');
+        }
+      },
+    );
+    // Future.microtask(() {
+    //   if (mounted) context.push('/post');
+    // });
   }
 
   @override

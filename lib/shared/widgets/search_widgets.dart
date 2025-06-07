@@ -20,19 +20,42 @@ Widget buildSearchBar({
         Expanded(
           child: TextField(
             controller: controller,
-            focusNode: focusNode,
+            // focusNode: focusNode,
             onChanged: onQueryChanged,
             textInputAction: TextInputAction.search,
             onSubmitted: (_) => onSearchPressed(),
+            textAlignVertical: TextAlignVertical.center,
             decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.search),
-              hintText: hintText,
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 0,
-                horizontal: 12,
+              isDense: true,
+              fillColor: Colors.grey[50],
+              prefixIcon: const Icon(
+                Icons.search,
+                size: 20,
+                color: AppColors.primary,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+              hintText: hintText,
+
+              // content is center aligned
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 6,
+                horizontal: 0,
+              ),
+              // border: OutlineInputBorder(
+              //   borderRadius: BorderRadius.circular(4),
+              //   borderSide: BorderSide(
+              //     color: Colors.green[200]!
+              //   ),
+              // ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(
+                  color:
+                      AppColors.primary, // hoặc Theme.of(context).primaryColor
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(color: Colors.grey.shade50),
               ),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -49,11 +72,11 @@ Widget buildSearchBar({
                     ),
                     onPressed: onToggleFilter,
                   ),
-                  IconButton(
-                    tooltip: 'Perform Search',
-                    icon: const Icon(Icons.search),
-                    onPressed: onSearchPressed,
-                  ),
+                  // IconButton(
+                  //   tooltip: 'Perform Search',
+                  //   icon: const Icon(Icons.search),
+                  //   onPressed: onSearchPressed,
+                  // ),
                 ],
               ),
             ),

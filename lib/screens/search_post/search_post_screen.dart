@@ -99,7 +99,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
               onToggleFilter:
                   () => setState(() => _showFilterPanel = !_showFilterPanel),
               showFilterHighlight: _showFilterPanel,
-              hintText: 'Search profiles…',
+              hintText: 'Search posts…',
             ),
             const SizedBox(height: 12),
             AnimatedSize(
@@ -395,6 +395,11 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
       itemCount: posts.length,
       itemBuilder: (context, index) {
         final post = posts[index];
+        final duration = DateTime.now().difference(post.createdAt!);
+        final timeAgo =
+            duration.inHours >= 24
+                ? '${duration.inDays} days ago'
+                : '${duration.inHours} hours ago';
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
           shape: RoundedRectangleBorder(
@@ -434,7 +439,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                     ),
                     const Spacer(),
                     Text(
-                      'Posted ${-post.createdAt!.difference(DateTime.now()).inHours} hours ago',
+                      'Posted $timeAgo',
                       style: TextStyle(color: AppColors.grey, fontSize: 12),
                     ),
                   ],
@@ -478,7 +483,52 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
+                    // Posted by & location
+                    // Row(
+                    //   children: [
+                    //     // const Icon(
+                    //     //   Icons.person,
+                    //     //   size: 16,
+                    //     //   color: Colors.grey,
+                    //     // ),
+                    //     // const SizedBox(width: 4),
+                    //     // Text(
+                    //     //   'Posted by ${post.authorId}', // Replace with actual author info
+                    //     //   style: TextStyle(color: Colors.grey),
+                    //     // ),
+                    //     // const SizedBox(width: 16),
+                    //     const Icon(
+                    //       Icons.location_on,
+                    //       size: 16,
+                    //       color: Colors.grey,
+                    //     ),
+                    //     const SizedBox(width: 4),
+                    //     Expanded(
+                    //       child: Text(
+                    //         post.location.label, // Display job location
+                    //         style: TextStyle(color: Colors.grey),
+                    //         maxLines: 1,
+                    //         overflow: TextOverflow.ellipsis,
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 8),
 
+                    //     // Working mode bên phải
+                    //     if (post.workingMode != null) ...[
+                    //       const Icon(
+                    //         Icons.work_outline,
+                    //         size: 16,
+                    //         color: Colors.grey,
+                    //       ),
+                    //       const SizedBox(width: 4),
+                    //       Text(
+                    //         post.workingMode!.label,
+                    //         style: TextStyle(color: Colors.grey),
+                    //         overflow: TextOverflow.ellipsis,
+                    //       ),
+                    //     ],
+                    //   ],
+                    // ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Row(
@@ -515,7 +565,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                                   post
                                       .workingMode!
                                       .label, // Optional: viết hoa chữ cái đầu
-                                  style: TextStyle(color: AppColors.grey),
+                                  style: TextStyle(color: AppColors.black),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
@@ -531,6 +581,7 @@ class _SearchPostScreenState extends ConsumerState<SearchPostScreen> {
                       style: TextStyle(color: AppColors.text),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
+                      softWrap: true,
                     ),
                   ],
                 ),
