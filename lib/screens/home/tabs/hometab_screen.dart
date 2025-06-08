@@ -112,7 +112,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                         ),
                     ],
                   ),
-                  tooltip: 'Tin nhắn',
+                  tooltip: 'Messages',
                   onPressed: () {
                     if (isLoggedIn) {
                       context.push('/message/user_list_view');
@@ -154,7 +154,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                         ),
                     ],
                   ),
-                  tooltip: 'Thông báo',
+                  tooltip: 'Notifications',
                   onPressed: () {
                     context.push('/notification');
                   },
@@ -179,8 +179,8 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
               context: context,
               asyncValue: ref.watch(constructionNewsProvider),
               itemBuilder: (article) => _buildArticleCard(context, article),
-              placeholderMessage: "Đang tải tin tức...",
-              emptyMessage: "Không có tin tức nào.",
+              placeholderMessage: "Loading news...",
+              emptyMessage: "No news available.",
               height: 260,
             ),
             const SizedBox(height: 16),
@@ -189,8 +189,8 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
               context: context,
               asyncValue: ref.watch(recentPostsProvider),
               itemBuilder: (post) => _buildPostCard(context, post),
-              placeholderMessage: "Đang tải bài viết...",
-              emptyMessage: "Chưa có bài viết nào.",
+              placeholderMessage: "Loading posts...",
+              emptyMessage: "No posts available.",
               height: 180,
             ),
             const SizedBox(height: 16),
@@ -200,8 +200,8 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
               asyncValue: ref.watch(suggestedConnectionsProvider),
               itemBuilder:
                   (user) => _buildConnectionCard(context, user, isLoggedIn),
-              placeholderMessage: "Đang tìm gợi ý...",
-              emptyMessage: "Không tìm thấy gợi ý kết nối.",
+              placeholderMessage: "Finding suggestions...",
+              emptyMessage: "No connection suggestions found.",
               height: 150,
             ),
             const SizedBox(height: 16),
@@ -216,15 +216,15 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: const Text('Yêu cầu đăng nhập'),
-            content: const Text('Bạn cần đăng nhập để sử dụng chức năng này.'),
+            title: const Text('Login Required'),
+            content: const Text('You need to login to use this feature.'),
             actions: [
               TextButton(
-                child: const Text('Để sau'),
+                child: const Text('Later'),
                 onPressed: () => Navigator.of(ctx).pop(),
               ),
               TextButton(
-                child: const Text('Đăng nhập'),
+                child: const Text('Login'),
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   context.push('/login');
@@ -310,7 +310,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
             height: height / 2,
             child: Center(
               child: Text(
-                'Lỗi: ${err.toString()}',
+                'Error: ${err.toString()}',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.error,
                 ),
@@ -327,7 +327,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
       if (article.url == null || article.url!.isEmpty) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Không tìm thấy đường dẫn bài báo.')),
+            const SnackBar(content: Text('Article URL not found.')),
           );
         }
         return;
@@ -343,14 +343,14 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
 
         if (!launched && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Không thể mở đường dẫn: ${article.url}')),
+            SnackBar(content: Text('Could not open URL: ${article.url}')),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('Lỗi khi mở đường dẫn: $e')));
+          ).showSnackBar(SnackBar(content: Text('Error opening URL: $e')));
         }
       }
     }
@@ -498,7 +498,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                     Text(
                       post.createdAt != null
                           ? timeAgo(post.createdAt!)
-                          : 'Không rõ',
+                          : 'Unknown',
                       style: textTheme.bodySmall?.copyWith(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -514,7 +514,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                     Text(
                       post.deadline != null
                           ? 'Deadline: ${DateFormat.yMMMd().format(post.deadline!)}'
-                          : 'Deadline: Không có',
+                          : 'Deadline: None',
                       style: textTheme.bodySmall?.copyWith(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -551,7 +551,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                           if (post.requiredSkills == null ||
                               post.requiredSkills!.isEmpty)
                             Text(
-                              'Không yêu cầu cụ thể',
+                              'No specific requirements',
                               style: textTheme.bodySmall?.copyWith(
                                 fontSize: 11,
                                 color: AppColors.textLight,
@@ -646,7 +646,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
         child: Container(
           width: 190,
           height: 120,
-          padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 8),
+          padding: const EdgeInsets.only(left: 9, top: 9, bottom: 9, right: 9),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -677,10 +677,10 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                         const Icon(Icons.badge_outlined),
                         const SizedBox(width: 5),
                         Text(
-                          'Type: ${profile.profileType.name}',
+                          'Type: ${profile.profileType.label}',
                           style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: AppColors.grey,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -694,7 +694,7 @@ class _HomeTabScreenState extends ConsumerState<HomeTabScreen> {
                           'City: ${profile.mainCity.label}',
                           style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: AppColors.grey,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),

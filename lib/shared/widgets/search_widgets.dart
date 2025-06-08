@@ -151,7 +151,7 @@ Widget buildProfileListResult({
   required bool isLoggedIn,
 }) {
   if (profiles.isEmpty) {
-    return const Center(child: Text('Không có kết quả nào.'));
+    return const Center(child: Text('No results found.'));
   }
 
   return ListView.builder(
@@ -202,15 +202,15 @@ Widget _buildProfileCard({
                 Text(profile.displayName, style: CardSearchStyle.title),
                 const SizedBox(height: 6),
                 Text(
-                  'Loại hồ sơ: ${profile.profileType.name}',
+                  'Profile Type: ${profile.profileType.name}',
                   style: const TextStyle(color: Colors.grey),
                 ),
                 Text(
-                  'Thành phố chính: ${profile.mainCity.label}',
+                  'Main City: ${profile.mainCity.label}',
                   style: const TextStyle(color: Colors.grey),
                 ),
                 Text(
-                  'Kinh nghiệm: ${profile.yearsOfExperience} năm',
+                  'Experience: ${profile.yearsOfExperience} years',
                   style: const TextStyle(color: Colors.grey),
                 ),
               ],
@@ -235,21 +235,21 @@ Widget _buildProfileCard({
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: const Text('Thông báo'),
+                          title: const Text('Notification'),
                           content: const Text(
-                            'Bạn cần đăng nhập để gửi tin nhắn.',
+                            'You need to login to send messages.',
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => context.pop(),
-                              child: const Text('Đóng'),
+                              child: const Text('Close'),
                             ),
                             TextButton(
                               onPressed: () {
                                 context.pop();
                                 context.push('/login');
                               },
-                              child: const Text('Đăng nhập'),
+                              child: const Text('Login'),
                             ),
                           ],
                         );

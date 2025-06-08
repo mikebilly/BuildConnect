@@ -68,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Build Connect'),
         automaticallyImplyLeading: false,
         actions: [
           _buildMenu(
@@ -112,13 +112,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         },
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 15.0), // Move up by 40 pixels
+        padding: const EdgeInsets.only(bottom: 15.0),
         child: SizedBox(
-          height: 50, // Shrink height
+          height: 50,
           child: FloatingActionButton.extended(
             onPressed: _navigateToPosts,
-            icon: const Icon(Icons.post_add, size: 18),
-            label: const Text('Post', style: TextStyle(fontSize: 14)),
+            elevation: 6,
+            backgroundColor: Theme.of(context).primaryColor,
+            icon: const Icon(Icons.post_add, size: 18, color: Colors.white),
+            label: const Text('Post', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white)),
           ),
         ),
       ),

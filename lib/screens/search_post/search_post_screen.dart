@@ -1,12 +1,12 @@
 import 'package:buildconnect/core/theme/theme.dart';
 import 'package:buildconnect/features/search_post/providers/search_post_provider.dart';
-import 'package:buildconnect/models/enums/enums.dart'; // Import Enums (cần JobPostingType)
+import 'package:buildconnect/models/enums/enums.dart'; // Import Enums (need JobPostingType)
 import 'package:buildconnect/models/post/post_model.dart'; // Import PostModel
 import 'package:buildconnect/shared/widgets/search_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-// import 'package:buildconnect/core/theme/theme.dart'; // Import theme nếu cần
+// import 'package:buildconnect/core/theme/theme.dart'; // Import theme if needed
 
 // Widget màn hình Search Post
 class SearchPostScreen extends ConsumerStatefulWidget {

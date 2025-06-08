@@ -9,48 +9,52 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileService {
   SupabaseClient _supabaseClient = Supabase.instance.client;
-  String? userId = Supabase.instance.client.auth.currentUser!.id;
+  
   Future<List<Profile>> fetchRecentProfile() async {
-    final builder = _supabaseClient
-        .from(SupabaseConstants.profilesTable)
-        .select('''
-      *,
-      profile_operating_areas(city),
-      profile_contacts(contact),
-      profile_domains(domain),
-      profile_payment_methods(payment_method)
-    ''')
-        .limit(20);
+    try {
+      final builder = _supabaseClient
+          .from(SupabaseConstants.profilesTable)
+          .select('''
+        *,
+        profile_operating_areas(city),
+        profile_contacts(contact),
+        profile_domains(domain),
+        profile_payment_methods(payment_method)
+      ''')
+          .limit(20);
 
-    final rawData = await builder as List<dynamic>;
-    final profileList =
-        rawData.map((row) => ProfileMapperExt.fromSupabaseMap(row)).toList();
-    // var result = <Profile>[];
-    // lấy ra các profiles có cùng profileType hoặc ở cùng mainAddress
-    var result = List<Profile>.from(profileList);
-    if (userId != null) {
-      final myProfile =
-          await _supabaseClient
-              .from(SupabaseConstants.profilesTable)
-              .select('profile_type, main_city')
-              .eq('user_id', userId!)
-              .maybeSingle();
-      debugPrint('-----------currentUser: ${myProfile.toString()}');
+      final rawData = await builder as List<dynamic>;
+      final profileList = rawData.map((row) => ProfileMapperExt.fromSupabaseMap(row)).toList();
+      var result = List<Profile>.from(profileList);
 
-      if (myProfile != null) {
-        final myProfileType = myProfile['profile_type'];
-        final myMainCity = myProfile['main_city'];
+      // Only try to filter by user profile if there is an authenticated user
+      final currentUser = _supabaseClient.auth.currentUser;
+      if (currentUser != null) {
+        final myProfile = await _supabaseClient
+            .from(SupabaseConstants.profilesTable)
+            .select('profile_type, main_city')
+            .eq('user_id', currentUser.id)
+            .maybeSingle();
+        
+        debugPrint('-----------currentUser: ${myProfile.toString()}');
 
-        result =
-            result.where((profile) {
-              final matchType = profile.profileType.name == myProfileType;
-              final matchCity = profile.mainCity.name == myMainCity;
-              final isMe = profile.userId! == userId!;
-              return (matchType || matchCity) && !isMe;
-            }).toList();
+        if (myProfile != null) {
+          final myProfileType = myProfile['profile_type'];
+          final myMainCity = myProfile['main_city'];
+
+          result = result.where((profile) {
+            final matchType = profile.profileType.name == myProfileType;
+            final matchCity = profile.mainCity.name == myMainCity;
+            final isMe = profile.userId == currentUser.id;
+            return (matchType || matchCity) && !isMe;
+          }).toList();
+        }
       }
-    }
 
-    return result;
+      return result;
+    } catch (e) {
+      debugPrint('Error fetching recent profiles: $e');
+      return [];
+    }
   }
 }

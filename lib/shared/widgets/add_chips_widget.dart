@@ -123,7 +123,7 @@ class _SkillInputFieldState extends State<SkillInputField> {
 //   chipTextColor: AppColors.text,
 //   chipBackgroundColor: AppColors.primary.withOpacity(0.1),
 //   onSkillListChanged: (skills) {
-//     print('Danh sách kỹ năng: $skills');
-//     // Có thể setState hay truyền vào model nếu cần
+//     print('Skills list: $skills');
+//     // Can setState or pass to model if needed
 //   },
 // )

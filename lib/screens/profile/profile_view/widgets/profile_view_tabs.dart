@@ -23,23 +23,18 @@ class ProfileViewTabs extends StatelessWidget {
               Tab(text: 'Contacts'),
             ],
           ),
-          // Make sure this container gets a fixed height
           const Padding(padding: EdgeInsets.only(top: 8)),
           Expanded(
             child: TabBarView(
+              physics: const BouncingScrollPhysics(),
               children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
+                _TabContent(
                   child: ProfileViewOverviewTab(profileData: profileData),
                 ),
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: ProfileViewProfessionalInfoTab(
-                    profileData: profileData,
-                  ),
+                _TabContent(
+                  child: ProfileViewProfessionalInfoTab(profileData: profileData),
                 ),
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
+                _TabContent(
                   child: ProfileViewContactsTab(profileData: profileData),
                 ),
               ],
@@ -47,6 +42,30 @@ class ProfileViewTabs extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TabContent extends StatefulWidget {
+  final Widget child;
+
+  const _TabContent({required this.child});
+
+  @override
+  State<_TabContent> createState() => _TabContentState();
+}
+
+class _TabContentState extends State<_TabContent> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(20),
+      child: widget.child,
     );
   }
 }

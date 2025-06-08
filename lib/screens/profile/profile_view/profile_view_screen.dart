@@ -145,19 +145,19 @@ Widget _buildAvatar(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: const Text('Thông báo'),
-                          content: const Text('Bạn cần đăng nhập để gửi tin nhắn.'),
+                          title: const Text('Notification'),
+                          content: const Text('You need to login to send messages.'),
                           actions: [
                             TextButton(
                               onPressed: () => context.pop(),
-                              child: const Text('Đóng'),
+                              child: const Text('Close'),
                             ),
                             TextButton(
                               onPressed: () {
                                 context.pop();
                                 context.push('/login');
                               },
-                              child: const Text('Đăng nhập'),
+                              child: const Text('Login'),
                             ),
                           ],
                         );

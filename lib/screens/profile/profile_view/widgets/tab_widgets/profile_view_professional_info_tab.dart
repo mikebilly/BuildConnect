@@ -11,6 +11,7 @@ import 'package:buildconnect/screens/profile/profile_view/widgets/tab_widgets/su
 
 class ProfileViewProfessionalInfoTab extends StatelessWidget {
   final ProfileData profileData;
+  
   const ProfileViewProfessionalInfoTab({super.key, required this.profileData});
 
   @override
@@ -18,38 +19,43 @@ class ProfileViewProfessionalInfoTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        heightWidget(
-          widget: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Operating Areas', style: AppTextStyles.subheading),
-              const SizedBox(height: 5),
-
-              displayFilterChip(
-                values: profileData.profile.operatingAreas,
-                title: '',
-              ),
-            ],
-          ),
-        ),
-        // buildBoxContainer(
-        //   widget:
-        switch (profileData.profile.profileType) {
-          ProfileType.architect => ArchitectProfileViewWidget(
-            profileData: profileData,
-          ),
-          ProfileType.contractor => ContractorProfileViewWidget(
-            profileData: profileData,
-          ),
-          ProfileType.constructionTeam => ConstructionTeamProfileViewWidget(
-            profileData: profileData,
-          ),
-          ProfileType.supplier => SupplierProfileViewWidget(
-            profileData: profileData,
-          ),
-        },
-        // ),
+        _buildOperatingAreas(),
+        const SizedBox(height: 16),
+        _buildProfileTypeSpecificContent(),
       ],
     );
+  }
+
+  Widget _buildOperatingAreas() {
+    return heightWidget(
+      widget: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Operating Areas', style: AppTextStyles.subheading),
+          const SizedBox(height: 5),
+          displayFilterChip(
+            values: profileData.profile.operatingAreas,
+            title: '',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileTypeSpecificContent() {
+    return switch (profileData.profile.profileType) {
+      ProfileType.architect => ArchitectProfileViewWidget(
+          profileData: profileData,
+        ),
+      ProfileType.contractor => ContractorProfileViewWidget(
+          profileData: profileData,
+        ),
+      ProfileType.constructionTeam => ConstructionTeamProfileViewWidget(
+          profileData: profileData,
+        ),
+      ProfileType.supplier => SupplierProfileViewWidget(
+          profileData: profileData,
+        ),
+    };
   }
 }

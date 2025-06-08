@@ -138,7 +138,7 @@ class FeedScreen extends ConsumerWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           // Job title
                           Text(
                             post.title, // Display actual job title
@@ -207,17 +207,17 @@ class FeedScreen extends ConsumerWidget {
                                     const Icon(
                                       Icons.location_on,
                                       size: 16,
-                                      color: AppColors.text,
+                                      color: AppColors.grey,
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
                                       post.location.label,
-                                      style: TextStyle(color: AppColors.text),
+                                      style: TextStyle(color: AppColors.grey),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
                                 ),
-
+                                const SizedBox(width: 8),
                                 // Working mode bên phải
                                 if (post.workingMode != null)
                                   Row(
@@ -242,7 +242,7 @@ class FeedScreen extends ConsumerWidget {
                               ],
                             ),
                           ),
-
+                          const SizedBox(height: 8),
                           // Description
                           Text(
                             post.description ??
