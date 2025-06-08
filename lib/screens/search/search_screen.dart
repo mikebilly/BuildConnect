@@ -32,15 +32,21 @@ class _SearchScreenState extends State<SearchScreen>
         title: const Text('Search'),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [Tab(text: 'Post'), Tab(text: 'Profile')],
+          tabs: const [
+            Tab(text: 'Post'),
+            Tab(text: 'Profile'),
+          ],
           labelColor: Colors.white,
-          unselectedLabelColor: const Color.fromARGB(128, 255, 255, 255),
+          unselectedLabelColor: Color.fromARGB(128, 255, 255, 255),
           indicatorColor: Colors.white,
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [SearchPostScreen(), SearchProfileScreen()],
+        children: const [
+          SearchPostScreen(),
+          SearchProfileScreen(),
+        ],
       ),
     );
   }
