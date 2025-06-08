@@ -29,15 +29,15 @@ class _SearchScreenState extends State<SearchScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tìm kiếm'),
+        title: const Text('Search'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Bài đăng'),
-            Tab(text: 'Hồ sơ'),
+            Tab(text: 'Post'),
+            Tab(text: 'Profile'),
           ],
           labelColor: Colors.white,
-          unselectedLabelColor: const Color.fromARGB(128, 255, 255, 255),
+          unselectedLabelColor: Color.fromARGB(128, 255, 255, 255),
           indicatorColor: Colors.white,
         ),
       ),
