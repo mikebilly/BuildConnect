@@ -43,7 +43,7 @@ Widget buildDrowndownButtonFormField<T>({
   required void Function(T?) onChanged,
   String? title,
   String? labelText,
-  double gap = 0,
+  double gap = 3,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +75,7 @@ Widget buildDropdownSearch<T>({
   required void Function(T?) onChanged,
   String? title,
   String? labelText,
-  double gap = 0,
+  double gap = 3,
   bool boldTitle = true,
 }) {
   return Column(
@@ -241,6 +241,7 @@ Widget buildFilterChip<T>({
         title ?? (values as dynamic).first.title,
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
+      SizedBox(height: 3),
       Wrap(
         spacing: spacing,
         runSpacing: runSpacing,
